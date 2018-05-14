@@ -1,0 +1,88 @@
+﻿@using System.Data
+@{
+    ViewBag.Title = "問題解答";
+    ViewBag.BodyClass = "FAQ";
+
+    DataTable dt = (DataTable)ViewData["dt"];
+
+    string faq_id = "";
+    string faq_title = "";
+    string faq_desc = "";
+    string faq_active = "";
+    string faq_html = "";
+    string cTitle = (string)ViewData["cTitle"];
+}
+
+<div role="main" class="main">
+    <div role="main" class="main">
+
+        <section class="page-top">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <ul class="breadcrumb">
+                            <li><a href="~/">Home</a></li>
+                            <li class="active">@cTitle</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <h1>@cTitle</h1>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <p class="lead">
+                        關於你的問題在這可以找到解答
+
+                    </p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+
+                    
+                        @if (dt.Rows.Count > 0)
+                        {
+                            faq_html = "";
+                            faq_html += "<div class=\"toogle\" data-plugin-toggle  data-plugin-options='{\"isAccordion\":true}'>";
+                            for (int i = 0; i < dt.Rows.Count; i++)
+                            {
+                                faq_id = dt.Rows[i]["faq_id"].ToString();
+                                faq_title = dt.Rows[i]["faq_title"].ToString();
+                                faq_desc = dt.Rows[i]["faq_desc"].ToString();
+
+                                if (i == 0)
+                                {
+                                    faq_active = "toggle active";
+                                }
+                                else
+                                {
+                                    faq_active = "toggle";
+                                }
+
+                                faq_html += "<section class=\"" + faq_active + "\">";
+                                faq_html += "<label>" + faq_title + "</label>";
+                                faq_html += "    <div class=\"toggle-content\">";
+                                faq_html += faq_desc;
+                                faq_html += "    </div>";
+                                faq_html += "</section>";
+      
+                            }
+                            faq_html += "</div>";
+                        }
+                        @Html.Raw(faq_html)
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>

@@ -1,0 +1,382 @@
+﻿@using System.Data
+
+@{
+    Layout = "~/Views/Shared/_MLayout.cshtml";
+    ViewBag.Crumb = "最新消息管理";
+    ViewBag.subnav = "n1";
+
+    DataTable dt = (DataTable)ViewData["dt"];
+    int row_count = 0;
+    int page_count = 50;
+    int page = (int)ViewData["page"];
+    int pre_page = 0;
+    int top_page = 0;
+    int next_page = 0;
+    int end_page = 0;
+    int min_row = 0;
+    int max_row = 0;
+    int total_page = 0;
+
+    string n_id = "";
+    string n_title = "";
+    string n_date = "";
+    string n_sort = "";
+    string is_index = "";
+    string show = "";
+    string show_class = "";
+    string str_index = "";
+    string index_class = "";
+    string txt_title_query = (string)ViewData["txt_title_query"];
+    string txt_sort = (string)ViewData["txt_sort"];
+    string txt_a_d = (string)ViewData["txt_a_d"];
+    string txt_start_date = (string)ViewData["txt_start_date"];
+    string txt_end_date = (string)ViewData["txt_end_date"];
+
+    string a_d = "";
+
+    if (txt_a_d == "")
+    {
+        a_d = "asc";
+    }
+    else
+    {
+        a_d = "desc";
+    }
+
+    string class_title = "";
+    string class_date = "";
+    string class_sort = "";
+    string class_status = "";
+    string class_index = "";
+
+    switch (txt_sort)
+    {
+        case "n_title":
+            class_title = a_d;
+            break;
+        case "n_date":
+            class_date = a_d;
+            break;
+        case "sort":
+            class_sort = a_d;
+            break;
+        case "is_index":
+            class_index = a_d;
+            break;
+        case "status":
+            class_status = a_d;
+            break;
+    }
+
+    row_count = dt.Rows.Count;
+    if (row_count % page_count > 0)
+    {
+        total_page = (row_count / page_count) + 1;
+    }
+    else
+    {
+        total_page = row_count / page_count;
+    }
+
+    if (page > total_page)
+    {
+        page = total_page;
+    }
+    else if (page < 1)
+    {
+        page = 1;
+    }
+
+    top_page = 1;
+
+    if (page > 1)
+    {
+        pre_page = page - 1;
+    }
+    else
+    {
+        pre_page = 1;
+    }
+
+    if (total_page > page)
+    {
+        next_page = page + 1;
+    }
+    else
+    {
+        next_page = total_page;
+    }
+
+    end_page = total_page;
+
+    min_row = 10 * (page - 1) + 1;
+    max_row = 10 * page;
+    if (max_row > row_count)
+    {
+        max_row = row_count;
+    }
+}
+
+@section Breadcrumb {
+    <ul class="breadcrumb">
+        <li>@ViewBag.Crumb</li>
+    </ul>
+}
+
+<h3 class="title">@ViewBag.Crumb </h3>
+
+<div class="alert-warning m-b-16">
+    <strong>前台排序：</strong> 依日期。<br>
+</div>
+
+<div class="topBtn-bar btn-group">
+    <button type="button" onclick="location.href='@Url.Content("~/Manage/News_Add")';" class="btn success oi" data-glyph="plus">
+        新增
+    </button>
+</div>
+<form name="form1" id="form1" action="" method="post">
+    <input type="hidden" id="txt_sort" name="txt_sort" value="@txt_sort" />
+    <input type="hidden" id="txt_a_d" name="txt_a_d" value="@txt_a_d" />
+
+    <header class="table-head form-inline">
+        <input type="text" placeholder="請輸入關鍵字..." id="txt_title_query" name="txt_title_query">
+
+        @* 用 datetimepicker (之類的東西) 選日期 *@
+        <label>起</label>
+        <input type="date" id="txt_start_date" name="txt_start_date" value="@txt_start_date">
+        ~
+        <label>迄</label>
+        <input type="date" id="txt_end_date" name="txt_end_date" value="@txt_end_date">
+
+        <label>前台顯示</label>
+        <select id="txt_show" name="txt_show">
+            <option value="">全部</option>
+            <option value="Y">顯示</option>
+            <option value="N">隱藏</option>
+        </select>
+
+        <label>首頁顯示</label>
+        <select id="txt_index" name="txt_index">
+            <option value="">全部</option>
+            <option value="Y">顯示</option>
+            <option value="N">隱藏</option>
+        </select>
+
+        <button class="btn sm oi" data-glyph="magnifying-glass" id="btn_query" name="btn_query" onclick="form_ok();">搜尋</button>
+    </header>
+    <table class="table-list table-hover table-striped">
+        <colgroup>
+            <col span="3">
+            <col style="width: 13.5%">
+            <col span="3" style="width: 11%">
+        </colgroup>
+        <thead>
+            <tr>
+                @* 點選排序功能 (點一下遞增, 點兩下遞減)
+                    <button class="th-sort-toggle"></button>
+                    遞增 asc
+                    <button class="th-sort-toggle asc"></button>
+                    遞減 desc
+                    <button class="th-sort-toggle desc"></button>
+                *@
+                @* 如不需要排序功能: 純文字即可 *@
+
+                <th class="item-edit">刪除</th>
+                <th class="item-edit">修改</th>
+                <th class="text-left">標題</th>
+                <th>
+                    @* 點選排序功能 (點一下遞增 asc, 點兩下遞減 desc) *@
+                    <button class="text-xs-center th-sort-toggle @class_date" name="btn_date" id="btn_date" onclick="sort('n_date');">發佈日期</button>
+                </th>
+                <th>
+                    @* 點選排序功能 (點一下遞增 asc, 點兩下遞減 desc) *@
+                    <button class="text-xs-center th-sort-toggle @class_status" name="btn_status" id="btn_status" onclick="sort('status');">前台顯示</button>
+                </th>
+                <th>
+                    @* 點選排序功能 (點一下遞增 asc, 點兩下遞減 desc) *@
+                    <button class="text-xs-center th-sort-toggle @class_index" name="btn_index" id="btn_index" onclick="sort('is_index');">首頁顯示</button>
+                </th>
+                <th>
+                    @* 點選排序功能 (點一下遞增 asc, 點兩下遞減 desc) *@
+                    <button class="text-xs-center th-sort-toggle @class_sort" name="btn_sort" id="btn_sort" onclick="sort('sort');">前台排序</button>
+                </th>
+            </tr>
+        <thead>
+        <tbody>
+            @* 建議: 1頁10筆資料 *@
+            @if (dt.Rows.Count > 0)
+            {
+                for (int i = min_row - 1; i < max_row; i++)
+                {
+                    n_id = dt.Rows[i]["n_id"].ToString();
+                    n_title = dt.Rows[i]["n_title"].ToString();
+                    n_date = dt.Rows[i]["n_date"].ToString();
+                    n_sort = dt.Rows[i]["sort"].ToString();
+                    is_index = dt.Rows[i]["is_index"].ToString();
+                    if (dt.Rows[i]["status"].ToString() == "Y")
+                    {
+                        show = "顯示";
+                        show_class = "label-success";
+                    }
+                    else
+                    {
+                        show = "隱藏";
+                        show_class = "";
+                    }
+
+                    if (dt.Rows[i]["is_index"].ToString() == "Y")
+                    {
+                        str_index = "顯示";
+                        index_class = "label-success";
+                    }
+                    else
+                    {
+                        str_index = "隱藏";
+                        index_class = "";
+                    }
+                    <tr>
+                        <td>
+                            <button type="button" onclick="location.href='@Url.Content("~/Manage/News_Del?n_id=" + n_id)';" class="btn btn-link text-danger oi" data-glyph="trash"></button>
+                        </td>
+                        <td>
+                            <button type="button" onclick="location.href='@Url.Content("~/Manage/News_Edit?n_id=" + n_id)';" class="btn btn-link oi" data-glyph="pencil"></button>
+                        </td>
+                        <td class="text-left">@n_title</td>
+                        <td>@n_date</td>
+                        <td><span class="label @show_class">@show</span></td>
+                        <td><span class="label @index_class">@str_index</span></td>
+                        <td>@n_sort</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td class="text-left" colspan="7">
+                        無資料
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <footer class="table-foot">
+
+
+
+        <small class="float-r">第 @min_row - @max_row 筆，共 @row_count 筆</small>
+        <nav class="pager">
+            <a href="@Url.Content("~/Manage/NewsList?page=" + top_page.ToString())" class="oi" data-glyph="media-step-backward" title="到最前頁"></a>
+            <a href="@Url.Content("~/Manage/NewsList?page=" + pre_page.ToString())" class="oi" data-glyph="caret-left" title="上一頁"></a>
+            <span>
+                第
+                <input type="text" class="form-control form-control-sm text-xs-center" style="width:100px" name="page" id="page" value="@page">
+                頁，共 @total_page 頁
+            </span>
+            <a href="@Url.Content("~/Manage/NewsList?page=" + next_page.ToString())" class="oi" data-glyph="caret-right" title="下一頁"></a>
+            <a href="@Url.Content("~/Manage/NewsList?page=" + end_page.ToString())" class="oi" data-glyph="media-step-forward" title="到最後頁"></a>
+        </nav>
+    </footer>
+</form>
+    <script>
+        $('#form1').on('keyup keypress', function (e) {
+            var keyCode = e.keyCode || e.which;
+            if (keyCode === 13) {
+                e.preventDefault();
+                return false;
+            }
+        });
+        //$('#page').on('keydown', function (e) {
+        //    if (e.which == 13) {
+        //        //alert('clicked');
+        //        document.form1.submit();
+        //    }
+        //});
+
+        //$('#txt_title_query').on('keydown', function (e) {
+        //    if (e.which == 13) {
+        //        //alert('clicked');
+        //        document.form1.submit();
+        //    }
+        //});
+
+        //$('#txt_start_date').on('keydown', function (e) {
+        //    if (e.which == 13) {
+        //        //alert('clicked');
+        //        document.form1.submit();
+        //    }
+        //});
+
+        //$('#txt_end_date').on('keydown', function (e) {
+        //    if (e.which == 13) {
+        //        //alert('clicked');
+        //        document.form1.submit();
+        //    }
+        //});
+
+        //$('#txt_lang').on('keydown', function (e) {
+        //    if (e.which == 13) {
+        //        //alert('clicked');
+        //        document.form1.submit();
+        //    }
+        //});
+
+        function form_ok() {
+            $('#form1').submit();
+        }
+
+        function sort(c_sort) {
+            var pre_sort = $('#txt_sort').val();
+            var pre_a_d = $('#txt_a_d').val();
+            var a_d = "";
+            var s_sort = "";
+            var class_a_d = "";
+
+            s_sort = c_sort;
+            if (pre_sort == c_sort) {
+                if (pre_a_d == "") {
+                    a_d = "desc";
+                }
+                else {
+                    a_d = "";
+                }
+            }
+            else {
+                a_d = "";
+            }
+
+            //alert("pre_sort:" + pre_sort + ";pre_a_d:" + pre_a_d + ";a_d:" + a_d + ";s_sort=" + s_sort)
+
+            $('#txt_sort').val(s_sort);
+            $('#txt_a_d').val(a_d);
+
+            $('#form1').submit();
+
+        }
+
+        //$('#btn_area').click(function (e) {
+        //    var pre_sort = $('#txt_sort').val();
+        //    var pre_a_d = $('#txt_a_d').val();
+        //    var a_d = "";
+        //    var sort = "";
+        //    if(pre_sort == "area")
+        //    {
+        //        if(pre_a_d == "")
+        //        {
+        //            a_d = "desc";
+        //        }
+        //        else
+        //        {
+        //            a_d = "";
+        //        }
+        //    }
+        //    else
+        //    {
+        //        sort = "area";
+        //        a_d = "";
+        //    }
+        //});
+        //$('#page').click(function (e) {
+        //    alert('clicked');
+        //});
+    </script>

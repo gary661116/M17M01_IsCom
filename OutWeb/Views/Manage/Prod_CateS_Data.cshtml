@@ -1,0 +1,395 @@
+﻿@using System.Data
+@{
+    Layout = "~/Views/Shared/_MLayout.cshtml";
+    ViewBag.Crumb = "產品小類管理";
+    ViewBag.subnav = "n4";
+    ViewBag.subnav2 = "Prod_CateS_List";
+
+    //變數設定
+
+    DataTable dt = (DataTable)ViewData["dt"];
+    DataTable d_img = (DataTable)ViewData["d_img"];
+    DataTable dt_b = (DataTable)ViewData["dt_b"];
+
+    string cate_id = "";
+    string cate_name = "";
+    string cate_desc = "";
+    string cate_pic = "";
+    string cate_pic_id = "";
+    string sort = "";
+    string action_sty = (string)ViewData["action_sty"];
+    string action_name = "";
+    string c_status = "";
+    string c_front_status = "";
+    string is_index = "";
+    string c_index_status = "";
+    string cateb_id = "";
+    string cate_selected = "";
+
+    string img_no = "";
+    string img_path = "../Images/";
+    string small_img = "";
+    string big_img = "";
+    string img_id = "";
+
+    img_no = DateTime.Now.ToString("yyyyMMddHHmmss");
+
+    if (action_sty == "add")
+    {
+        action_name = "新增";
+
+        cate_id = "";
+        cate_name = "";
+        cate_desc = "";
+        //n_date = DateTime.Today.ToString("yyyy-MM-dd");
+        c_status = "Y";
+        c_front_status = "checked";
+        cate_pic = "";
+        cate_pic_id = "";
+        cateb_id = "";
+
+        sort = "0";
+    }
+    else if (action_sty == "edit")
+    {
+        action_name = "修改";
+
+        //d_news = (DataTable)ViewData["d_news"];
+
+        //d_scenic_img_b = (DataTable)ViewData["d_scenic_img_b"];
+        //d_scenic_img_s = (DataTable)ViewData["d_scenic_img_s"];
+
+        cate_id = dt.Rows[0]["cate_s_id"].ToString();
+        cate_name = dt.Rows[0]["cate_name"].ToString();
+        cate_desc = dt.Rows[0]["cate_desc"].ToString();
+        cate_pic = img_path + dt.Rows[0]["img_file"].ToString();
+        cate_pic_id = dt.Rows[0]["img_id"].ToString();
+        c_status = dt.Rows[0]["status"].ToString();
+        sort = dt.Rows[0]["sort"].ToString();
+        cateb_id = dt.Rows[0]["cate_b_id"].ToString();
+
+        switch (c_status)
+        {
+            case "Y":
+                c_front_status = "checked";
+                break;
+            case "N":
+                c_front_status = "";
+                break;
+        }
+
+    }
+
+}
+
+@section Breadcrumb {
+    <ul class="breadcrumb">
+        <li>@ViewBag.Crumb</li>
+    </ul>
+}
+
+<h3 class="title">@ViewBag.Crumb <small class="oi" data-glyph="tags">編輯</small></h3>
+@* 引用 ajaxfileupload *@
+<script src="~/Scripts/ajaxfileupload.js"></script>
+@* 引用 ajax_lib *@
+<script src="~/Scripts/ajax_lib.js"></script>
+@*1.引用ckeditor.js*@
+<script src="~/ckeditor/ckeditor.js"></script>
+<script>
+    function form_ok() {
+        //檢查資料
+        var sshow = "";
+        var shot = "";
+        var cmsg = "";
+        var cate_name = "";
+        cate_name = $("#cate_name").val();
+        if(cate_name == "")
+        {
+            cmsg = "請輸入類別名稱";
+        }
+
+
+        if ($("#cshow").prop("checked")) {
+            $("#show").val("Y");
+            sshow = "Y";
+        }
+        else
+        {
+            $("#show").val("N");
+            sshow = "N";
+        }
+
+        //alert("show:" + $("#show").val() + ";hot:" + $("#hot").val());
+        if(cmsg != "")
+        {
+            alert(cmsg);
+        }
+        else
+        {
+            form1.submit();
+        }
+
+    }
+
+    function del_img(img_id,c_sty)
+    {
+        var cimg_no = "";
+        var c_cate = "Prod_Cate";
+        var c_img_sty = "S";
+
+        if (confirm("確定刪除??")) {
+            //alert("你按下確定");
+            if ($("#cate_id").val().length > 0) {
+                cimg_no = $("#cate_id").val();
+            }else {
+                cimg_no = @img_no;
+            }
+
+            $.ajax({                
+                url: 'Img_Del',
+                data: { img_id: img_id, img_sta:c_sty, img_no: cimg_no,img_cate: c_cate,img_sty: c_img_sty }, //此参数非常严谨，写错一个引号都不行
+                type:"POST",
+                dataType: 'TEXT', //返回值类型 一般设置为json
+                async: false,
+                success: function(JData){
+                    //alert(JData);
+                    data = handleAjaxVPNMsg(JData);
+                    i = 0;
+                    c_html = "";
+
+                    $.each($.parseJSON(data), function (idx, obj) {
+                        i = i + 1;
+                        c_html = c_html + "<li>";
+                        c_html = c_html + "    <button class=\"close\" id=\"btn_close_" + c_sty + "_" + i + "\" name=\"btn_close_" + c_sty + "_" + i + "\" onclick=\"del_img('" + obj.img_id + "','" + c_sty + "');\" >&times;</button>";
+                        c_html = c_html + "    <img id=\"img_" + c_sty + "_" + i + "\" name=\"img_" + c_sty + "_" + i + "\" src=\"../Images/" + obj.img_file + "\" alt=\"\">";
+                        c_html = c_html + "</li>";
+                    });
+
+                    $('#c_img_' + c_sty).html(c_html);
+                },
+                error:function(xhr, ajaxOptions, thrownError){ 
+                    alert(xhr.status); 
+                    alert(thrownError); 
+                },
+                complete: function () {
+                    //alert(tbl_new_list);
+                    //alert('ajax complete');
+                }
+            });
+        }
+        else {
+            //alert("你按下取消");
+        }
+
+        return false;
+    }
+
+    function upload(c_sty)
+    {
+        if ($("#pic_" + c_sty).val().length > 0) {
+            //ajaxFileUpload('pic_small','small_img');
+            ajaxFileUpload(c_sty);
+        }
+        else {
+            alert("請選擇圖片");
+        }
+    }
+
+    function ajaxFileUpload(c_sty) {
+        var cimg_no = "";
+        var c_img = "pic_" + c_sty;
+        var c_cate = "Prod_Cate";
+        var c_img_sty = "S";
+
+        if ($("#cate_id").val().length > 0) {
+            cimg_no = $("#cate_id").val();
+        }else {
+            cimg_no = @img_no;
+        }
+
+        var chtml = "";
+        var i = 0;
+        $.ajaxFileUpload
+        (
+            {
+                url: 'Upload', //用于文件上传的服务器端请求地址
+                type: 'post',
+                data: { img_no: cimg_no, img_sta:c_sty,img_cate: c_cate, img_sty: c_img_sty}, //此参数非常严谨，写错一个引号都不行
+                secureuri: false, //一般设置为false
+                //fileElementId: 'file1', //文件上传空间的id属性  <input type="file" id="file" name="file" />
+                fileElementId: c_img, //文件上传空间的id属性  <input type="file" id="file" name="file" />
+                //dataType: 'HTML', //返回值类型 一般设置为json
+                dataType: 'JSON', //返回值类型 一般设置为json
+                success: function (JData, status)  //服务器成功响应处理函数
+                {
+                    //alert(JData);
+
+                    data = handleAjaxVPNMsg(JData);
+
+                    i = 0;
+                    c_html = "";
+                    $.each($.parseJSON(data), function (idx, obj) {
+                        i = i + 1;
+                        c_html = c_html + "<li>";
+                        c_html = c_html + "    <button class=\"close\" id=\"btn_close_" + c_sty + "_" + i + "\" name=\"btn_close_" + c_sty + "_" + i + "\" onclick=\"del_img('" + obj.img_id + "','" + c_sty + "');\" >&times;</button>";
+                        c_html = c_html + "    <img id=\"img_" + c_sty + "_" + i + "\" name=\"img_" + c_sty + "_" + i + "\" src=\"../Images/" + obj.img_file + "\" alt=\"\">";
+                        c_html = c_html + "</li>";
+                    });
+
+                    $('#c_img_' + c_sty).html(c_html);
+                },
+                error: function (data, status, e)//服务器响应失败处理函数
+                {
+                    alert(e);
+                }
+            }
+        )
+        return false;
+    }
+
+    function handleAjaxVPNMsg(data) {
+        var firstRemoveIndexStart = data.indexOf("<SCRIPT");
+        var firstRemoveIndexEnd = data.indexOf("<\/SCRIPT>");
+        var newData = data;
+        while (firstRemoveIndexStart != -1) {
+            firstRemoveIndexStart = newData.indexOf("<SCRIPT");
+            firstRemoveIndexEnd = newData.indexOf("<\/SCRIPT>");
+            //alert('firstRemoveIndexStart:'+firstRemoveIndexStart);
+            if (firstRemoveIndexStart != -1) {
+                if (firstRemoveIndexStart == 0) {
+                    newData = newData.substr(firstRemoveIndexEnd + 9, newData.length);
+                } else {
+                    newDataHead = newData.substr(0, firstRemoveIndexStart);
+                    newDataTail = newData.substr(firstRemoveIndexEnd + 9, newData.length);
+                    //alert('newDataHead'+newDataHead);
+                    //alert('newDataTail'+newDataTail);
+                    newData = newDataHead + newDataTail;
+                }
+            }
+            //alert(newData);
+        }
+        //alert("before:second:"+newData);
+        var secondeRemoveIndex = newData.indexOf("<\/noscript>");
+        //alert(secondeRemoveIndex);
+        if (secondeRemoveIndex != -1) {
+            newData = newData = newData.substr(0, secondeRemoveIndex);
+        }
+        //alert(newData);
+        return newData;
+    }
+</script>
+
+<form class="form-list" action="Prod_CateS_Save" name="form1" id="form1" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="action_sty" id="action_sty" value="@action_sty" />
+    <input type="hidden" name="cate_id" id="cate_id" value="@cate_id" />
+    <input type="hidden" name="img_no" id="img_no" value="@img_no" />
+    <input type="hidden" name="show" id="show" value="" />
+    <input type="hidden" name="hot" id="hot" value="" />
+    
+    @if (action_sty == "add")
+    {
+        <input type="hidden" name="sort" id="sort" value="" />
+    }
+
+    <dl class="fields">
+        <dt class="col-2">*類別名稱</dt>
+        <dd class="col-10">
+            <input type="text" class="form-control form-control-sm" required id="cate_name" name="cate_name" value="@cate_name">
+        </dd>
+    </dl>
+    <dl class="fields">
+        <dt class="col-2">大類類別</dt>
+        <dd class="col-10">
+            <select id="cateb_id" name="cateb_id">
+                @for (int i = 0; i < dt_b.Rows.Count; i++)
+                {
+                    if (dt_b.Rows[i]["cate_b_id"].ToString() == cateb_id)
+                    {
+                        cate_selected = "selected";
+                    }
+                    else
+                    {
+                        cate_selected = "";
+                    }
+
+                    <option value="@dt_b.Rows[i]["cate_b_id"].ToString()" @cate_selected>@dt_b.Rows[i]["cate_name"].ToString()</option>
+                }
+            </select>
+        </dd>
+    </dl>
+
+    @if (action_sty == "edit")
+    {
+        <dl class="fields">
+            <dt class="col-2">排序</dt>
+            <dd class="col-4">
+                <input type="number" min="0" class="inline" id="sort" name="sort" value="@sort">
+                <small>數字愈大愈前面</small>
+            </dd>
+        </dl>
+    }
+    
+    <dl class="fields">
+        <dt class="col-2">前台顯示</dt>
+        <dd class="col-4">
+            <label class="switch">
+                <input type="checkbox" name="cshow" id="cshow" @c_front_status>
+                <div class="slider round"></div>
+            </label>
+        </dd>
+    </dl>
+    <!--
+    <dl class="fields">
+        <dt class="col-2">種類圖片</dt>
+        <dd class="col-10">
+            @* 瀏覽&上傳檔案 *@
+            <input type="file" name="pic_S" id="pic_S" accept="image/*" class="form-control form-control-sm">
+            <button type="button" name="btn_small_pic" onclick="upload('S');" class="btn btn-sm btn-success oi m-t-small" data-glyph="data-transfer-upload">
+                上傳
+            </button>
+            <br>
+            @* 照片縮圖(上傳圖片後顯示) *@
+            <ol class="upload-img list-inline" id="c_img_S" name="c_img_small">
+                @for (int s = 0; s < d_img.Rows.Count; s++)
+                {
+                    small_img = img_path + d_img.Rows[s]["img_file"].ToString();
+                    img_id = d_img.Rows[s]["img_id"].ToString();
+                    <li>
+                        <button class="close" id="btn_close_s_@s" name="btn_close_s_@s" onclick="del_img('@img_id','S');">&times;</button>
+                        <img id="img_S_@s" name="img_S_@s" src="@small_img" alt="">
+                    </li>
+                }
+
+            </ol>
+
+            <small class="text-muted">可上傳 1 張照片，建議尺寸為 795px*503px 或等比例長寬，每張圖最大不可超過 500kb</small>
+        </dd>
+    </dl>
+    -->
+    <fieldset class="m-t-24">
+        <legend class="underline">[ 內容 ]</legend>
+        <div class="alert-warning font-sm m-b-16">
+            <strong>編輯器注意事項:</strong><br>
+            從 WORD 複製文字時，請使用下方的 <img src="/Content/images/icon-word.jpg" /> 圖示來貼上 WORD 文字，避免跑版<br />
+            編輯器上傳圖片或新增表格等時，請勿設定寬度及高度(將數字刪除) ，以免行動裝置顯示時會跑版。<br />
+            檔案尺寸寬度超過 1600 或 高度超過1200 的圖片會被壓縮(PNG透明背景會變成不透明) <br />
+            youtube 可勾選「用自適應縮放模式」
+        </div>
+        @* 編輯器(含圖片上傳功能) *@
+        <textarea class="ckeditor form-control" rows="12" placeholder="請輸入種類描述" name="cate_desc" id="n_desc">@cate_desc</textarea>
+        @*加入圖片上傳頁籤，放在頁面底下，放在頁面head區的話，會抓不到myText DOM*@
+        <script type="text/javascript">
+                    CKEDITOR.replace('cate_desc'
+                , { filebrowserImageUploadUrl: '@Url.Content("~/Manage/UploadPicture")' }
+                );
+        </script>
+    </fieldset>
+    <footer class="submit-bar clear m-t-24">
+        <button type="button" name="btn_ok" onclick="form_ok();" class="btn success oi" data-glyph="circle-check">
+            確認儲存
+        </button>
+        <button type="button" id="btn_back" name="btn_back" onclick="location.href='Prod_CateS_List'" class="btn warning oi" data-glyph="circle-x">
+            回列表
+        </button>
+    </footer>
+</form>

@@ -1,0 +1,433 @@
+﻿@using System.Data
+@using System.Text.RegularExpressions
+
+@{
+    ViewBag.Title = "首頁";
+
+    DataTable d_news = (DataTable)ViewData["d_news"];
+    DataTable d_ad = (DataTable)ViewData["d_ad"];
+    DataTable d_proj = (DataTable)ViewData["d_proj"];
+    DataTable d_ads = (DataTable)ViewData["d_ads"];
+    DataTable d_ads_cate = (DataTable)ViewData["d_ads_cate"];
+
+    string n_id = "";
+    string n_title = "";
+    string n_date = "";
+    string n_desc = "";
+    string n_day = "";
+    string n_month = "";
+    string nmonth = "AAA,Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec";
+    string[] array_month = nmonth.Split(',');
+    string n_memo = "";
+    string n_html = "";
+    string img_path = "~/Images/";
+
+    string proj_id = "";
+    string proj_title = "";
+    string proj_date = "";
+    string proj_desc = "";
+    string proj_url = "";
+    string proj_memo = "";
+
+    string ads_cate_id = "";
+    string ads_cate_name = "";
+    string ads_cate_desc = "";
+    string ads_cate_pic = "";
+    string ads_i = "";
+
+    string ads_id = "";
+    string ads_title = "";
+    string ads_url = "";
+    string ads_pic = "";
+    string ads_deplay = "";
+
+    string ads_html = "";
+
+    int ii = 0;
+
+}
+
+<div role="main" class="main">
+
+    <div class="slider-container slider-csp">
+        <div class="slider slider-csps" id="revolutionSlider" >
+            <ul>
+                @if (d_ad.Rows.Count > 0)
+                {
+                    for (int i = 0; i < d_ad.Rows.Count; i++)
+                    {
+                        <li data-transition="fade" data-slotamount="10" data-masterspeed="150">
+                            <a href="http://www.iscom.com.tw/News/NewsData?n_id=73"><img src="@Url.Content("~/Images/" + d_ad.Rows[i]["ad_img"].ToString())" data-bgfit="cover" data-bgposition="right center" data-bgrepeat="no-repeat"></a>
+                        </li>
+                    }
+                }
+                @*
+                else
+                {
+                    <li data-transition="fade" data-slotamount="10" data-masterspeed="150">
+                       <img src="~/img/slides/dark-cover.jpg"  data-bgrepeat="no-repeat">
+                    </li>
+                    <li data-transition="fade" data-slotamount="10" data-masterspeed="150">
+                        <img src="~/img/slides/slide-bg-3.jpg"  data-bgrepeat="no-repeat">
+                    </li>
+                    <li data-transition="fade" data-slotamount="10" data-masterspeed="150">
+                        <img src="~/img/slides/light-cover.jpg" data-bgrepeat="no-repeat">
+                    </li>
+                }
+                *@
+            </ul>
+        </div>
+    </div>
+    <div class="btntree hidden-sm hidden-md hidden-lg ">
+        <a href="#boxshow-1" class="btn btn-primary btn-xs">應用服務</a>
+        <a href="#boxshow-2" class="btn btn-primary btn-xs">解決方案</a>
+        <a href="#boxshow-3" class="btn btn-primary btn-xs">采威動向</a>
+    </div>
+    <!--  小圖廣告 Start -->
+    @if (d_ads_cate.Rows.Count > 0)
+    {
+        ads_html = "";
+        for (int i = 0; i < d_ads_cate.Rows.Count; i++)
+        {
+            ads_cate_id = d_ads_cate.Rows[i]["cate_id"].ToString();
+            ads_cate_name = d_ads_cate.Rows[i]["cate_name"].ToString();
+            ads_cate_pic = img_path + d_ads_cate.Rows[i]["img_file"].ToString();
+            ads_i = (i + 1).ToString();
+            //--Temp檔--建立---------//
+            DataTable ads;
+            //----------------------------------------------------------------------//
+            DataRow[] ads_Rows = d_ads.Select("cate_id=" + ads_cate_id);
+            //----------------------------------------------------------------------//
+            if (ads_Rows.Any())
+            {
+                ads = ads_Rows.CopyToDataTable();
+            }
+            else
+            {
+                ads = d_ads.Clone();
+                ads.Clear();
+            }
+
+            if (i == 0)
+            {
+                ads_html += "";
+                ads_html += "<div class=\"boxshow-" + ads_i + "\">";
+                ads_html += "    <div id=\"boxshow-" + ads_i + "\"></div>";
+                ads_html += "    <div class=\"container\">";
+                ads_html += "        <div class=\"row center\">";
+                ads_html += "             <div class=\"col-md-12\">";
+                ads_html += "                 <p class=\"lead push-bottom\">";
+                ads_html += "                    <h2 class=\"shorter word-rotator-title push-top\">";
+                ads_html += "                                        <strong>" + ads_cate_name + "</strong>";
+                ads_html += "                    </h2>";
+                ads_html += "                </p>";
+                ads_html += "            </div>";
+                ads_html += "        </div>";
+                ads_html += "     </div>";
+                ads_html += "     <div class=\"slider-container\">";
+                ads_html += "         <ul class=\"portfolio-list sort-destination full-width\">";
+                if (ads.Rows.Count > 0)
+                {
+                    for (int j = 0; j < ads.Rows.Count; j++)
+                    {
+                        ads_title = ads.Rows[j]["ad_title"].ToString();
+                        ads_url = ads.Rows[j]["ad_url"].ToString();
+                        ads_pic = img_path + ads.Rows[j]["img_file"].ToString();
+
+                        ads_html += "         <li class=\"isotope-item\">";
+                        ads_html += "             <div class=\"portfolio-item img-thumbnail\">";
+                        ads_html += "               <a href=\"" + Url.Content(ads_url) + "\" class=\"thumb-info secundary\">";
+                        ads_html += "               <img alt=\"\" class=\"img-responsive\" src=\"" + Url.Content(ads_pic) + "\">";
+                        ads_html += "             <span class=\"thumb-info-title\">";
+                        ads_html += "                <span class=\"thumb-info-inner\">" + ads_title + "</span>";
+                        ads_html += "                <span class=\"thumb-info-type\">more</span>";
+                        ads_html += "             </span>";
+                        ads_html += "             <span class=\"thumb-info-action\">";
+                        ads_html += "                 <span title=\"Universal\" class=\"thumb-info-action-icon\"><i class=\"fa fa-link\"></i></span>";
+                        ads_html += "             </span>";
+                        ads_html += "        </a>";
+                        ads_html += "     </div>";
+                        ads_html += " </li>";
+                    }
+                }
+                ads_html += "        </ul>";
+                ads_html += "     </div>";
+                ads_html += " </div>";
+
+            }
+            
+            
+            else
+            {
+                ads_html += "<div class=\"boxshow-" + ads_i + "\">";
+                ads_html += "    <div id=\"boxshow-" + ads_i + "\"></div>";
+                ads_html += "    <div class=\"home-concept\">";
+                ads_html += "         <div class=\"container\">";
+                if (ads.Rows.Count > 0)
+                {
+                    ads_html += "             <div class=\"row center\">";
+                    ads_html += "                 <span class=\"sun\"></span>";
+                    ads_html += "                 <span class=\"cloud\"></span>";
+                    for (int j = 0; j < ads.Rows.Count; j++)
+                    {
+                        ads_title = ads.Rows[j]["ad_title"].ToString();
+                        ads_url = ads.Rows[j]["ad_url"].ToString();
+                        ads_pic = img_path + ads.Rows[j]["img_file"].ToString();
+                        ads_deplay = (j * 200).ToString();
+
+                        ads_html += "                 <div class=\"col-md-2\">";
+                        ads_html += "                    <div class=\"process-image\" data-appear-animation=\"bounceIn\"";
+                        if(j > 0)
+                        {
+                            ads_html += " data -appear-animation-delay=\"" + ads_deplay + "\" ";
+                        }
+                        ads_html += ">";
+                        ads_html += "                         <a href=\"" + Url.Content(ads_url) + "\"><img src=\"" + Url.Content(ads_pic) + "\" alt=\"\" /></a>";
+                        ads_html += "                         <strong><a href=\"" + Url.Content(ads_url) + "\">" + ads_title + "</a></strong>";
+                        ads_html += "                     </div>";
+                        ads_html += "                 </div>";
+                    }
+
+                    ads_html += "                <div class=\"col-md-4 col-md-offset-1\">";
+                    ads_html += "                    <div class=\"project-image\">";
+                    ads_html += "                        <div id=\"fcSlideshow\" class=\"fc-slideshow\">";
+                    ads_html += "                            <ul class=\"fc-slides\">";
+                    ads_html += "                                <li><img class=\"img-responsive\" src=\"" + Url.Content(ads_cate_pic) + "\" /></li>";
+                    ads_html += "                            </ul>";
+                    ads_html += "                        </div>";
+                    ads_html += "                        <strong class=\"our-work\">" + ads_cate_name + "</strong>";
+                    ads_html += "                    </div>";
+                    ads_html += "                </div>";
+
+                    ads_html += "            </div>";
+                }
+
+                ads_html += "        </div>";
+                ads_html += "    </div>";
+
+                ads_html += "    <div class=\"container\">";
+                ads_html += "        <div class=\"row\">";
+                ads_html += "            <br />";
+                ads_html += "        </div>";
+                ads_html += "     </div>";
+                ads_html += "</div>";
+            }
+
+            //--Temp檔--釋放-------//
+            ads.Dispose();
+            ads = null;
+
+        }
+
+    }
+    @Html.Raw(ads_html)
+    <!--  小圖廣告 End   -->
+    <!--  采威動向 Start -->
+    <div class="boxshow-3">
+        <div id="boxshow-3"></div>
+        <section class="featured footer map">
+            <div class="container">
+                <div class="row center">
+                    <div class="col-md-12">
+                        <h2 class="shorter word-rotator-title push-top">
+                            <strong>采威動向</strong>
+                        </h2>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="recent-posts push-bottom">
+                            <h3 class="center"><a href="~/News">最新消息</a></h3>
+                            <div class="row">
+                                <div class="owl-carousel" data-plugin-options='{"items": 1}'>
+                                    @if(d_news.Rows.Count > 0)
+                                    {
+                                        n_html = "";
+                                        for (int i = 0; i < d_news.Rows.Count; i++)
+                                        {
+                                            n_id = d_news.Rows[i]["n_id"].ToString();
+                                            n_title = d_news.Rows[i]["n_title"].ToString();
+                                            //if(n_title.Length > 10)
+                                            //{
+                                            //    n_title = n_title.Substring(0, 10) + "...";
+                                            //}
+
+                                            n_date = d_news.Rows[i]["n_date"].ToString();
+                                            n_month = array_month[Convert.ToInt16(n_date.Substring(5, 2))];
+                                            n_day = n_date.Substring(8, 2);
+                                            n_memo = d_news.Rows[i]["n_memo"].ToString();
+                                            n_desc = d_news.Rows[i]["n_desc"].ToString();
+                                            if (n_desc.Length > 50)
+                                            {
+                                                n_desc = n_desc.Substring(0, 50) + "...";
+                                            }
+
+                                            if (i % 2 == 0)
+                                            {
+                                                n_html += "<div>";
+                                            }
+                                            n_html += "<div class=\"col-md-6\">";
+                                            n_html += "            <article>";
+                                            n_html += "                <div class=\"date\">";
+                                            n_html += "                  <span class=\"day\">" + n_day + "</span>";
+                                            n_html += "                  <span class=\"month\">" + n_month + "</span>";
+                                            n_html += "                </div> ";
+                                            n_html += "                <h4><a href=\"" + Url.Content("~/News/NewsData?n_id=" + n_id) + "\">" + n_title + "</a></h4>";
+                                            n_html += "                <p>" + n_desc + "<br /><a href=\"" + Url.Content("~/News/NewsData?n_id=" + n_id) + "\" class=\"read-more\">more <i class=\"fa fa-angle-right\"></i></a></p>";
+                                            n_html += "            </article>";
+                                            n_html += "</div>";
+
+                                            if (i % 2 == 1)
+                                            {
+                                                n_html += "</div>";
+                                            }
+                                        }
+
+                                        if(d_news.Rows.Count % 2 == 1)
+                                        {
+                                            n_html += "<div class=\"col-md-6\"></div>";
+                                            n_html += "</div>";
+                                        }
+                                    }
+                                                @Html.Raw(n_html);
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h3 class="center"><a href="~/Project">成交案例</a></h3>
+                        <div class="toogle" data-plugin-toggle="">
+                            @if (d_proj.Rows.Count > 0)
+                                            {
+                                                for (ii = 0; ii < d_proj.Rows.Count; ii++)
+                                                {
+                                                    proj_id = d_proj.Rows[ii]["proj_id"].ToString();
+                                                    proj_title = d_proj.Rows[ii]["proj_title"].ToString();
+                                                    proj_url = d_proj.Rows[ii]["proj_url"].ToString();
+                                                    proj_date = d_proj.Rows[ii]["proj_date"].ToString();
+                                                    proj_desc = d_proj.Rows[ii]["proj_desc"].ToString();
+                                                    proj_memo = d_proj.Rows[ii]["proj_memo"].ToString();
+                                    <section class="toggle">
+                                        <label>@proj_title</label>
+                                        <div class="toggle-content" style="display: none;">   
+                                            <p>@Html.Raw(proj_desc)<a href="~/Project/ProjData?proj_id=@proj_id">找相關服務</a></p>
+                                        </div>
+                                    </section>
+
+                                }
+                                    }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <!-- 采威動向 End -->
+    <!-- 小圖廣告 類別 Start -->
+    <div class="container portfolio-box">
+        <div class="row">
+            <ul class="portfolio-list">
+                @if (d_ads_cate.Rows.Count > 0)
+                {
+                    for (int i = 0; i < d_ads_cate.Rows.Count; i++)
+                    {
+                        ads_cate_id = d_ads_cate.Rows[i]["cate_id"].ToString();
+                        ads_cate_name = d_ads_cate.Rows[i]["cate_name"].ToString();
+                        ads_cate_desc = d_ads_cate.Rows[i]["cate_desc"].ToString();
+                        ads_cate_pic = img_path + d_ads_cate.Rows[i]["img_file"].ToString();
+                        ads_i = (i + 1).ToString();
+
+                        <li class="col-md-4">
+                            <div class="portfolio-item thumbnail">
+                                <a href="#boxshow-@ads_i" class="thumb-info btnop-@ads_i btn-go">
+                                    <img alt="" class="img-responsive" src="@Url.Content(ads_cate_pic)">
+                                    <span class="thumb-info-title  iscom-tit">
+                                        <span class="thumb-info-inner">@ads_cate_name</span>
+                                        <span class="thumb-info-type">@ads_cate_desc</span>
+                                    </span>
+                                    <span class="thumb-info-action">
+                                        <span title="Universal" class="thumb-info-action-icon"><i class="fa fa-link"></i></span>
+                                    </span>
+                                </a>
+                            </div>
+                        </li>
+
+                    }
+                }
+                <!--
+                <li class="col-md-4">
+                    <div class="portfolio-item thumbnail">
+                        <a href="#boxshow-1" class="thumb-info btnop-1 btn-go">
+                            <img alt="" class="img-responsive" src="~/img/projects/01.jpg">
+                            <span class="thumb-info-title  iscom-tit">
+                                <span class="thumb-info-inner">服務與解決方案</span>
+                                <span class="thumb-info-type">Self-service approach</span>
+                            </span>
+                            <span class="thumb-info-action">
+                                <span title="Universal" class="thumb-info-action-icon"><i class="fa fa-link"></i></span>
+                            </span>
+                        </a>
+                    </div>
+                </li>
+                <li class="col-md-4">
+                    <div class="portfolio-item thumbnail">
+                        <a href="#boxshow-2" class="thumb-info btnop-2 btn-go">
+                            <img alt="" class="img-responsive" src="~/img/projects/02.jpg">
+                            <span class="thumb-info-title  iscom-tit">
+                                <span class="thumb-info-inner">智慧化應用</span>
+                                <span class="thumb-info-type">Wisdom wisdom</span>
+                            </span>
+                            <span class="thumb-info-action">
+                                <span title="Universal" class="thumb-info-action-icon"><i class="fa fa-link"></i></span>
+                            </span>
+                        </a>
+                    </div>
+                </li>
+                -->
+                <li class="col-md-4">
+                    <div class="portfolio-item thumbnail">
+                        <a href="#boxshow-3" class="thumb-info btnop-3 btn-go">
+                            <img alt="" class="img-responsive" src="~/img/projects/03.jpg">
+                            <span class="thumb-info-title  iscom-tit">
+                                <span class="thumb-info-inner">動態與趨勢</span>
+                                <span class="thumb-info-type">News and Trend</span>
+                            </span>
+                            <span class="thumb-info-action">
+                                <span title="Universal" class="thumb-info-action-icon"><i class="fa fa-link"></i></span>
+                            </span>
+                        </a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!-- 小圖廣告 類別 End -->
+
+
+</div>
+
+@* 彈出視窗 *@
+@* <div class="modal" id="popup">
+    <main class="modal-content">
+        <button class="modal-close" onclick="document.getElementById('popup').style.display='none'">&#215;</button>
+        <img src="~/Content/images/index/notice.jpg">
+    </main>
+</div> *@
+@functions
+{
+    /// <summary>
+    /// 移除html tag
+    /// </summary>
+    /// <param name="htmlSource"></param>
+    /// <returns></returns>
+    public static string RemoveHTMLTag(string htmlSource)
+    {
+        //移除  javascript code.
+        htmlSource = Regex.Replace(htmlSource, @"<script[\d\D]*?>[\d\D]*?</script>", String.Empty);
+
+        //移除html tag.
+        htmlSource = Regex.Replace(htmlSource, @"<[^>]*>", String.Empty);
+        return htmlSource;
+    }
+}

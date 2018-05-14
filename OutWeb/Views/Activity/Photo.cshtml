@@ -1,0 +1,63 @@
+﻿@using System.Data
+@{
+    DataTable d_album = (DataTable)ViewData["d_album"];
+    DataTable d_album_img = (DataTable)ViewData["d_album_img"];
+    string act_id = "";
+    string act_name = "";
+    string act_img = "";
+    string act_desc = "";
+    string img_path = "~/Images/";
+    string img_id = "";
+    string img_file = "";
+    string img_desc = "";
+
+    if (d_album.Rows.Count > 0)
+    {
+        act_id = d_album.Rows[0]["act_id"].ToString();
+        act_name = d_album.Rows[0]["act_name"].ToString();
+        act_desc = d_album.Rows[0]["act_desc"].ToString();
+    }
+
+    ViewBag.Title = act_name;  @* 相簿名稱 *@
+    ViewBag.BodyClass = "News";
+    ViewBag.subnav = "Activity";
+}
+
+@section css {
+    <link rel="stylesheet" href="~/Content/css/vendor/lightbox.min.css">
+}
+@section scripts {
+    <script src="~/Content/js/lightbox.min.js"></script>
+    <script>
+        lightbox.option({
+          'resizeDuration': 200,
+          'imageFadeDuration': 250,
+          'fadeDuration': 200
+        })
+    </script>
+}
+
+<header class="bg-pattern p-y-48">
+    <h1 class="title">@act_name</h1>
+    @Html.Partial("subnav")
+</header>
+
+<section class="wrap p-y-48">
+    <nav class="photo-list m-b-32">
+        @if (d_album_img.Rows.Count > 0)
+        {
+            for (int i = 0; i < d_album_img.Rows.Count; i++)
+            {
+                img_id = d_album_img.Rows[i]["img_id"].ToString();
+                img_desc = d_album_img.Rows[i]["img_desc"].ToString();
+                img_file = img_path + d_album_img.Rows[i]["img_file"].ToString();
+                <a href="@Url.Content(img_file)" class="photo" data-lightbox="set" data-title="@img_desc">
+                    <img src="@Url.Content(img_file)" alt="相片圖說">
+                    <span>@img_desc</span>
+                </a>
+            }
+        }
+    </nav>
+
+    <a href="@Url.Content("~/Activity/Album")" class="btn lg">回活動剪影列表</a>
+</section>

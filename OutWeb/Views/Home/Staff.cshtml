@@ -1,0 +1,96 @@
+﻿@using System.Data
+@{
+    ViewBag.Title = "加入采威";
+    ViewBag.BodyClass = "staff";
+
+    DataTable dt = (DataTable)ViewData["dt"];
+
+    string s_id = "";
+    string s_title = "";
+    string s_desc = "";
+    string s_active = "";
+    string s_i = "";
+    string s_head = "";
+    string s_body = "";
+    string cTitle = (string)ViewData["cTitle"];
+}
+
+<div role="main" class="main">
+
+    <section class="page-top">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <ul class="breadcrumb">
+                        <li><a href="~/">Home</a></li>
+                        <li class="active">@cTitle</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <h1>@cTitle</h1>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="tabs tabs-vertical tabs-left">
+                    <ul class="nav nav-tabs col-sm-3">
+                        @if (dt.Rows.Count > 0)
+                        {
+                            s_head = "";
+                            for (int i = 0; i < dt.Rows.Count; i++)
+                            {
+                                s_i = i.ToString();
+                                s_title = dt.Rows[i]["s_title"].ToString();
+
+                                s_head += "<li";
+                                if(i == 0)
+                                {
+                                    s_head += " class=\"active\" ";
+                                }
+                                s_head += ">";
+                                s_head += "   <a href=\"#tab" + s_i + "\" data-toggle=\"tab\">" + s_title + "</a>";
+                                s_head += "</li>";
+                            }
+                        }
+                        @Html.Raw(s_head)
+                    </ul>
+                    <div class="tab-content">
+                        @if (dt.Rows.Count > 0)
+                        {
+                            s_body = "";
+                            for (int i = 0; i < dt.Rows.Count; i++)
+                            {
+                                s_title = dt.Rows[i]["s_title"].ToString();
+                                s_desc = dt.Rows[i]["s_desc"].ToString();
+                                s_id = dt.Rows[i]["s_id"].ToString();
+                                s_i = i.ToString();
+
+                                s_body += "<div id=\"tab" + s_i + "\" class=\"tab-pane";
+                                if(i == 0)
+                                {
+                                    s_body += " active";
+                                }
+                                s_body += "\">";
+                                s_body += "  <div class=\"col-xs-12\">";
+                                s_body += "    <h4>" + s_title + "</h4>";
+                                s_body += "       <div class=\"panel-group\" id=\"accordion" + s_i + "\">";
+                                s_body += "          " + s_desc + " ";
+                                s_body += "       </div>";
+                                s_body += "  </div>";
+                                s_body += "</div>";
+                            }
+                        }
+                        @Html.Raw(s_body)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,74 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_MLayout.cshtml";
+    ViewBag.Crumb = "變更密碼";
+    ViewBag.subnav = "n99";
+    ViewBag.subnav2 = "ChangPW";
+
+}
+
+@section Breadcrumb {
+    <ul class="breadcrumb">
+        <li>系統設定</li>
+        <li>&#10095; @ViewBag.Crumb</li>
+    </ul>
+}
+
+<script>
+    function form_ok()
+    {
+        var cmsg = "";
+        var chk_new_pwd = "";
+        var new_pwd = "";
+        new_pwd = $('#new_pwd').val();
+        chk_new_pwd = $('#chk_new_pwd').val();
+
+        if(new_pwd == chk_new_pwd)
+        {
+            form1.submit();
+        }
+        else
+        {
+            alert("【確認密碼】與【新密碼】不符，請重新輸入")
+        }
+
+    }
+</script>
+
+<h3 class="title">@ViewBag.Crumb</h3>
+
+<form class="form-list" method="post" name="form1" id="form1" action="">
+    <dl class="fields">
+        <dt class="col-2">目前密碼</dt>
+        <dd class="col-5">
+            <input type="password" class="form-element" id="now_pwd" name="now_pwd" required>
+        </dd>
+    </dl>
+    <dl class="fields">
+        <dt class="col-2">新密碼</dt>
+        <dd class="col-5">
+            <input type="password" class="form-element" id="new_pwd" name="new_pwd">
+        </dd>
+        @* 有限制密碼規則時才顯示
+        <dd class="col-4 text-danger">*密碼規則</dd> *@
+    </dl>
+    <dl class="fields">
+        <dt class="col-2">確認密碼</dt>
+        <dd class="col-5">
+            <input type="password" class="form-element" id="chk_new_pwd" name="chk_new_pwd">
+        </dd>
+    </dl>
+    <footer class="submit-bar clear m-t-24">
+        <button type="button" class="btn success oi" data-glyph="circle-check" onclick="form_ok();">
+            確認儲存
+        </button>
+    </footer>
+</form>
+
+@if (TempData["message"] != null)
+{
+    <script type="text/javascript">
+            var message = @Html.Raw(Json.Encode(TempData["message"]));
+            alert(message);
+    </script>
+}

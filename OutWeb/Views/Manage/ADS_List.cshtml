@@ -1,0 +1,387 @@
+﻿@using System.Data
+@{
+    Layout = "~/Views/Shared/_MLayout.cshtml";
+    ViewBag.Crumb = "小圖廣告管理";
+    ViewBag.subnav = "n1";
+    ViewBag.subnav2 = "ADS_List";
+
+    DataTable dt = (DataTable)ViewData["dt"];
+    DataTable dt_b = (DataTable)ViewData["dt_b"];
+    int row_count = 0;
+    int page_count = 10;
+    int page = (int)ViewData["page"];
+    int pre_page = 0;
+    int top_page = 0;
+    int next_page = 0;
+    int end_page = 0;
+    int min_row = 0;
+    int max_row = 0;
+    int total_page = 0;
+
+    string img_path = "../Images/";
+    string ad_pic = "";
+    string ad_id = "";
+    string ad_title = "";
+    string ad_url = "";
+    string cate_id = "";
+    string cate_name = "";
+    string sort = "";
+    string show = "";
+    string show_class = "";
+    string txt_sort = (string)ViewData["txt_sort"];
+    string txt_a_d = (string)ViewData["txt_a_d"];
+    string txt_cate = (string)ViewData["txt_cate_id"];
+    string txt_title_query = (string)ViewData["txt_title_query"];
+    string UrlPara = "";
+
+    if (txt_cate.Trim().Length > 0)
+    {
+        UrlPara += "&cate_id=" + txt_cate.Trim();
+    }
+
+    string cate_selected = "";
+
+    string a_d = "";
+
+    if (txt_a_d == "")
+    {
+        a_d = "asc";
+    }
+    else
+    {
+        a_d = "desc";
+    }
+
+    string class_ad_title = "";
+    string class_ad_url = "";
+    string class_cate = "";
+    string class_sort = "";
+    string class_status = "";
+
+    switch (txt_sort)
+    {
+        case "ad_title":
+            class_ad_title = a_d;
+            break;
+        case "ad_url":
+            class_ad_url = a_d;
+            break;
+        case "cate_name":
+            class_cate = a_d;
+            break;
+        case "sort":
+            class_sort = a_d;
+            break;
+        case "status":
+            class_status = a_d;
+            break;
+    }
+
+    row_count = dt.Rows.Count;
+    if (row_count % page_count > 0)
+    {
+        total_page = (row_count / page_count) + 1;
+    }
+    else
+    {
+        total_page = row_count / page_count;
+    }
+
+    if (page > total_page)
+    {
+        page = total_page;
+    }
+    else if (page < 1)
+    {
+        page = 1;
+    }
+
+    top_page = 1;
+
+    if (page > 1)
+    {
+        pre_page = page - 1;
+    }
+    else
+    {
+        pre_page = 1;
+    }
+
+    if (total_page > page)
+    {
+        next_page = page + 1;
+    }
+    else
+    {
+        next_page = total_page;
+    }
+
+    end_page = total_page;
+
+    min_row = page_count * (page - 1) + 1;
+    max_row = page_count * page;
+    if (max_row > row_count)
+    {
+        max_row = row_count;
+    }
+
+}
+
+@section Breadcrumb {
+    <ul class="breadcrumb">
+        <li>@ViewBag.Crumb</li>
+    </ul>
+}
+
+<h3 class="title">@ViewBag.Crumb </h3>
+
+<script>
+    function form_ok() {
+        form1.submit();
+    }
+
+    function del(url)
+    {
+        if (confirm("確定刪除??")) {
+            location.href=url;
+            //alert("你按下確定");
+        }
+        else {
+            //alert("你按下取消");
+        }
+    }
+</script>
+
+<div class="alert-warning m-b-16">
+    <strong>前台排序：</strong>依序號。<br />
+</div>
+
+<!--
+<div class="topBtn-bar btn-group">
+    <button type="button" onclick="location.href='@Url.Content("~/Manage/ADS_Add")';" class="btn success oi" data-glyph="plus">
+        新增
+    </button>
+</div>
+-->
+<form name="form1" id="form1" action="" method="post">
+    <input type="hidden" id="txt_sort" name="txt_sort" value="@txt_sort" />
+    <input type="hidden" id="txt_a_d" name="txt_a_d" value="@txt_a_d" />
+    <header class="table-head form-inline">
+        <input type="text" placeholder="請輸入關鍵字..." id="txt_title_query" name="txt_title_query">
+        <label>小圖廣告類別</label>
+        <select id="cate_id" name="cate_id" >
+            <option value="">全部</option>
+            @if (dt_b.Rows.Count > 0)
+            {
+                for (int i = 0; i < dt_b.Rows.Count; i++)
+                {
+                    if (dt_b.Rows[i]["cate_id"].ToString() == txt_cate)
+                    {
+                        cate_selected = "selected";
+                    }
+                    else
+                    {
+                        cate_selected = "";
+                    }
+                    <option value="@dt_b.Rows[i]["cate_id"].ToString()" @cate_selected>@dt_b.Rows[i]["cate_name"].ToString()</option>
+                }
+            }
+        </select>
+        <button class="btn sm oi" data-glyph="magnifying-glass" id="btn_query" name="btn_query" onclick="form_ok();">搜尋</button>
+    </header>
+    <table class="table-list table-hover table-striped">
+        <colgroup>
+            <col span="3">
+            <col style="width: 13.5%">
+            <col span="3" style="width: 11%">
+        </colgroup>
+        <thead>
+            <tr>
+                <th class="text-xs-center">刪除</th> @* 文字置中: class="text-xs-center" / 置右: class="text-xs-right" *@
+                <th class="text-xs-center">修改</th>
+                <th>
+                    <button class="text-xs-center th-sort-toggle @class_cate" name="btn_cate" id="btn_cate" onclick="sort('cate_name');">小圖廣告類別</button>
+                </th>
+                <th>
+                    @* 點選排序功能 (點一下遞增 asc, 點兩下遞減 desc) *@
+                    <button class="text-xs-center th-sort-toggle @class_ad_title" name="btn_ad_title" id="btn_ad_title" onclick="sort('ad_title');">標題</button>
+                </th>
+                <th>
+                    <button class="text-xs-center th-sort-toggle @class_ad_url" name="btn_ad_url" id="btn_ad_url" onclick="sort('ad_url');">連結</button>
+                </th>
+                <th class="text-left">圖片</th>
+                <th>
+                    @* 點選排序功能 (點一下遞增 asc, 點兩下遞減 desc) *@
+                    <button class="text-xs-center th-sort-toggle @class_sort" name="btn_sort" id="btn_sort" onclick="sort('sort');">排序</button>
+                </th>
+                <th>
+                    <button class="text-xs-center th-sort-toggle @class_status" name="btn_status" id="btn_status" onclick="sort('status');">狀態</button>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @* 建議: 1頁10筆資料 *@
+            @if (dt.Rows.Count > 0)
+            {
+                for (int i = min_row - 1; i < max_row; i++)
+                {
+                    ad_id = dt.Rows[i]["ad_id"].ToString();
+                    ad_title = dt.Rows[i]["ad_title"].ToString();
+                    ad_url = dt.Rows[i]["ad_url"].ToString();
+                    cate_name = dt.Rows[i]["cate_name"].ToString();
+                    sort = dt.Rows[i]["sort"].ToString();
+                    ad_pic = img_path + dt.Rows[i]["img_file"].ToString();
+                    if (dt.Rows[i]["status"].ToString() == "Y")
+                    {
+                        show = "已發佈";
+                        show_class = "label-success";
+                    }
+                    else
+                    {
+                        show = "草稿";
+                        show_class = "label-default";
+                    }
+
+                    <tr>
+                        <td class="text-xs-center">
+                            <!--<button type="button" onclick="del('@Url.Content("~/Manage/ADS_Del?ad_id=" + ad_id)');" class="btn btn-link text-danger oi" data-glyph="trash"></button>-->
+                        </td>
+                        <td class="text-xs-center">
+                            <button type="button" onclick="location.href='@Url.Content("~/Manage/ADS_Edit?ad_id=" + ad_id)';" class="btn btn-link oi" data-glyph="pencil"></button>
+                        </td>
+                        <td class="text-xs-center">@cate_name</td>
+                        <td class="text-xs-center">@ad_title</td>
+                        <td class="text-xs-left">@ad_url</td>
+                        <td>
+                           @if (dt.Rows[i]["img_file"].ToString().Trim().Length > 0)
+                           {
+                            <img id="img_ad_@i" name="img_ad_@i" src="@ad_pic" alt="" style="width:70%;">
+                           }
+                        </td>
+                        <td class="text-xs-center">@sort</td>
+                        <td class="text-xs-center"><span class="w3-tag @show_class w3-round">@show</span></td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td class="text-xs-left" colspan="7">
+                        無資料
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <footer class="table-foot">
+
+
+
+        <small class="float-r">第 @min_row - @max_row 筆，共 @row_count 筆</small>
+        <nav class="pager">
+            <a href="@Url.Content("~/Manage/ADS_List?page=" + top_page.ToString() + UrlPara)" class="oi" data-glyph="media-step-backward" title="到最前頁"></a>
+            <a href="@Url.Content("~/Manage/ADS_List?page=" + pre_page.ToString() + UrlPara)" class="oi" data-glyph="caret-left" title="上一頁"></a>
+            <span>
+                第
+                <input type="text" class="form-control form-control-sm text-xs-center" style="width:100px" name="page" id="page" value="@page">
+                頁，共 @total_page 頁
+            </span>
+            <a href="@Url.Content("~/Manage/ADS_List?page=" + next_page.ToString() + UrlPara)" class="oi" data-glyph="caret-right" title="下一頁"></a>
+            <a href="@Url.Content("~/Manage/ADS_List?page=" + end_page.ToString() + UrlPara)" class="oi" data-glyph="media-step-forward" title="到最後頁"></a>
+        </nav>
+    </footer>
+</form>
+<script>
+    //禁止按下enter
+    $('#form1').on('keyup keypress', function (e) {
+        var keyCode = e.keyCode || e.which;
+        if (keyCode === 13) {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    //$('#page').on('keydown', function (e) {
+    //    if (e.which == 13) {
+    //        //alert('clicked');
+    //        document.form1.submit();
+    //    }
+    //});
+
+    //$('#txt_title_query').on('keydown', function (e) {
+    //    if (e.which == 13) {
+    //        //alert('clicked');
+    //        document.form1.submit();
+    //    }
+    //});
+
+    //$('#txt_cate').on('keydown', function (e) {
+    //    if (e.which == 13) {
+    //        //alert('clicked');
+    //        document.form1.submit();
+    //    }
+    //});
+
+    //$('#txt_lang').on('keydown', function (e) {
+    //    if (e.which == 13) {
+    //        //alert('clicked');
+    //        document.form1.submit();
+    //    }
+    //});
+
+    function sort(c_sort)
+    {
+        var pre_sort = $('#txt_sort').val();
+        var pre_a_d = $('#txt_a_d').val();
+        var a_d = "";
+        var s_sort = "";
+        var class_a_d = "";
+
+        s_sort = c_sort;
+        if (pre_sort == c_sort) {
+            if (pre_a_d == "") {
+                a_d = "desc";
+            }
+            else {
+                a_d = "";
+            }
+        }
+        else {
+            a_d = "";
+        }
+
+        //alert("pre_sort:" + pre_sort + ";pre_a_d:" + pre_a_d + ";a_d:" + a_d + ";s_sort=" + s_sort)
+
+        $('#txt_sort').val(s_sort);
+        $('#txt_a_d').val(a_d);
+
+        $('#form1').submit();
+
+    }
+
+    //$('#btn_area').click(function (e) {
+    //    var pre_sort = $('#txt_sort').val();
+    //    var pre_a_d = $('#txt_a_d').val();
+    //    var a_d = "";
+    //    var sort = "";
+    //    if(pre_sort == "area")
+    //    {
+    //        if(pre_a_d == "")
+    //        {
+    //            a_d = "desc";
+    //        }
+    //        else
+    //        {
+    //            a_d = "";
+    //        }
+    //    }
+    //    else
+    //    {
+    //        sort = "area";
+    //        a_d = "";
+    //    }
+    //});
+    //$('#page').click(function (e) {
+    //    alert('clicked');
+    //});
+</script>

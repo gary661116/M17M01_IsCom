@@ -1,0 +1,397 @@
+﻿@using System.Data
+@using System.Text.RegularExpressions
+@{ 
+    //DataTable d_menub = (DataTable)ViewData["d_menub"];
+    //DataTable d_menus = (DataTable)ViewData["d_menus"];
+    DataTable d_menub = (DataTable)Session["d_menub"];
+    DataTable d_menus = (DataTable)Session["d_menus"];
+    DataTable d_foot = (DataTable)ViewData["d_foot"];
+    //string menub = "";
+    //string menu_url = "";
+    string cateb_id = "";
+    string cateb_name = "";
+    string cates_id = "";
+    //string cates_url = "";
+    string cates_name = "";
+    string cc_menus = "";
+    string foot_title = "";
+    string foot_url = "";
+    string foot_blank = "";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-61451173-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'UA-61451173-1');
+    </script>
+
+    <!-- Facebook Pixel Code -->
+    <script>
+        !function(f,b,e,v,n,t,s)
+        {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+        n.queue=[];t=b.createElement(e);t.async=!0;
+        t.src=v;s=b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t,s)}(window, document,'script',
+        'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '662412500634134');
+        fbq('track', 'PageView');
+    </script>
+    <noscript>
+        <img height="1" width="1" style="display:none"
+             src="https://www.facebook.com/tr?id=662412500634134&ev=PageView&noscript=1" />
+    </noscript>
+    <!-- End Facebook Pixel Code -->
+
+    <!-- Basic -->
+    <meta charset="utf-8">
+    <title>采威國際資訊股份有限公司</title>
+    <meta name="keywords" content="智慧安全,雲端運維,智慧製造,智慧工廠,智慧旅運,資料科技,智慧城市,智慧校園,智慧監控,微軟夥伴,微軟國家獎,服務解決方案,中小企業轉型,開放資料應用,系統整合,B2B,物聯網加值,聯網,數據分析,足跡分析,輿情分析,網站建置,平台建置" />
+    <meta name="description" content="創立18年，總公司設立於台中，在台北、新竹設有分公司，服務中小企業達上千家，目前共有三大事業群，「雲端運維暨智慧安全事業群」、「智慧製造與資料科技事業群」、「智慧城市與教育事業群」，提供各地不同的客戶最即時的服務。">
+    <meta name="author" content="okler.net">
+
+    <!-- Mobile Metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Web Fonts  -->
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800%7CShadows+Into+Light" rel="stylesheet" type="text/css">
+
+    <!-- Vendor CSS -->
+    <link rel="stylesheet" href="~/vendor/bootstrap/bootstrap.css">
+    <link rel="stylesheet" href="~/vendor/fontawesome/css/font-awesome.css">
+    <link rel="stylesheet" href="~/vendor/owlcarousel/owl.carousel.min.css" media="screen">
+    <link rel="stylesheet" href="~/vendor/owlcarousel/owl.theme.default.min.css" media="screen">
+    <link rel="stylesheet" href="~/vendor/magnific-popup/magnific-popup.css" media="screen">
+
+    <!-- Theme CSS -->
+    <link rel="stylesheet" href="~/css/theme.css">
+    <link rel="stylesheet" href="~/css/theme-elements.css">
+    <link rel="stylesheet" href="~/css/theme-blog.css">
+    <link rel="stylesheet" href="~/css/theme-shop.css">
+    <link rel="stylesheet" href="~/css/theme-animate.css">
+
+    <!-- Current Page CSS -->
+    <link rel="stylesheet" href="~/vendor/rs-plugin/css/settings.css" media="screen">
+    <link rel="stylesheet" href="~/vendor/circle-flip-slideshow/css/component.css" media="screen">
+
+    <!-- Skin CSS -->
+    <link rel="stylesheet" href="~/css/skins/default.css">
+
+    <!-- Theme Custom CSS -->
+    <link rel="stylesheet" href="~/css/custom.css">
+    <link rel="stylesheet" href="~/css/iscom-style.css">
+
+    <!-- Head Libs -->
+    <script src="~/vendor/modernizr/modernizr.js"></script>
+
+    <!-- JQuery UI Css -->
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="~/vendor/jquery/jquery.js"></script>
+    <!--[if IE]>
+        <link rel="stylesheet" href="css/ie.css">
+    <![endif]-->
+    <!--[if lte IE 8]>
+        <script src="vendor/respond/respond.js"></script>
+        <script src="vendor/excanvas/excanvas.js"></script>
+    <![endif]-->
+    @RenderSection("css", false)
+</head>
+<body>
+    <div id="wrapper" class="body">
+        <header id="header">
+            <div class="container">
+
+                <div class="logo">
+                    <a href="~/">
+                        <img alt="Porto" width="291" height="55" data-sticky-width="291" data-sticky-height="55" src="~/img/logo.png">
+                    </a>
+                </div>
+
+                <!-- <div class="search">
+                <form id="searchForm" action="page-search-results.html" method="get">
+                    <div class="input-group">
+                        <input type="text" class="form-control search" name="q" id="q" placeholder="Search..." required>
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="submit"><i class="fa fa-search"></i></button>
+                        </span>
+                    </div>
+                </form>
+            </div> -->
+                <nav>
+                    <ul class="nav nav-pills nav-top">
+                        <li>
+                            <a href="~/Home/AboutUs"><i class="fa fa-angle-right"></i>采威集團</a>
+                        </li>
+                        <li>
+                            <a href="~/Home/ContactUs"><i class="fa fa-angle-right"></i>聯絡我們</a>
+                        </li>
+                        <li class="phone">
+                            <span><i class="fa fa-phone"></i>(04) 2326-5200</span>
+                        </li>
+                    </ul>
+                </nav>
+                <button class="btn btn-responsive-nav btn-inverse" data-toggle="collapse" data-target=".nav-main-collapse">
+                    <i class="fa fa-bars"></i>
+                </button>
+            </div>
+            <div class="navbar-collapse nav-main-collapse collapse">
+                <div class="container">
+                    <ul class="social-icons">
+                        <li class="facebook"><a href="https://www.facebook.com/ISCOMOnline/" target="_blank" title="Facebook">Facebook</a></li>
+                        <li class="youtube"><a href="https://www.youtube.com/channel/UCZRvLUvl60C1i7znIlyb6VA" target="_blank" title="Twitter">Twitter</a></li>
+                    </ul>
+                    <nav class="nav-main mega-menu">
+                        <ul class="nav nav-pills nav-main" id="mainMenu">
+                            <li class="dropdown">
+                                <a class="dropdown-toggle" href="#">
+                                    采威動向
+                                    <i class="fa fa-angle-down"></i>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="~/News">最新消息</a></li>
+                                    <li><a href="~/Project">成交案例</a></li>
+                                </ul>
+                            </li>
+                            @if (d_menub.Rows.Count > 0)
+                            {
+                                cc_menus = "";
+                                for (int i = 0; i < d_menub.Rows.Count; i++)
+                                {
+                                    cateb_id = d_menub.Rows[i]["cate_b_id"].ToString();
+                                    cateb_name = d_menub.Rows[i]["cate_name"].ToString();
+                                    //--Temp檔--建立---------//
+                                    DataTable menus;
+                                    //----------------------------------------------------------------------//
+                                    DataRow[] menus_Rows = d_menus.Select("cate_b_id=" + cateb_id);
+                                    //----------------------------------------------------------------------//
+                                    if (menus_Rows.Any())
+                                    {
+                                        menus = menus_Rows.CopyToDataTable();
+                                    }
+                                    else
+                                    {
+                                        menus = d_menus.Clone();
+                                        menus.Clear();
+                                    }
+
+                                    if (menus.Rows.Count > 0)
+                                    {
+                                        cc_menus += "<li class=\"dropdown\">";
+                                        cc_menus += "    <a class=\"dropdown-toggle\" href=\"" + Url.Content("~/Prod?cateb_id=" + cateb_id) + "\">";
+                                        cc_menus += "    " + cateb_name + " ";
+                                        cc_menus += "    <i class=\"fa fa-angle-down\"></i>";
+                                        cc_menus += "    </a>";
+                                        cc_menus += "    <ul class=\"dropdown-menu\">";
+                                        for (int j = 0; j < menus.Rows.Count; j++)
+                                        {
+                                            cates_id = menus.Rows[j]["cate_s_id"].ToString();
+                                            cates_name = menus.Rows[j]["cate_name"].ToString();
+                                            cc_menus += "<li><a href=\"" + Url.Content("~/Prod?cateb_id=" + cateb_id + "&cates_id=" + cates_id) + "\">" + cates_name + "</a></li>";
+                                        }
+                                        cc_menus += "    </ul>";
+                                        cc_menus += "</li>";
+                                    }
+                                    else
+                                    {
+                                        cc_menus += "<li class=\"\">";
+                                        cc_menus += "    <a class=\"dropdown-toggle\" href=\"" + Url.Content("~/Prod?cateb_id=" + cateb_id) + "\">";
+                                        cc_menus += "    " + cateb_name + " ";
+                                        cc_menus += "    </a>";
+                                        cc_menus += "</li>";
+                                    }
+
+                                    //--Temp檔--釋放-------//
+                                    menus.Dispose();
+                                    menus = null;
+
+                                }
+                            }
+                            @Html.Raw(cc_menus)
+
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        @RenderBody()
+        <div class="container">
+            <div class="col-xs-12" style="padding: 0px 5px;">
+                <a class="h-banner" href="http://www.iscom.com.tw/Prod/List?page=1&cateb_id=7&cates_id=33"><img src="~/img/banners.jpg" class="img-responsive"  alt=""></a>
+            </div>
+        </div>
+        <footer id="footer">
+            <div class="container footerbg">
+                <div class="row">
+                    <div class="col-md-12 footerlink">
+                        @if (d_foot.Rows.Count > 0)
+                        {
+                            for (int i = 0; i < d_foot.Rows.Count; i++)
+                            {
+                                foot_title = d_foot.Rows[i]["foot_title"].ToString();
+                                foot_url = d_foot.Rows[i]["foot_url"].ToString();
+                                if (d_foot.Rows[i]["is_blank"].ToString() == "Y")
+                                {
+                                    foot_blank = "_blank";
+                                }
+                                else
+                                {
+                                    foot_blank = "";
+                                }
+
+                                <a href="@Url.Content(foot_url)" target="@foot_blank">@foot_title</a>
+                            }
+                        }
+                        <hr>
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                     <!-- <div class="footer-ribbon">
+                    <span>聯繫采威</span>
+                </div>  -->
+                    
+                    <div class="col-md-4">
+                        <div class="contact-details">
+                            <h4>企業總部</h4>
+                            <ul class="contact">
+                                <li><p><i class="fa fa-map-marker"></i> <strong>地址 : </strong>408台中市南屯區公益路二段51號24樓</p></li>
+                                <li><p><i class="fa fa-phone"></i> <strong>電話 :</strong> (04) 2326-5200</p></li>
+                                <li><p><i class="fa fa-fax"></i> <strong>傳真 : </strong> (04) 2326-2107</p></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="contact-details">
+                            <h4>台北分公司</h4>
+                            <ul class="contact">
+                                <li><p><i class="fa fa-map-marker"></i> <strong>地址 : </strong>104台北市中山區敬業一路128巷39號2樓</p></li>
+                                <li><p><i class="fa fa-phone"></i> <strong>電話 : </strong> (02) 8501-1109</p></li>
+                                <li><p><i class="fa fa-fax"></i> <strong>傳真 :  </strong> (02) 8501-2795</p></li>
+
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="contact-details">
+                            <h4>新竹分公司</h4>
+                            <ul class="contact">
+                                <li><p><i class="fa fa-map-marker"></i> <strong>地址 : </strong>300新竹市寶山路
+                                452巷9弄12號</p></li>
+                                <li><p><i class="fa fa-phone"></i> <strong>電話 : </strong> (03) 5797-606</p></li>
+                                <!-- <li><p><i class="fa fa-fax"></i> <strong>傳真 :  </strong> (02) 8501-2795</p></li> -->
+
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-copyright">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <p>© Copyright 2017.Iscom All Rights Reserved.</p>
+                        </div>
+                        <div class="col-md-4">
+                            <nav id="sub-menu">
+                                <ul>
+                                    <li><a href="http://www.cloudez.com.tw/" target="_blank">雲易數位關係企業</a></li>
+                                    <li><a href="https://eip.iscom.com.tw/Home/LoginPage" target="_blank">員工專區</a></li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div><!-- wrapper //-->
+    <!-- Vendor -->
+
+    <script src="~/vendor/jquery.appear/jquery.appear.js"></script>
+    <script src="~/vendor/jquery.easing/jquery.easing.js"></script>
+    <script src="~/vendor/jquery-cookie/jquery-cookie.js"></script>
+    <script src="~/vendor/bootstrap/bootstrap.js"></script>
+    <script src="~/vendor/common/common.js"></script>
+    <script src="~/vendor/jquery.validation/jquery.validation.js"></script>
+    <script src="~/vendor/jquery.stellar/jquery.stellar.js"></script>
+    <script src="~/vendor/jquery.easy-pie-chart/jquery.easy-pie-chart.js"></script>
+    <script src="~/vendor/jquery.gmap/jquery.gmap.js"></script>
+    <script src="~/vendor/isotope/jquery.isotope.js"></script>
+    <script src="~/vendor/owlcarousel/owl.carousel.js"></script>
+    <script src="~/vendor/jflickrfeed/jflickrfeed.js"></script>
+    <script src="~/vendor/magnific-popup/jquery.magnific-popup.js"></script>
+    <script src="~/vendor/vide/vide.js"></script>
+
+    <!-- Theme Base, Components and Settings -->
+    <script src="~/js/theme.js"></script>
+
+    <!-- Specific Page Vendor and Views -->
+    <script src="~/vendor/rs-plugin/js/jquery.themepunch.tools.min.js"></script>
+    <script src="~/vendor/rs-plugin/js/jquery.themepunch.revolution.min.js"></script>
+    <script src="~/vendor/circle-flip-slideshow/js/jquery.flipshow.js"></script>
+    <script src="~/js/views/view.home.js"></script>
+
+    <!-- Theme Custom -->
+    <script src="~/js/custom.js"></script>
+
+    <!-- Theme Initialization Files -->
+    <script src="~/js/theme.init.js"></script>
+
+    <!-- Google Analytics: Change UA-XXXXX-X to be your site's ID. Go to http://www.google.com/analytics/ for more information.
+    <script type="text/javascript">
+
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-12345678-1']);
+        _gaq.push(['_trackPageview']);
+
+        (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+
+    </script>
+     -->
+
+    <script>
+		 	$(document).ready(function(){
+		 		$(".btnop-1").click(function(){
+	  			$(".boxshow-1").show(700);
+	  			$(".boxshow-2").hide();
+	  			$(".boxshow-3").hide();
+				});
+				$(".btnop-2").click(function(){
+	  			$(".boxshow-2").show(700);
+	  			$(".boxshow-1").hide();
+	  			$(".boxshow-3").hide();
+				});
+				$(".btnop-3").click(function(){
+	  			$(".boxshow-3").show(700);
+	  			$(".boxshow-2").hide();
+	  			$(".boxshow-1").hide();
+				});
+				$(".btn-go").click(function () {
+				        jQuery("html,body").animate({
+				            scrollTop: $($(this).attr("href")).offset().top
+				        }, 1200);
+				});
+
+		 	});
+
+		 	(function (d, t) {
+		 	    var a = d.createElement(t), s = d.getElementsByTagName(t)[0];
+		 	    a.async = a.src = '//cdn.speaklyn.com/22f542a2718a6123bdea18d125a69839.js';
+		 	    s.parentNode.insertBefore(a, s);
+		 	}(document, 'script'));
+    </script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

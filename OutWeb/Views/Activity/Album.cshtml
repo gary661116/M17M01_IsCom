@@ -1,0 +1,42 @@
+﻿@using System.Data
+@using System.Text.RegularExpressions
+
+@{
+    ViewBag.Title = "寶程國際物業活動剪影";
+    ViewBag.BodyClass = "News";
+    ViewBag.subnav = "Activity";
+
+    DataTable d_album = (DataTable)ViewData["d_album"];
+    string act_id = "";
+    string act_name = "";
+    string act_img = "";
+    string act_desc = "";
+    string img_path = "~/Images/";
+}
+
+<header class="bg-pattern p-y-48">
+    <h1 class="title">@ViewBag.Title</h1>
+    @Html.Partial("subnav")
+</header>
+
+<section class="wrap row-x-0 m-y-64">
+  @if (d_album.Rows.Count > 0)
+  {
+      for (int i = 0; i < d_album.Rows.Count; i++)
+      {
+          act_id = d_album.Rows[i]["act_id"].ToString();
+          act_name = d_album.Rows[i]["act_name"].ToString();
+          act_desc = d_album.Rows[i]["act_desc"].ToString();
+          act_img = img_path + d_album.Rows[i]["img_file"].ToString();
+
+        <figure class="album">
+            <img src="@Url.Content(act_img)" alt="插圖">
+            <a href="@Url.Content("~/Activity/Photo?act_id=" + act_id)"></a>
+            <figcaption>
+                <h4>@act_name</h4>
+                <i class="oi" data-glyph="magnifying-glass"></i>
+            </figcaption>
+        </figure>
+      }
+  }
+</section>

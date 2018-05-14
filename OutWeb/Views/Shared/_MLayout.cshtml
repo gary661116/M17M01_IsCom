@@ -1,0 +1,136 @@
+﻿@{
+    ViewBag.mainName = "采威國際資訊管理系統";
+}
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>@ViewBag.mainName</title>
+    <link rel="stylesheet" href="~/Content/css/vendor/open-iconic.css">
+    <link rel="stylesheet" href="~/Content/css/grid.css">
+    @if (ViewBag.IsFirstPage)
+    {
+        <link rel="stylesheet" href="~/Content/css/login.css">
+    }
+    else
+    {
+        <link rel="stylesheet" href="~/Content/css/admin.css">
+    }
+
+    @* 引用 jQuery *@
+    <script src="//code.jquery.com/jquery-latest.min.js"></script>
+    @* 引用 jQuery *@
+    @*<script src="~/Scripts/jquery-1.10.2.min.js"></script>*@
+
+    @RenderSection("css", false)
+</head>
+
+<body>
+
+    <div class="wrapper">
+        @if (!ViewBag.IsFirstPage)
+        {
+            if (Convert.ToString(Session["IsLogined"]) != "Y")
+            {
+                Response.Redirect(Url.Content("~/Manage/Login"));
+            }
+            else
+            {
+                <header id="header">
+                    <h1 class="logo">
+                        <a href="@Url.Content("~/Manage")" title="回登入首頁" tabindex="-1">
+                            @ViewBag.mainName
+                        </a>
+                    </h1>
+
+                    <nav class="navbar">
+                        <span class="nav-link">登入身份: @Convert.ToString(Session["account"])</span>
+
+                        <a href="@Url.Content("~/Home")" class="nav-link oi home" data-glyph="home">
+                            回首頁
+                        </a>
+
+                        <a href="@Url.Content("~/Manage/Logout")" class="nav-link oi logout" data-glyph="power-standby">
+                            登出
+                        </a>
+                    </nav>
+                </header><!-- header //-->
+            }
+        }
+
+        <main id="main">
+
+            @if (ViewBag.IsFirstPage)
+            {
+                @RenderBody()
+            }
+            else
+            {
+                <div id="content" class="font-md">
+                    @RenderSection("Breadcrumb", false)
+                    @RenderBody()
+                </div><!-- content //-->
+
+                <aside id="sidebar">
+                    <h6 class="oi" data-glyph="menu">功能選單 MENU</h6>
+                    <header class='collapse-toggle oi @(ViewBag.subnav == "n1" ? "active" : "")' data-glyph="cog">廣告管理</header>
+                    <nav class='collapse-content @(ViewBag.subnav == "n1" ? "in" : "")'>
+                        <a href="~/Manage/Advertisement" class='@(ViewBag.subnav2 == "Advertisement" ? "active" : "")'>大圖廣告</a>
+                        <a href="~/Manage/ADS_Cate_List" class='@(ViewBag.subnav2 == "ADS_Cate_List" ? "active" : "")'>小圖廣告類別</a>
+                        <a href="~/Manage/ADS_List" class='@(ViewBag.subnav2 == "ADS_List" ? "active" : "")'>小圖廣告</a>
+                    </nav>
+                    <a href="~/Manage/News_List" class='collapse-toggle oi @(ViewBag.subnav == "n2" ? "active" : "")' data-glyph="bell">最新消息管理</a>
+                    <a href="~/Manage/Proj_List" class='collapse-toggle oi @(ViewBag.subnav == "n3" ? "active" : "")' data-glyph="flag">成交案例</a>
+                    <header class='collapse-toggle oi @(ViewBag.subnav == "n4" ? "active" : "")' data-glyph="cog">產品管理</header>
+                    <nav class='collapse-content @(ViewBag.subnav == "n4" ? "in" : "")'>
+                         <a href="~/Manage/Prod_CateB_List" class='@(ViewBag.subnav2 == "Prod_CateB_List" ? "active" : "")'>產品大類</a>
+                         <a href="~/Manage/Prod_CateS_List" class='@(ViewBag.subnav2 == "Prod_CateS_List" ? "active" : "")'>產品小類</a>
+                         <a href="~/Manage/Prod_List" class='@(ViewBag.subnav2 == "Prod_List" ? "active" : "")'>產品明細</a>
+                    </nav>
+                    <a href="~/Manage/His_List" class='collapse-toggle oi @(ViewBag.subnav == "n5" ? "active" : "")' data-glyph="flag">里程碑</a>
+                    <a href="~/Manage/Faq_List" class='collapse-toggle oi @(ViewBag.subnav == "n6" ? "active" : "")' data-glyph="flag">FAQ</a>
+                    <a href="~/Manage/Staff_List" class='collapse-toggle oi @(ViewBag.subnav == "n7" ? "active" : "")' data-glyph="flag">職工福利</a>
+                    <header class='collapse-toggle oi @(ViewBag.subnav == "n8" ? "active" : "")' data-glyph="cog">合作夥伴</header>
+                    <nav class='collapse-content @(ViewBag.subnav == "n8" ? "in" : "")'>
+                        <a href="~/Manage/Partner_Cate_List" class='@(ViewBag.subnav2 == "Partner_Cate_List" ? "active" : "")'>合作夥伴-類別</a>
+                        <a href="~/Manage/Partner_List" class='@(ViewBag.subnav2 == "Partner_List" ? "active" : "")'>合作夥伴</a>
+                    </nav>
+                    <a href="~/Manage/Foot_List" class='collapse-toggle oi @(ViewBag.subnav == "n9" ? "active" : "")' data-glyph="flag">Foot</a>
+                    <header class='collapse-toggle oi @(ViewBag.subnav == "n99" ? "active" : "")' data-glyph="cog">系統設定</header>
+                    <nav class='collapse-content @(ViewBag.subnav == "n99" ? "in" : "")'>
+                        <a href="~/Manage/ChangePW" class='@(ViewBag.subnav2 == "ChangPW" ? "active" : "")'>變更密碼</a>
+                    </nav>
+</aside><!-- sidebar //-->
+            }
+
+        </main><!-- main //-->
+
+    </div><!-- wrapper //-->
+
+    <footer id="footer">
+        <div class="copyright text-muted font-sp">Powered By <a href="http://www.morden.tw" target="new">Morden</a></div>
+        <small>本網站適用 Chrome, firefox, IE10.0+, 最佳瀏覽解析度為 1280*800 以上</small>
+    </footer><!-- footer //-->
+
+
+
+    @if (!ViewBag.IsFirstPage)
+    {
+        <script>
+            // 左選單縮放特效
+            var $collapse = $('.collapse-toggle');
+            var fall = '.collapse-content';
+
+            $collapse.click(function (e) {
+                $(this).addClass('active').next(fall).slideToggle();
+                $(this).siblings().removeClass('active').next(fall).slideUp();
+                // event.preventDefault();
+            });
+        </script>
+    }
+    @*RenderSection("IncludeScript", false)*@
+    @RenderSection("scripts", false)
+</body>
+</html>

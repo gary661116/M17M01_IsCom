@@ -1,0 +1,182 @@
+﻿@using System.Data
+@{
+    Layout = "~/Views/Shared/_MLayout.cshtml";
+    ViewBag.Crumb = "Foot資料管理";
+    ViewBag.subnav = "n9";
+
+    DataTable dt = (DataTable)ViewData["dt"];
+
+    string foot_id = "";
+    string foot_title = "";
+    string foot_url = "";
+    string sort = "";
+    string action_sty = (string)ViewData["action_sty"];
+    string action_name = "";
+    string c_status = "";
+    string c_blank = "";
+    string c_front_status = "";
+    string c_blank_status = "";
+
+    if (action_sty == "add")
+    {
+        action_name = "新增";
+
+        foot_id = "";
+        foot_title = "";
+        foot_url = "";
+        c_status = "Y";
+        c_front_status = "checked";
+        c_blank_status = "";
+        sort = "0";
+
+    }
+    else if (action_sty == "edit")
+    {
+        action_name = "修改";
+
+        foot_id = dt.Rows[0]["foot_id"].ToString();
+        foot_title = dt.Rows[0]["foot_title"].ToString();
+        foot_url = dt.Rows[0]["foot_url"].ToString();
+
+        c_status = dt.Rows[0]["status"].ToString();
+        sort = dt.Rows[0]["sort"].ToString();
+        c_blank = dt.Rows[0]["is_blank"].ToString();
+
+        switch (c_status)
+        {
+            case "Y":
+                c_front_status = "checked";
+                break;
+            case "N":
+                c_front_status = "";
+                break;
+        }
+
+        switch (c_blank)
+        {
+            case "Y":
+                c_blank_status = "checked";
+                break;
+            case "N":
+                c_blank_status = "";
+                break;
+        }
+    }
+
+}
+
+@section Breadcrumb {
+    <ul class="breadcrumb">
+        <li>@ViewBag.Crumb</li>
+    </ul>
+}
+
+<h3 class="title">@ViewBag.Crumb <small class="oi" data-glyph="tags">編輯</small></h3>
+
+<script>
+    function form_ok() {
+
+        //檢查資料
+        var sshow = "";
+        var shot = "";
+        var cmsg = "";
+        var foot_title = "";
+        foot_title = $("#foot_title").val();
+
+        if (foot_title == "") {
+            cmsg = "請輸入標題";
+        }
+
+
+        if ($("#cshow").prop("checked")) {
+            $("#show").val("Y");
+            sshow = "Y";
+        }
+        else
+        {
+            $("#show").val("N");
+            sshow = "N";
+        }
+
+        if ($("#cblank").prop("checked")) {
+            $("#is_blank").val("Y");
+            sshow = "Y";
+        }
+        else {
+            $("#is_blank").val("N");
+            sshow = "N";
+        }
+
+        if (cmsg != "")
+        {
+            alert(cmsg);
+        }
+        else
+        {
+            form1.submit();
+        }
+    }
+</script>
+
+<form class="form-list" action="Foot_Save" name="form1" id="form1" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="action_sty" id="action_sty" value="@action_sty" />
+    <input type="hidden" name="foot_id" id="foot_id" value="@foot_id" />
+    <input type="hidden" name="show" id="show" value="" />
+    <input type="hidden" name="is_blank" id="is_blank" value="" />
+    <dl class="fields">
+        <dt class="col-2">*標題</dt>
+        <dd class="col-10">
+            <input type="text" class="form-control form-control-sm" required id="foot_title" name="foot_title" value="@foot_title">
+        </dd>
+    </dl>
+    <dl class="fields">
+        <dt class="col-2">連結</dt>
+        <dd class="col-10">
+            <input type="text" class="form-control form-control-sm" required id="foot_url" name="foot_url" value="@foot_url">
+        </dd>
+    </dl>
+    <dl class="fields">
+        <dt class="col-2">前台顯示</dt>
+        <dd class="col-4">
+            <label class="switch">
+                <input type="checkbox" name="cshow" id="cshow" @c_front_status>
+                <div class="slider round"></div>
+            </label>
+        </dd>
+    </dl>
+    <dl class="fields">
+        <dt class="col-2">開新視窗</dt>
+        <dd class="col-4">
+            <label class="switch">
+                <input type="checkbox" name="cblank" id="cblank" @c_blank_status>
+                <div class="slider round"></div>
+            </label>
+        </dd>
+    </dl>
+    <dl class="fields">
+        <dt class="col-2">排序</dt>
+        <dd class="col-4">
+            <input type="number" min="0" class="inline" id="sort" name="sort" value="@sort">
+            <small>數字愈小愈前面</small>
+        </dd>
+    </dl>
+    <footer class="submit-bar clear m-t-24">
+        <button type="button" name="btn_ok" onclick="form_ok();" class="btn success oi" data-glyph="circle-check">
+            確認儲存
+        </button>
+        <button type="button" id="btn_back" name="btn_back" onclick="location.href='Partner_List'" class="btn warning oi" data-glyph="circle-x">
+            回列表
+        </button>
+    </footer>
+</form>
+
+<script>
+    //禁止按下enter
+    $('#form1').on('keyup keypress', function (e) {
+        var keyCode = e.keyCode || e.which;
+        if (keyCode === 13) {
+            e.preventDefault();
+            return false;
+        }
+    });
+</script>

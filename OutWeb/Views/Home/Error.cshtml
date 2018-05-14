@@ -1,0 +1,29 @@
+﻿
+@{
+    ViewBag.Title = "錯誤頁面";
+    ViewBag.BodyClass = "Error";
+}
+<div role="main" class="main">
+
+    <section class="page-top">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <h1>@ViewBag.Title</h1>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+
+        <div class="row">
+            <div class="alert alert-danger" id="contactMsg" name="contactMsg">
+                <p>
+                    <strong>System Error !!!</strong>
+                    <button id="btn_index" name="btn_index" onclick="location.href='@Url.Content("~/")';">回首頁</button>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

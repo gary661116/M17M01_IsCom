@@ -1,0 +1,92 @@
+﻿@using System.Data
+@{
+    ViewBag.Title = "成功案例資訊";
+    ViewBag.BodyClass = "Project";
+    ViewBag.subnav = "Project";
+
+    DataTable d_proj = (DataTable)ViewData["d_proj"];
+    string proj_id = "";
+    string proj_title = "";
+    string proj_desc = "";
+    string proj_date = "";
+    string proj_url = "";
+    string sort = "";
+    string is_index = "";
+    string c_status = "";
+    string nmonth = "AAA,Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec";
+    string[] array_month = nmonth.Split(',');
+    string proj_month = "";
+    string proj_day = "";
+
+    if (d_proj.Rows.Count > 0)
+    {
+        proj_id = d_proj.Rows[0]["proj_id"].ToString();
+        proj_title = d_proj.Rows[0]["proj_title"].ToString();
+        proj_desc = d_proj.Rows[0]["proj_desc"].ToString();
+        proj_date = d_proj.Rows[0]["proj_date"].ToString();
+        proj_month = array_month[Convert.ToInt16(proj_date.Substring(5, 2))];
+        proj_day = proj_date.Substring(8, 2);
+        proj_url = d_proj.Rows[0]["proj_url"].ToString();
+        is_index = d_proj.Rows[0]["is_index"].ToString();
+        c_status = d_proj.Rows[0]["status"].ToString();
+        sort = d_proj.Rows[0]["sort"].ToString();
+    }
+}
+
+
+<div role="main" class="main">
+
+    <section class="page-top">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <ul class="breadcrumb">
+                        <li><a href="~/">Home</a></li>
+                        <li class="active">@ViewBag.Title</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <h1>@ViewBag.Title</h1>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+
+        <div class="row">
+            <div class="col-md-3">
+                <aside class="sidebar">
+
+                    <h4>采威</h4>
+                    <ul class="nav nav-list primary push-bottom">
+                        <li><a href="~/News">最新消息</a></li>
+                        <li><a href="~/Project">成交案例</a></li>
+                    </ul>
+
+                </aside>
+            </div>
+            <div class="col-md-9">
+                <div class="blog-posts single-post">
+
+                    <article class="post post-large blog-single-post">
+                        <div class="post-date">
+                            <span class="day">@proj_day</span>
+                            <span class="month">@proj_month</span>
+                        </div>
+                        <div class="post-content">
+                            <h2>@proj_title</h2>
+                            <p>@Html.Raw(@proj_desc)</p>
+                        </div>
+                    </article>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

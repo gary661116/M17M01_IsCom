@@ -1,0 +1,82 @@
+﻿@using System.Data
+@{
+    ViewBag.Title = "里程碑";
+    ViewBag.BodyClass = "AboutHistory";
+
+    DataTable dt = (DataTable)ViewData["dt"];
+    string cTitle = (string)ViewData["cTitle"];
+    string his_id = "";
+    string his_title = "";
+    string his_ym = "";
+    string his_desc = "";
+    string his_pic = "";
+    string img_path = "~/Images/";
+}
+
+<div role="main" class="main">
+
+    <section class="page-top">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <ul class="breadcrumb">
+                        <li><a href="~/">Home</a></li>
+                        <li class="active">@cTitle</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <h1>@cTitle</h1>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <ul class="history">
+                    @if (dt.Rows.Count > 0)
+                    {
+                        for (int i = 0; i < dt.Rows.Count; i++)
+                        {
+                            his_id = dt.Rows[i]["his_id"].ToString();
+                            his_title = dt.Rows[i]["his_title"].ToString();
+                            his_desc = dt.Rows[i]["his_desc"].ToString();
+                            his_ym = dt.Rows[i]["his_ym"].ToString();
+                            if (dt.Rows[i]["img_file"].ToString() == "")
+                            {
+                                his_pic = "~/img/office-1.jpg";
+                            }
+                            else
+                            {
+                                his_pic = img_path + dt.Rows[i]["img_file"].ToString();
+                            }
+
+                            <li data-appear-animation="fadeInUp">
+                                <div class="thumb">
+                                    <img src="@Url.Content(his_pic)" alt="" />
+                                </div>
+                                <div class="featured-box">
+                                    <div class="box-content">
+                                        <h4><strong>@his_ym</strong></h4>
+                                        <p>
+                                            <b>@his_title</b>
+                                            <br />
+                                            @Html.Raw(his_desc)
+                                        </p>
+                                    </div>
+                                </div>
+                            </li>
+
+                        }
+                    }
+                </ul>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>

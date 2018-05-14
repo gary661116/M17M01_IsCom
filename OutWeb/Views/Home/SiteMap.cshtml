@@ -1,0 +1,129 @@
+﻿@using System.Data
+@using System.Text.RegularExpressions
+@{
+    ViewBag.Title = "網站地圖";
+    ViewBag.BodyClass = "SiteMap";
+
+    //DataTable d_mapb = (DataTable)ViewData["d_menub"];
+    //DataTable d_maps = (DataTable)ViewData["d_menus"];
+    DataTable d_mapb = (DataTable)Session["d_menub"];
+    DataTable d_maps = (DataTable)Session["d_menus"];
+    DataTable d_mapf = (DataTable)ViewData["d_foot"];
+    string mapb = "";
+    string map_url = "";
+    string cateb_id = "";
+    string cateb_name = "";
+    string cates_id = "";
+    string cates_url = "";
+    string cates_name = "";
+    string cc_map = "";
+    string foot_title = "";
+    string foot_url = "";
+    string foot_blank = "";
+    string cTitle = (string)ViewData["cTitle"];
+
+}
+
+<div role="main" class="main">
+
+    <section class="page-top">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <ul class="breadcrumb">
+                        <li><a href="~/">Home</a></li>
+                        <li class="active">@cTitle</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <h1>@cTitle</h1>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <h4>采威動向</h4>
+                <hr>
+                <div><a href="~/News">最新消息</a></div>
+                <div><a href="~/Project">成交案例</a></div>
+                <br />
+            </div>
+            @if(d_mapb.Rows.Count > 0)
+            {
+                cc_map = "";
+                for(int i = 0; i < d_mapb.Rows.Count; i++)
+                {
+                    cateb_id = d_mapb.Rows[i]["cate_b_id"].ToString();
+                    cateb_name = d_mapb.Rows[i]["cate_name"].ToString();
+                    //--Temp檔--建立---------//
+                    DataTable maps;
+                    //----------------------------------------------------------------------//
+                    DataRow[] maps_Rows = d_maps.Select("cate_b_id=" + cateb_id);
+                    //----------------------------------------------------------------------//
+                    if (maps_Rows.Any())
+                    {
+                        maps = maps_Rows.CopyToDataTable();
+                    }
+                    else
+                    {
+                        maps = d_maps.Clone();
+                        maps.Clear();
+                    }
+
+                    cc_map += "<div class=\"col-md-4\">";
+                    cc_map += "    <h4>" + cateb_name + "</h4>";
+                    cc_map += "    <hr>";
+                    if (maps.Rows.Count > 0)
+                    {
+                        
+                        for (int j = 0; j < maps.Rows.Count; j++)
+                        {
+                            cates_id = maps.Rows[j]["cate_s_id"].ToString();
+                            cates_name = maps.Rows[j]["cate_name"].ToString();
+                            cc_map += "<div><a href=\"" + Url.Content("~/Prod?cateb_id=" + cateb_id + "&cates_id=" + cates_id) + "\">" + cates_name + "</a></div>";
+                        }
+                    }
+                    cc_map += "<br/>";
+                    cc_map += "</div>";
+
+                    //--Temp檔--釋放-------//
+                    maps.Dispose();
+                    maps = null;
+                }
+            }
+            @Html.Raw(cc_map)
+            <div class="col-md-4">
+                <h4>其他</h4>
+                <hr>
+                @if (d_mapf.Rows.Count > 0)
+                {
+                    for (int i = 0; i < d_mapf.Rows.Count; i++)
+                    {
+                        foot_title = d_mapf.Rows[i]["foot_title"].ToString();
+                        foot_url = d_mapf.Rows[i]["foot_url"].ToString();
+                        if (d_mapf.Rows[i]["is_blank"].ToString() == "Y")
+                        {
+                            foot_blank = "_blank";
+                        }
+                        else
+                        {
+                            foot_blank = "";
+                        }
+
+                        <div><a href="@Url.Content(foot_url)" target="@foot_blank">@foot_title</a></div>
+                    }
+                }
+                <br />
+            </div>
+
+
+        </div>
+
+    </div>
+
+</div>

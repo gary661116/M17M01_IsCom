@@ -1,0 +1,411 @@
+﻿@using System.Data
+@{
+    Layout = "~/Views/Shared/_MLayout.cshtml";
+    ViewBag.Crumb = "首頁大圖廣告";
+    ViewBag.subnav = "n1";
+    ViewBag.subnav2 = "Advertisement";
+
+    DataTable d_video = (DataTable)ViewData["d_video"];
+    string mv = "";
+    string img_path = "../Images/";
+    string big_img = "";
+    string img_id = "";
+    string img_no = "";
+    string img_count = "";
+    string img_desc = "";
+    string img_status = "";
+    string img_limit = "N"; //圖片限制->目前不限制
+    string img_maxnum = "5";
+
+    img_no = DateTime.Now.ToString("yyyyMMddHHmmss");
+    img_count = d_video.Rows.Count.ToString();
+    //string mv_url = "";
+    //if(d_video.Rows.Count > 0)
+    //{
+    //    mv = d_video.Rows[0]["ad_mv"].ToString();
+    //    mv_url = "../Images/" + mv;
+    //}
+
+}
+
+<h3 class="title">@ViewBag.Crumb </h3>
+
+@* 引用 ajaxfileupload *@
+<script src="~/Scripts/ajaxfileupload.js"></script>
+@* 引用 ajax_lib *@
+<script src="~/Scripts/ajax_lib.js"></script>
+
+<script>
+    function form_ok() {
+        //檢查check值
+        var img_count = $('#img_count').val();
+        var str_status = "";
+        var chk = "";
+        var i = 0;
+        for(i = 1; i <= img_count; i++)
+        {
+            if($("#img_status_" + i).prop("checked")) {
+                chk = "Y";
+            } else {
+                chk = "N";
+            }
+
+            if(str_status.length > 0)
+            {
+                str_status += ",";
+            }
+            str_status += chk;
+        }
+
+        //alert(str_status);
+
+        $('#img_status').val(str_status);
+
+        form1.submit();
+    }
+
+    function del_img(img_id,c_sty)
+    {
+        var cimg_no = "";
+        var c_cate = "Ad"
+        @*if ($("#prod_id").val().length > 0) {
+            cimg_no = $("#prod_id").val();
+        }else {
+            cimg_no = @img_no;
+        }*@
+
+        var c_html = "";
+        var chtml = "";
+        var i = 0;
+
+        if (confirm("確定刪除??")) {
+            //alert("你按下確定");
+            cimg_no = @img_no;
+
+            $.ajax({                
+                url: 'Img_Del',
+                data: { img_id: img_id, img_sta:c_sty, img_no: cimg_no,img_cate: c_cate  }, //此参数非常严谨，写错一个引号都不行
+                type:"POST",
+                dataType: 'TEXT', //返回值类型 一般设置为json
+                async: false,
+                success: function(JData){
+                    //alert(JData);
+                    data = handleAjaxVPNMsg(JData);
+                    i = 0;
+
+                    c_html = "";
+                    chtml = "";
+
+                    $.each($.parseJSON(data), function (idx, obj) {
+                        i = i + 1;
+                        c_html = c_html + "<tr>";
+                        c_html = c_html + "    <td>";
+                        c_html = c_html + "       <input type=\"hidden\" name=\"img_id[]\" id=\"img_id[]\" value=\"" + obj.ad_id + "\" />";
+                        c_html = c_html + "       <img id=\"img_" + c_sty + "_" + i + "\" name=\"img_" + c_sty + "_" + i + "\" src=\"../Images/" + obj.ad_img + "\" alt=\"\">";
+                        c_html = c_html + "    </td>";
+                        c_html = c_html + "    <td>";
+                        c_html = c_html + "       <input type=\"text\" name=\"img_desc[]\" id=\"img_desc[]\" class=\"form-element\" value=\"" + obj.ad_memo + "\">";
+                        c_html = c_html + "    </td>";
+                        c_html = c_html + "    <td>";
+                        c_html = c_html + "      <label class=\"switch\">";
+                        c_html = c_html + "       <input type=\"checkbox\" name=\"img_status_" + i + "\" id=\"img_status_" + i + "\"";
+                        if(obj.status == "Y")
+                        {
+                            c_html = c_html + " checked ";
+                        }
+                        c_html = c_html + "       >";
+                        c_html = c_html + "       <div class=\"slider round\"></div>";
+                        c_html = c_html + "      </label>";
+                        c_html = c_html + "    </td>";
+                        c_html = c_html + "    <td  class=\"item-edit\">";
+                        c_html = c_html + "       <button class=\"btn-link text-danger hover-text-danger oi\" id=\"btn_close_" + c_sty + "_" + i + "\" name=\"btn_close_" + c_sty + "_" + i + "\" title=\"刪除\" data-glyph=\"trash\" onclick=\"del_img('" + obj.ad_id + "','" + c_sty + "','" + c_sty + "');\"></button>";
+                        c_html = c_html + "    </td>";
+                        c_html = c_html + "</tr>";
+                    });
+
+                    if(i > 0)
+                    {
+                        chtml += "<table class=\"uploader\">";
+                        chtml += "    <colgroup>";
+                        chtml += "        <col style=\"width: 15%\">";
+                        chtml += "        <col span=\"3\">";
+                        chtml += "    </colgroup>";
+                        chtml += "    <tr>";
+                        chtml += "        <th>圖片</th>";
+                        chtml += "        <th class=\"text-left\">圖說</th>";
+                        chtml += "        <th>啟用/停用</th>";
+                        chtml += "        <th class=\"item-edit\">刪除</th>";
+                        chtml += "    </tr>";
+                        chtml += c_html;
+                        chtml += "</table>";
+                    }
+
+
+                    $('#images_container').html(chtml);
+
+                    $('#img_count').val(i);
+                },
+                error:function(xhr, ajaxOptions, thrownError){ 
+                    alert(xhr.status); 
+                    alert(thrownError); 
+                },
+                complete: function () {
+                    //alert(tbl_new_list);
+                    //alert('ajax complete');
+                }
+            });
+        }
+        else {
+            //alert("你按下取消");
+        }
+
+        return false;
+    }
+
+    function upload(c_sty)
+    {
+        var img_count = $('#img_count').val();
+        var img_limit = @img_limit;
+        var img_maxnum = @img_maxnum;
+        var cmsg = "";
+
+        if ($("#pic_" + c_sty).val().length == 0)
+        {
+            cmsg = "請選擇圖片!!!";
+        }
+        else
+        {
+            if(img_limit == "Y")
+            {
+                if(img_count >= img_maxnum)
+                {
+                    cmsg = "圖片已滿" + img_maxnum + "張!!!";
+                }
+            }
+        }
+
+        if(cmsg == "")
+        {
+            ajaxFileUpload(c_sty);
+        }
+        else
+        {
+            alert(cmsg);
+        }
+    }
+
+    function ajaxFileUpload(c_sty) {
+        var cimg_no = "";
+        var c_img = "pic_" + c_sty;
+        var c_cate = "Ad"
+
+        @*if ($("#prod_id").val().length > 0) {
+            cimg_no = $("#prod_id").val();
+        }else {
+            cimg_no = @img_no;
+        }*@
+
+        cimg_no = @img_no;
+
+        var c_html = "";
+        var chtml = "";
+        var i = 0;
+        $.ajaxFileUpload
+        (
+            {
+                url: 'Upload', //用于文件上传的服务器端请求地址
+                type: 'post',
+                data: { img_no: cimg_no, img_sta:c_sty,img_cate: c_cate}, //此参数非常严谨，写错一个引号都不行
+                secureuri: false, //一般设置为false
+                //fileElementId: 'file1', //文件上传空间的id属性  <input type="file" id="file" name="file" />
+                fileElementId: c_img, //文件上传空间的id属性  <input type="file" id="file" name="file" />
+                //dataType: 'HTML', //返回值类型 一般设置为json
+                dataType: 'JSON', //返回值类型 一般设置为json
+                success: function (JData, status)  //服务器成功响应处理函数
+                {
+                    //alert(JData);
+
+                    data = handleAjaxVPNMsg(JData);
+
+                    i = 0;
+
+                    c_html = "";
+                    chtml = "";
+
+                    $.each($.parseJSON(data), function (idx, obj) {
+                        i = i + 1;
+                        c_html = c_html + "<tr>";
+                        c_html = c_html + "    <td>";
+                        c_html = c_html + "       <input type=\"hidden\" name=\"img_id[]\" id=\"img_id[]\" value=\"" + obj.ad_id + "\" />";
+                        c_html = c_html + "       <img id=\"img_" + c_sty + "_" + i + "\" name=\"img_" + c_sty + "_" + i + "\" src=\"../Images/" + obj.ad_img + "\" alt=\"\">";
+                        c_html = c_html + "    </td>";
+                        c_html = c_html + "    <td>";
+                        c_html = c_html + "       <input type=\"text\" name=\"img_desc[]\" id=\"img_desc[]\" class=\"form-element\" value=\"" + obj.ad_memo + "\">";
+                        c_html = c_html + "    </td>";
+                        c_html = c_html + "    <td>";
+                        c_html = c_html + "      <label class=\"switch\">";
+                        c_html = c_html + "       <input type=\"checkbox\" name=\"img_status_" + i + "\" id=\"img_status_" + i + "\"";
+                        if(obj.status == "Y")
+                        {
+                            c_html = c_html + " checked ";
+                        }
+                        c_html = c_html + "       >";
+                        c_html = c_html + "       <div class=\"slider round\"></div>";
+                        c_html = c_html + "      </label>";
+                        c_html = c_html + "    </td>";
+                        c_html = c_html + "    <td  class=\"item-edit\">";
+                        c_html = c_html + "       <button class=\"btn-link text-danger hover-text-danger oi\" id=\"btn_close_" + c_sty + "_" + i + "\" name=\"btn_close_" + c_sty + "_" + i + "\" title=\"刪除\" data-glyph=\"trash\" onclick=\"del_img('" + obj.ad_id + "','" + c_sty + "','" + c_sty + "');\"></button>";
+                        c_html = c_html + "    </td>";
+                        c_html = c_html + "</tr>";
+                    });
+
+                    if(i > 0)
+                    {
+                        chtml += "<table class=\"uploader\">";
+                        chtml += "    <colgroup>";
+                        chtml += "        <col style=\"width: 15%\">";
+                        chtml += "        <col span=\"3\">";
+                        chtml += "    </colgroup>";
+                        chtml += "    <tr>";
+                        chtml += "        <th>圖片</th>";
+                        chtml += "        <th class=\"text-left\">圖說</th>";
+                        chtml += "        <th>啟用/停用</th>";
+                        chtml += "        <th class=\"item-edit\">刪除</th>";
+                        chtml += "    </tr>";
+                        chtml += c_html;
+                        chtml += "</table>";
+                    }
+
+
+                    $('#images_container').html(chtml);
+
+                    $('#img_count').val(i);
+                },
+                error: function (data, status, e)//服务器响应失败处理函数
+                {
+                    alert(e);
+                }
+            }
+        )
+        return false;
+    }
+
+    function handleAjaxVPNMsg(data) {
+        var firstRemoveIndexStart = data.indexOf("<SCRIPT");
+        var firstRemoveIndexEnd = data.indexOf("<\/SCRIPT>");
+        var newData = data;
+        while (firstRemoveIndexStart != -1) {
+            firstRemoveIndexStart = newData.indexOf("<SCRIPT");
+            firstRemoveIndexEnd = newData.indexOf("<\/SCRIPT>");
+            //alert('firstRemoveIndexStart:'+firstRemoveIndexStart);
+            if (firstRemoveIndexStart != -1) {
+                if (firstRemoveIndexStart == 0) {
+                    newData = newData.substr(firstRemoveIndexEnd + 9, newData.length);
+                } else {
+                    newDataHead = newData.substr(0, firstRemoveIndexStart);
+                    newDataTail = newData.substr(firstRemoveIndexEnd + 9, newData.length);
+                    //alert('newDataHead'+newDataHead);
+                    //alert('newDataTail'+newDataTail);
+                    newData = newDataHead + newDataTail;
+                }
+            }
+            //alert(newData);
+        }
+        //alert("before:second:"+newData);
+        var secondeRemoveIndex = newData.indexOf("<\/noscript>");
+        //alert(secondeRemoveIndex);
+        if (secondeRemoveIndex != -1) {
+            newData = newData = newData.substr(0, secondeRemoveIndex);
+        }
+        //alert(newData);
+        return newData;
+    }
+
+</script>
+
+@* <div class="alert alert-warning w3-padding-small text-sm">
+        <strong>YouTube注意事項: </strong><br/>
+        嵌入連結路徑如圖示 (<a href="/Content/images/sys/youtube.jpg" target="new">點選看圖示</a>)
+    </div> *@
+
+<form action="Advertisement_Update" class="form" method="post" name="form1" id="form1" enctype="multipart/form-data">
+    <input type="hidden" id="img_count" name="img_count" value="@img_count" />
+    <input type="hidden" name="img_no" id="img_no" value="@img_no" />
+    <input type="hidden" id="img_status" name="img_status" value="" />
+    <div class="form-group row">
+        <div class="col-xs-6">
+            <input type="file" class="form-control form-control-sm" name="pic_B" id="pic_B" accept="image/*">
+            <small class="text-muted">可上傳 1-5 張圖片，須為 jpg, png 或 gif 格式<br />建議尺寸為 1680*978px，檔案最大不可超過 600 KB</small>
+        </div>
+        <div class="col-xs-2">
+            <button type="button" class="btn btn-sm btn-success oi m-t-small" data-glyph="data-transfer-upload" name="btn_big_pic" onclick="upload('B');">上傳</button>
+        </div>
+    </div>
+
+    <div id="images_container" name="images_container">
+        @* 上傳完成後的圖片 *@
+        @if (d_video.Rows.Count > 0)
+            {
+            <table class="uploader">
+                <colgroup>
+                    <col style="width: 15%">
+                    <col span="3">
+                </colgroup>
+                <tr>
+                    <th>圖片</th>
+                    <th class="text-left">圖說</th>
+                    <th>啟用/停用</th>
+                    <th class="item-edit">刪除</th>
+                </tr>
+                @for (int b = 0; b < d_video.Rows.Count; b++)
+                {
+                    big_img = img_path + d_video.Rows[b]["ad_img"].ToString();
+                    img_id = d_video.Rows[b]["ad_id"].ToString();
+                    img_desc = d_video.Rows[b]["ad_memo"].ToString();
+                    if (d_video.Rows[b]["status"].ToString() == "Y")
+                    {
+                        img_status = " checked ";
+                    }
+                    else
+                    {
+                        img_status = "";
+                    }
+
+                    <tr>
+                        <td>
+                            <input type="hidden" name="img_id[]" id="img_id[]" value="@img_id" />
+                            <img id="img_B_@b" name="img_B_@b" src="@big_img" alt="">
+                        </td>
+                        <td>
+                            <input type="text" name="img_desc[]" id="img_desc[]" class="form-element" value="@img_desc">
+                        </td>
+                        <td>
+                            <label class="switch">
+                                <input type="checkbox" name="img_status_@b" id="img_status_@b" @img_status>
+                                <div class="slider round"></div>
+                            </label>
+                        </td>
+                        <td class="item-edit">
+                            <button class="btn-link text-danger hover-text-danger oi" id="btn_close_B_@b" name="btn_close_B_@b" title="刪除" data-glyph="trash" onclick="del_img('@img_id','B');"></button>
+                        </td>
+                    </tr>
+                }
+            </table>
+        }
+    </div>
+    <div class="form-action text-xs-center">
+        <button type="button" name="btn_ok" onclick="form_ok();" class="btn btn-primary btn-sm oi" data-glyph="circle-check">
+            存檔確認
+        </button>
+    </div>
+</form>
+<script>
+    //禁止按下enter
+    $('#form1').on('keyup keypress', function (e) {
+    var keyCode = e.keyCode || e.which;
+    if (keyCode === 13) {
+    e.preventDefault();
+    return false;
+    }
+    });
+</script>

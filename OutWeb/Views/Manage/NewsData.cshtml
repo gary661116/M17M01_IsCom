@@ -1,0 +1,194 @@
+﻿@using System.Data
+@{
+    Layout = "~/Views/Shared/_MLayout.cshtml";
+    ViewBag.Crumb = "最新消息管理";
+    ViewBag.subnav = "n1";
+
+    //變數設定
+
+    DataTable d_news = (DataTable)ViewData["d_news"];
+
+    string n_id = "";
+    string n_title = "";
+    string n_desc = "";
+    string n_memo = "";
+    string n_date = "";
+    string n_url = "";
+    string sort = "";
+    string action_sty = (string)ViewData["action_sty"];
+    string action_name = "";
+    string c_status = "";
+    string c_front_status = "";
+    string is_index = "";
+    string c_index_status = "";
+
+    if (action_sty == "add")
+    {
+        action_name = "新增";
+
+        n_id = "";
+        n_title = "";
+        n_desc = "";
+        n_date = DateTime.Today.ToString("yyyy-MM-dd");
+        n_url = "";
+        n_memo = "";
+        c_status = "Y";
+        c_front_status = "checked";
+        is_index = "Y";
+        c_index_status = "checked";
+        sort = "0";
+    }
+    else if (action_sty == "edit")
+    {
+        action_name = "修改";
+
+        //d_news = (DataTable)ViewData["d_news"];
+
+        //d_scenic_img_b = (DataTable)ViewData["d_scenic_img_b"];
+        //d_scenic_img_s = (DataTable)ViewData["d_scenic_img_s"];
+
+        n_id = d_news.Rows[0]["n_id"].ToString();
+        n_title = d_news.Rows[0]["n_title"].ToString();
+        n_desc = d_news.Rows[0]["n_desc"].ToString();
+        n_memo = d_news.Rows[0]["n_memo"].ToString();
+        n_date = d_news.Rows[0]["n_date"].ToString();
+        n_url = d_news.Rows[0]["n_url"].ToString();
+        is_index = d_news.Rows[0]["is_index"].ToString();
+        c_status = d_news.Rows[0]["status"].ToString();
+        sort = d_news.Rows[0]["sort"].ToString();
+
+        switch (c_status)
+        {
+            case "Y":
+                c_front_status = "checked";
+                break;
+            case "N":
+                c_front_status = "";
+                break;
+        }
+
+        switch (is_index)
+        {
+            case "Y":
+                c_index_status = "checked";
+                break;
+            case "N":
+                c_index_status = "";
+                break;
+        }
+    }
+
+}
+
+@section Breadcrumb {
+    <ul class="breadcrumb">
+        <li>@ViewBag.Crumb</li>
+    </ul>
+}
+
+<h3 class="title">@ViewBag.Crumb <small class="oi" data-glyph="tags">編輯</small></h3>
+@*1.引用ckeditor.js*@
+<script src="~/ckeditor/ckeditor.js"></script>
+<script>
+    function form_ok() {
+        var sshow = "";
+        var shot = "";
+        if ($("#cshow").prop("checked")) {
+            $("#show").val("Y");
+            sshow = "Y";
+        }
+        else
+        {
+            $("#show").val("N");
+            sshow = "N";
+        }
+
+        if ($("#chot").prop("checked")) {
+            $("#hot").val("Y");
+            shot = "Y";
+        }
+        else {
+            $("#hot").val("N");
+            shot = "N";
+        }
+
+        //alert("show:" + $("#show").val() + ";hot:" + $("#hot").val());
+        form1.submit();
+    }
+</script>
+    <form class="form-list" action="News_Save" name="form1" id="form1" method="post" enctype="multipart/form-data" >
+        <input type="hidden" name="action_sty" id="action_sty" value="@action_sty" />
+        <input type="hidden" name="n_id" id="n_id" value="@n_id" />
+        <input type="hidden" name="show" id="show" value="" />
+        <input type="hidden" name="hot" id="hot" value="" />
+        <dl class="fields">
+            <dt class="col-2">發佈日期</dt>
+            <dd class="col-4">
+                <input type="date" required id="n_date" name="n_date" value="@n_date" >@* 用 datetimepicker (之類的東西) 選日期 *@
+            </dd>
+        </dl>
+        <dl class="fields">
+            <dt class="col-2">標題</dt>
+            <dd class="col-10">
+                <input type="text" class="form-control form-control-sm" required id="n_title" name="n_title" value="@n_title">
+            </dd>
+        </dl>
+        <dl class="fields">
+            <dt class="col-2">排序</dt>
+            <dd class="col-4">
+                <input type="number" min="0" class="inline" id="sort" name="sort" value="@sort">
+                <small>數字愈大愈前面</small>
+            </dd>
+        </dl>
+        <dl class="fields">
+            <dt class="col-2">前台顯示</dt>
+            <dd class="col-4">
+                <label class="switch">
+                    <input type="checkbox" name="cshow" id="cshow" @c_front_status>
+                    <div class="slider round"></div>
+                </label>
+            </dd>
+        </dl>
+        <dl class="fields">
+            <dt class="col-2">首頁顯示</dt>
+            <dd class="col-4">
+                <label class="switch">
+                    <input type="checkbox" name="chot" id="chot" @c_index_status>
+                    <div class="slider round"></div>
+                </label>
+            </dd>
+        </dl>
+        <dl class="fields">
+            <dt class="col-2">內容簡述</dt>
+            <dd class="col-10">
+                <input type="text" class="form-control form-control-sm" required id="n_memo" name="n_memo" value="@n_memo">
+                <small>內容不超過200字</small>
+            </dd>
+        </dl>
+        <fieldset class="m-t-24">
+            <legend class="underline">[ 內容 ]</legend>
+            <div class="alert-warning font-sm m-b-16">
+                <strong>編輯器注意事項:</strong><br>
+                從 WORD 複製文字時，請使用下方的 <img src="/Content/images/icon-word.jpg" /> 圖示來貼上 WORD 文字，避免跑版<br />
+                編輯器上傳圖片或新增表格等時，請勿設定寬度及高度(將數字刪除) ，以免行動裝置顯示時會跑版。<br />
+                檔案尺寸寬度超過 1600 或 高度超過1200 的圖片會被壓縮(PNG透明背景會變成不透明) <br />
+                youtube 可勾選「用自適應縮放模式」
+            </div>
+            @* 編輯器(含圖片上傳功能) *@
+            <textarea class="ckeditor form-control" rows="12" placeholder="請輸入最新消息內容" name="n_desc" id="n_desc">@n_desc</textarea>
+            @*加入圖片上傳頁籤，放在頁面底下，放在頁面head區的話，會抓不到myText DOM*@
+            <script type="text/javascript">
+                    CKEDITOR.replace('n_desc'
+                , { filebrowserImageUploadUrl: '@Url.Content("~/Manage/UploadPicture")' }
+                );
+            </script>
+        </fieldset>
+        <footer class="submit-bar clear m-t-24">
+            <button type="button" name="btn_ok" onclick="form_ok();" class="btn success oi" data-glyph="circle-check">
+                    確認儲存
+            </button>
+            <button type="button" id="btn_back" name="btn_back" onclick="location.href='NewsList'" class="btn warning oi" data-glyph="circle-x">
+                    回列表
+            </button>
+        </footer>
+    </form>

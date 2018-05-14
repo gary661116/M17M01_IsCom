@@ -1,0 +1,109 @@
+﻿@using System.Data
+@using System.Text.RegularExpressions
+@{
+    ViewBag.Title = "合作夥伴";
+    ViewBag.BodyClass = "Partner";
+
+    DataTable dt = (DataTable)ViewData["dt"];
+    DataTable dt_b = (DataTable)ViewData["dt_b"];
+
+    string cate_id = "";
+    string cate_name = "";
+    string cate_desc = "";
+    string cate_class = "";
+
+    string part_id = "";
+    string part_cate = "";
+    string part_title = "";
+    string part_url = "";
+    string part_class = "";
+    string part_pic = "";
+    string img_path = "~/Images/";
+    string cTitle = (string)ViewData["cTitle"];
+}
+
+<div role="main" class="main">
+
+    <section class="page-top">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <ul class="breadcrumb">
+                        <li><a href="~/">Home</a></li>
+                        <li class="active">@cTitle</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <h1>@cTitle</h1>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="sort-source-wrapper">
+        <div class="container">
+            <ul class="nav nav-pills sort-source secundary pull-right" data-sort-id="portfolio" data-option-key="filter">
+                <li data-option-value="*" class="active"><a href="#">合作夥伴</a></li>
+                @if (dt_b.Rows.Count > 0)
+                {
+                    for (int i = 0; i < dt_b.Rows.Count; i++)
+                    {
+                        cate_id = dt_b.Rows[i]["cate_id"].ToString();
+                        cate_name = dt_b.Rows[i]["cate_name"].ToString();
+                        cate_desc = dt_b.Rows[i]["cate_desc"].ToString();
+                        cate_class = ".cate_" + cate_id;
+                        <li data-option-value="@cate_class"><a href="#">@cate_name</a></li>
+                    }
+                }
+            </ul>
+        </div>
+    </div>
+
+    <ul class="portfolio-list sort-destination full-width" data-sort-id="portfolio">
+        @if (dt.Rows.Count > 0)
+        {
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                part_id = dt.Rows[i]["part_id"].ToString();
+                part_cate = dt.Rows[i]["cate_name"].ToString();
+                part_title = dt.Rows[i]["part_title"].ToString();
+                part_url = dt.Rows[i]["part_url"].ToString();
+                part_class = "cate_" + dt.Rows[i]["cate_id"].ToString();
+                if(dt.Rows[i]["img_file"].ToString().Trim().Length > 0)
+                {
+                    part_pic = img_path + dt.Rows[i]["img_file"].ToString();
+                }
+                else
+                {
+                    part_pic = "~/img/projects/project-6.jpg";
+                }
+                <li class="isotope-item @part_class">
+                    <div class="portfolio-item img-thumbnail">
+                        <a href="@Url.Content(part_url)" class="thumb-info secundary" target="_blank">
+                            <img alt="" class="img-responsive" src="@Url.Content(part_pic)">
+                            <span class="thumb-info-title">
+                                <span class="thumb-info-inner">@part_cate</span>
+                                <span class="thumb-info-type">@part_title</span>
+                            </span>
+                            <span class="thumb-info-action">
+                                <span title="Universal" class="thumb-info-action-icon"><i class="fa fa-link"></i></span>
+                            </span>
+                        </a>
+                    </div>
+                </li>
+            }
+        }
+    </ul>
+
+</div>
+<section class="call-to-action featured footer no-arrow">
+    <div class="container">
+        <div class="row">
+            <div class="center">
+                <h3>您若需要一個 <strong>專業技術</strong> 且 <strong>信賴可靠</strong> 的夥伴請馬上找采威國際 <a href="@Url.Content("~/Home/ContactUs")" target="_blank" class="btn btn-lg btn-primary" data-appear-animation="bounceIn">Now!</a> <span class="arrow hlb hidden-xs hidden-sm hidden-md" data-appear-animation="rotateInUpLeft" style="top: -22px;"></span></h3>
+            </div>
+        </div>
+    </div>
+</section>

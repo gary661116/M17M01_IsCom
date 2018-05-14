@@ -1,0 +1,29 @@
+.upload-image
+{
+    width: 200px;
+    height:200px;
+    border-style: dashed;
+    margin-top: 10%;
+    margin-left: 38%;
+    border-color: black ;
+}
+
+.dragover
+{
+    border-color: red ;
+}
+
+.progress
+{
+    margin-top: 3% ;
+    width: 60%;
+    margin-left: 15%;
+}
+
+.image
+{
+    width: 200px ;
+    height: 200px ;
+    border-width: 2px;
+    border-style: solid;
+}

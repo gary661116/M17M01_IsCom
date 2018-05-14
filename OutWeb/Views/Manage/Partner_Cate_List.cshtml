@@ -1,0 +1,358 @@
+﻿@using System.Data
+
+@{
+    Layout = "~/Views/Shared/_MLayout.cshtml";
+    ViewBag.Crumb = "合作夥伴類別管理";
+    ViewBag.subnav = "n8";
+    ViewBag.subnav2 = "Partner_Cate_List";
+
+    DataTable dt = (DataTable)ViewData["dt"];
+    int row_count = 0;
+    int page_count = 50;
+    int page = (int)ViewData["page"];
+    int pre_page = 0;
+    int top_page = 0;
+    int next_page = 0;
+    int end_page = 0;
+    int min_row = 0;
+    int max_row = 0;
+    int total_page = 0;
+
+    string cate_id = "";
+    string cate_name = "";
+    string cate_desc = "";
+    string cate_pic = "";
+    string cate_sort = "";
+
+    string show = "";
+    string show_class = "";
+    string txt_title_query = (string)ViewData["txt_title_query"];
+    string txt_sort = (string)ViewData["txt_sort"];
+    string txt_a_d = (string)ViewData["txt_a_d"];
+
+    string a_d = "";
+
+    if (txt_a_d == "")
+    {
+        a_d = "asc";
+    }
+    else
+    {
+        a_d = "desc";
+    }
+
+    string class_title = "";
+    string class_date = "";
+    string class_sort = "";
+    string class_status = "";
+    string class_index = "";
+    string img_path = "../Images/";
+
+    switch (txt_sort)
+    {
+        case "n_title":
+            class_title = a_d;
+            break;
+        case "n_date":
+            class_date = a_d;
+            break;
+        case "sort":
+            class_sort = a_d;
+            break;
+        case "is_index":
+            class_index = a_d;
+            break;
+        case "status":
+            class_status = a_d;
+            break;
+    }
+
+    row_count = dt.Rows.Count;
+    if (row_count % page_count > 0)
+    {
+        total_page = (row_count / page_count) + 1;
+    }
+    else
+    {
+        total_page = row_count / page_count;
+    }
+
+    if (page > total_page)
+    {
+        page = total_page;
+    }
+    else if (page < 1)
+    {
+        page = 1;
+    }
+
+    top_page = 1;
+
+    if (page > 1)
+    {
+        pre_page = page - 1;
+    }
+    else
+    {
+        pre_page = 1;
+    }
+
+    if (total_page > page)
+    {
+        next_page = page + 1;
+    }
+    else
+    {
+        next_page = total_page;
+    }
+
+    end_page = total_page;
+
+    min_row = page_count * (page - 1) + 1;
+    max_row = page_count * page;
+    if (max_row > row_count)
+    {
+        max_row = row_count;
+    }
+}
+
+@section Breadcrumb {
+    <ul class="breadcrumb">
+        <li>@ViewBag.Crumb</li>
+    </ul>
+}
+<script>
+    function del(url) {
+        if (confirm("確定刪除??")) {
+            location.href = url;
+            //alert("你按下確定");
+        }
+        else {
+            //alert("你按下取消");
+        }
+    }
+</script>
+<h3 class="title">@ViewBag.Crumb </h3>
+
+<div class="alert-warning m-b-16">
+    <strong>前台排序：</strong> 依排序號碼。<br>
+</div>
+
+<div class="topBtn-bar btn-group">
+    <button type="button" onclick="location.href='@Url.Content("~/Manage/Partner_Cate_Add")';" class="btn success oi" data-glyph="plus">
+        新增
+    </button>
+</div>
+<form name="form1" id="form1" action="" method="post">
+    <input type="hidden" id="txt_sort" name="txt_sort" value="@txt_sort" />
+    <input type="hidden" id="txt_a_d" name="txt_a_d" value="@txt_a_d" />
+
+    <header class="table-head form-inline">
+        <input type="text" placeholder="請輸入關鍵字..." id="txt_title_query" name="txt_title_query">
+
+        <label>前台顯示</label>
+        <select id="txt_show" name="txt_show">
+            <option value="">全部</option>
+            <option value="Y">顯示</option>
+            <option value="N">隱藏</option>
+        </select>
+        <button class="btn sm oi" data-glyph="magnifying-glass" id="btn_query" name="btn_query" onclick="form_ok();">搜尋</button>
+    </header>
+    <table class="table-list table-hover table-striped">
+        <colgroup>
+            <col span="3">
+            <col style="width: 13.5%">
+            <col span="2" style="width: 11%">
+        </colgroup>
+        <thead>
+            <tr>
+                @* 點選排序功能 (點一下遞增, 點兩下遞減)
+                    <button class="th-sort-toggle"></button>
+                    遞增 asc
+                    <button class="th-sort-toggle asc"></button>
+                    遞減 desc
+                    <button class="th-sort-toggle desc"></button>
+                *@
+                @* 如不需要排序功能: 純文字即可 *@
+
+                <th class="item-edit">刪除</th>
+                <th class="item-edit">修改</th>
+                <th class="text-left">類別</th>
+                <th class="text-left">描述</th>
+                <th>
+                    @* 點選排序功能 (點一下遞增 asc, 點兩下遞減 desc) *@
+                    <button class="text-xs-center th-sort-toggle @class_status" name="btn_status" id="btn_status" onclick="sort('status');">顯示</button>
+                </th>
+                <th>
+                    @* 點選排序功能 (點一下遞增 asc, 點兩下遞減 desc) *@
+                    <button class="text-xs-center th-sort-toggle @class_sort" name="btn_sort" id="btn_sort" onclick="sort('sort');">排序</button>
+                </th>
+            </tr>
+        <thead>
+        <tbody>
+            @* 建議: 1頁10筆資料 *@
+            @if (dt.Rows.Count > 0)
+            {
+                for (int i = min_row - 1; i < max_row; i++)
+                {
+                    cate_id = dt.Rows[i]["cate_id"].ToString();
+                    cate_name = dt.Rows[i]["cate_name"].ToString();
+                    cate_desc = dt.Rows[i]["cate_desc"].ToString();
+                    cate_sort = dt.Rows[i]["sort"].ToString();
+
+                    if (dt.Rows[i]["status"].ToString() == "Y")
+                    {
+                        show = "顯示";
+                        show_class = "label-success";
+                    }
+                    else
+                    {
+                        show = "隱藏";
+                        show_class = "";
+                    }
+
+                    <tr>
+                        <td>
+                            <button type="button" onclick="del('@Url.Content("~/Manage/Partner_Cate_Del?cate_id=" + cate_id)');" class="btn btn-link text-danger oi" data-glyph="trash"></button>
+                        </td>
+                        <td>
+                            <button type="button" onclick="location.href='@Url.Content("~/Manage/Partner_Cate_Edit?cate_id=" + cate_id)';" class="btn btn-link oi" data-glyph="pencil"></button>
+                        </td>
+                        <td class="text-left">@cate_name</td>
+                        <td class="text-left">@Html.Raw(cate_desc)</td>
+                        <td><span class="label @show_class">@show</span></td>
+                        <td>@cate_sort</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td class="text-left" colspan="7">
+                        無資料
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <footer class="table-foot">
+
+
+
+        <small class="float-r">第 @min_row - @max_row 筆，共 @row_count 筆</small>
+        <nav class="pager">
+            <a href="@Url.Content("~/Manage/Partner_Cate_List?page=" + top_page.ToString())" class="oi" data-glyph="media-step-backward" title="到最前頁"></a>
+            <a href="@Url.Content("~/Manage/Partner_Cate_List?page=" + pre_page.ToString())" class="oi" data-glyph="caret-left" title="上一頁"></a>
+            <span>
+                第
+                <input type="text" class="form-control form-control-sm text-xs-center" style="width:100px" name="page" id="page" value="@page">
+                頁，共 @total_page 頁
+            </span>
+            <a href="@Url.Content("~/Manage/Partner_Cate_List?page=" + next_page.ToString())" class="oi" data-glyph="caret-right" title="下一頁"></a>
+            <a href="@Url.Content("~/Manage/Partner_Cate_List?page=" + end_page.ToString())" class="oi" data-glyph="media-step-forward" title="到最後頁"></a>
+        </nav>
+    </footer>
+</form>
+<script>
+        $('#form1').on('keyup keypress', function (e) {
+            var keyCode = e.keyCode || e.which;
+            if (keyCode === 13) {
+                e.preventDefault();
+                return false;
+            }
+        });
+        //$('#page').on('keydown', function (e) {
+        //    if (e.which == 13) {
+        //        //alert('clicked');
+        //        document.form1.submit();
+        //    }
+        //});
+
+        //$('#txt_title_query').on('keydown', function (e) {
+        //    if (e.which == 13) {
+        //        //alert('clicked');
+        //        document.form1.submit();
+        //    }
+        //});
+
+        //$('#txt_start_date').on('keydown', function (e) {
+        //    if (e.which == 13) {
+        //        //alert('clicked');
+        //        document.form1.submit();
+        //    }
+        //});
+
+        //$('#txt_end_date').on('keydown', function (e) {
+        //    if (e.which == 13) {
+        //        //alert('clicked');
+        //        document.form1.submit();
+        //    }
+        //});
+
+        //$('#txt_lang').on('keydown', function (e) {
+        //    if (e.which == 13) {
+        //        //alert('clicked');
+        //        document.form1.submit();
+        //    }
+        //});
+
+        function form_ok() {
+            $('#form1').submit();
+        }
+
+        function sort(c_sort) {
+            var pre_sort = $('#txt_sort').val();
+            var pre_a_d = $('#txt_a_d').val();
+            var a_d = "";
+            var s_sort = "";
+            var class_a_d = "";
+
+            s_sort = c_sort;
+            if (pre_sort == c_sort) {
+                if (pre_a_d == "") {
+                    a_d = "desc";
+                }
+                else {
+                    a_d = "";
+                }
+            }
+            else {
+                a_d = "";
+            }
+
+            //alert("pre_sort:" + pre_sort + ";pre_a_d:" + pre_a_d + ";a_d:" + a_d + ";s_sort=" + s_sort)
+
+            $('#txt_sort').val(s_sort);
+            $('#txt_a_d').val(a_d);
+
+            $('#form1').submit();
+
+        }
+
+        //$('#btn_area').click(function (e) {
+        //    var pre_sort = $('#txt_sort').val();
+        //    var pre_a_d = $('#txt_a_d').val();
+        //    var a_d = "";
+        //    var sort = "";
+        //    if(pre_sort == "area")
+        //    {
+        //        if(pre_a_d == "")
+        //        {
+        //            a_d = "desc";
+        //        }
+        //        else
+        //        {
+        //            a_d = "";
+        //        }
+        //    }
+        //    else
+        //    {
+        //        sort = "area";
+        //        a_d = "";
+        //    }
+        //});
+        //$('#page').click(function (e) {
+        //    alert('clicked');
+        //});
+</script>

@@ -1,0 +1,256 @@
+﻿
+@{
+    ViewBag.Title = "聯絡我們";
+    ViewBag.BodyClass = "ContactUs";
+}
+
+@section scripts{
+    @* Google reCaptcha 驗證工具 *@
+    <script src='https://www.google.com/recaptcha/api.js'></script>
+
+}
+
+<script type="text/javascript">
+
+    function form_ok() {
+        var cmsg = "";
+        //檢查
+        var t_subject = "";
+        var t_name = "";
+        var t_email = "";
+        var t_message = "";
+        var t_vali = "";
+
+        t_name = $("#txt_name").val();
+        t_subject = $("#txt_subject").val();
+        t_message = $("#txt_message").val();
+        t_email = $("#txt_email").val();
+        t_vali = chk_vali();
+
+        if (t_name == "")
+        {
+            cmsg = "請輸入姓名";
+        }
+
+        if (t_email == "")
+        {
+            if(cmsg != "")
+            {
+                cmsg += "<br />";
+            }
+            cmsg += "請輸入email";
+        }
+
+        if (t_message == "") {
+            if (cmsg != "") {
+                cmsg += "<br />";
+            }
+            cmsg += "請輸入內容";
+        }
+
+        if (t_vali == "N") {
+            if (cmsg != "") {
+                cmsg += "<br />";
+            }
+            cmsg += "驗證碼錯誤";
+        }
+
+        if (cmsg.length > 0)
+        {
+            $("#contactMsg").attr("class", "alert alert-danger");
+            $("#contactMsg").html(cmsg);
+        }
+        else
+        {
+            $("#contactMsg").attr("class", "alert alert-danger hidden");
+            form1.submit();
+        }
+    }
+
+    $(function () {
+        $("#valiCode").bind("click", function () {
+
+            this.src = "@Url.Content("~/Home/GetValidateCode")?time=" + (new Date()).getTime();
+        });
+    });
+
+    function chk_vali() {
+        //  取得被選擇項目的值
+        //$("#select").find(":selected").val();
+        var c_Vali = $("#ValidCode").val();
+        var chkVali = "";
+        $.ajax({
+            url: 'ChkValidateCode',
+            data: { Vali_Code: c_Vali }, //此参数非常严谨，写错一个引号都不行
+            type: "POST",
+            dataType: 'TEXT', //返回值类型 一般设置为json
+            async: false,
+            success: function (JData) {
+                //alert(JData);
+                data = handleAjaxVPNMsg(JData);
+                i = 0;
+                chkVali = data;
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert(xhr.status);
+                alert(thrownError);
+            },
+            complete: function () {
+                //alert(tbl_new_list);
+                //alert('ajax complete');
+            }
+        });
+        //return false;
+        return chkVali;
+    }
+
+    function handleAjaxVPNMsg(data) {
+        var firstRemoveIndexStart = data.indexOf("<SCRIPT");
+        var firstRemoveIndexEnd = data.indexOf("<\/SCRIPT>");
+        var newData = data;
+        while (firstRemoveIndexStart != -1) {
+            firstRemoveIndexStart = newData.indexOf("<SCRIPT");
+            firstRemoveIndexEnd = newData.indexOf("<\/SCRIPT>");
+            //alert('firstRemoveIndexStart:'+firstRemoveIndexStart);
+            if (firstRemoveIndexStart != -1) {
+                if (firstRemoveIndexStart == 0) {
+                    newData = newData.substr(firstRemoveIndexEnd + 9, newData.length);
+                } else {
+                    newDataHead = newData.substr(0, firstRemoveIndexStart);
+                    newDataTail = newData.substr(firstRemoveIndexEnd + 9, newData.length);
+                    //alert('newDataHead'+newDataHead);
+                    //alert('newDataTail'+newDataTail);
+                    newData = newDataHead + newDataTail;
+                }
+            }
+            //alert(newData);
+        }
+        //alert("before:second:"+newData);
+        var secondeRemoveIndex = newData.indexOf("<\/noscript>");
+        //alert(secondeRemoveIndex);
+        if (secondeRemoveIndex != -1) {
+            newData = newData = newData.substr(0, secondeRemoveIndex);
+        }
+        //alert(newData);
+        return newData;
+    }
+</script>
+
+<div role="main" class="main">
+
+    <section class="page-top">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <ul class="breadcrumb">
+                        <li><a href="#">Home</a></li>
+                        <li class="active">@ViewBag.Title</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <h1>@ViewBag.Title</h1>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Google Maps - Go to the bottom of the page to change settings and map location. -->
+
+    
+        <div class="container">
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="alert alert-danger hidden" id="contactMsg" name="contactMsg">
+                    </div>
+
+                    <!--<form id="contactForm" action="php/contact-form.php" method="POST">-->
+                    <form class="m-t-32 text-left" name="form1" id="form1" action="@Url.Content("~/Home/ContactUs")" method="post">
+                        @Html.AntiForgeryToken()
+                        <div class="row">
+                            <div class="form-group">
+                                <div class="col-md-6">
+                                    <label>姓名 *</label>
+                                    <input type="text" value="" data-msg-required="Please enter your name." maxlength="100" class="form-control" name="txt_name" id="txt_name" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>連絡電話</label>
+                                    <input type="text" value="" data-msg-required="Please enter the subject." maxlength="100" class="form-control" name="txt_subject" id="txt_subject" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <div class="col-md-12">
+									<label>信箱 *</label>
+                                    <input type="email" value="" data-msg-required="Please enter your email address." data-msg-email="Please enter a valid email address." maxlength="100" class="form-control" name="txt_email" id="txt_email" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    <label>內容 *</label>
+                                    <textarea maxlength="5000" data-msg-required="Please enter your message." rows="10" class="form-control" name="txt_message" id="txt_message" required></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    <label>驗證碼 *</label>
+                                    <input type="text" class="m-b-12" name="ValidCode" id="ValidCode" value="" placeholder="請輸入下圖所看到的文字" required>
+                                    @*<div class="g-recaptcha" data-sitekey="6LcePAATAAAAAGPRWgx90814DTjgt5sXnNbV5WaW"></div>*@
+                                    <img id="valiCode" style="cursor: pointer;height:30px;" src="@Url.Content("~/Home/GetValidateCode")" alt="驗証碼" />
+                                    @*<a href="" class="oi inline-block m-t-4" data-glyph="reload">看不懂，重新產生</a>*@
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <input type="button" value="Send Message" class="btn btn-primary btn-lg" data-loading-text="Loading..." onclick="form_ok();">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-6">
+
+                    <h4 class="push-top">采威國際資訊股份有限公司 <strong>iscom</strong></h4>
+                    <p>
+                        采威國際資訊(ISCOM)為提供兩岸三地的專業資訊服務公司，主要服務項目以系統整合、系統服務建置、企業E化服務(企業電子化、電子商務)、雲端維運服務、軟體產品與資訊解決方案，服務對象跨足兩岸三地中小企業、政府機關、教育市場等。
+                    </p>
+
+                    <hr />
+
+                    <h4>公司資訊</h4>
+                    <ul class="list-unstyled">
+                        <li><i class="fa fa-map-marker"></i> <strong>Address:</strong>408台中市南屯區公益路二段51號24樓</li>
+                        <li><i class="fa fa-phone"></i> <strong>Phone:</strong> 04-23265200</li>
+                        <li><i class="fa fa-envelope"></i> <strong>Email:</strong> <a href="mailto:service@iscom.com.tw">service@iscom.com.tw</a></li>
+                    </ul>
+
+                    <hr />
+
+                    <h4>服務時段 <strong></strong></h4>
+                    <ul class="list-unstyled">
+                        <li><i class="fa fa-time"></i> 週一 ~ 週五 </li>
+                        <li><i class="fa fa-time"></i> 9am to 18pm </li>
+                    </ul>
+
+                </div>
+
+            </div>
+
+        </div>
+
+</div>
+
+@if (TempData["msg_status"] != null)
+{
+    <script type="text/javascript">
+        var message = @Html.Raw(Json.Encode(TempData["msg"]));
+        alert(message);
+    </script>
+}

@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26403.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OutWeb", "OutWeb\OutWeb.csproj", "{40A964F5-D06C-44F9-B87A-46C58BC752D5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{40A964F5-D06C-44F9-B87A-46C58BC752D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40A964F5-D06C-44F9-B87A-46C58BC752D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40A964F5-D06C-44F9-B87A-46C58BC752D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40A964F5-D06C-44F9-B87A-46C58BC752D5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

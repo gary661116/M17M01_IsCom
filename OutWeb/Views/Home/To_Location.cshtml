@@ -1,0 +1,26 @@
+﻿
+@{
+    Layout = null;
+    string sUrl = "";
+    sUrl = (string)ViewData["Url"];
+
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>To_Location</title>
+</head>
+<body>
+    <div> 
+        @if(sUrl.Trim().Length > 0)
+        {
+            <script>
+                location.replace = "@Url.Content(sUrl)";
+            </script>
+        }
+    </div>
+</body>
+</html>
