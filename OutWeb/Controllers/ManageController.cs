@@ -353,12 +353,14 @@ namespace OutWeb.Controllers
         }
         [HttpPost]
         [ValidateInput(false)]
-        public ActionResult Advertisement_Update(string[] img_id,string[] img_desc, string img_status, string img_count)
+        public ActionResult Advertisement_Update(string[] img_id,string[] img_desc, string[] img_url, string[] img_sort, string img_status, string img_count)
         {
             int i_count = 0;
             string str_img_desc = "";
             string str_img_id = "";
             string str_status = "";
+            string str_img_url = "";
+            string str_img_sort = "";
 
             string[] arr_status;
 
@@ -381,8 +383,10 @@ namespace OutWeb.Controllers
                 str_img_id = img_id[i];
                 str_img_desc = img_desc[i];
                 str_status = arr_status[i];
+                str_img_url = img_url[i];
+                str_img_sort = img_sort[i];
 
-                DB.Ad_Update(str_img_id,str_img_desc,str_status);
+                DB.Ad_Update(str_img_id,str_img_desc,str_status,str_img_url,str_img_sort);
             }
             return RedirectToAction("Advertisement");
         }

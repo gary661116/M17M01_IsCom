@@ -1243,7 +1243,7 @@ namespace Lib.Service
         #endregion
 
         #region 首頁 廣告圖片說明 & 狀態更新 Ad_Update
-        public string Ad_Update(string ad_id = "",string ad_memo = "",string ad_status = "")
+        public string Ad_Update(string ad_id = "",string ad_memo = "",string ad_status = "",string ad_url = "", string ad_sort = "")
         {
             string c_msg = "";
             string c_sql = "";
@@ -1265,6 +1265,24 @@ namespace Lib.Service
                         c_sql += ",";
                     }
                     c_sql += "ad_memo = @ad_memo ";
+                }
+
+                if (ad_url.Trim().Length > 0)
+                {
+                    if (c_sql.Trim().Length > 0)
+                    {
+                        c_sql += ",";
+                    }
+                    c_sql += "ad_url = @ad_url ";
+                }
+
+                if (ad_sort.Trim().Length > 0)
+                {
+                    if (c_sql.Trim().Length > 0)
+                    {
+                        c_sql += ",";
+                    }
+                    c_sql += "sort = @sort ";
                 }
 
                 if (ad_status.Trim().Length > 0)
@@ -1293,6 +1311,16 @@ namespace Lib.Service
                 if (ad_memo.Trim().Length > 0)
                 {
                     cmd.Parameters.AddWithValue("@ad_memo", ad_memo);
+                }
+
+                if (ad_url.Trim().Length > 0)
+                {
+                    cmd.Parameters.AddWithValue("@ad_url", ad_url);
+                }
+
+                if (ad_sort.Trim().Length > 0)
+                {
+                    cmd.Parameters.AddWithValue("@sort", ad_sort);
                 }
 
                 if (ad_status.Trim().Length > 0)

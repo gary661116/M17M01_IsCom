@@ -16,6 +16,8 @@
     string img_status = "";
     string img_limit = "N"; //圖片限制->目前不限制
     string img_maxnum = "5";
+    string img_url = "";
+    string img_sort = "";
 
     img_no = DateTime.Now.ToString("yyyyMMddHHmmss");
     img_count = d_video.Rows.Count.ToString();
@@ -107,6 +109,12 @@
                         c_html = c_html + "       <input type=\"text\" name=\"img_desc[]\" id=\"img_desc[]\" class=\"form-element\" value=\"" + obj.ad_memo + "\">";
                         c_html = c_html + "    </td>";
                         c_html = c_html + "    <td>";
+                        c_html = c_html + "       <input type=\"text\" name=\"img_url[]\" id=\"img_url[]\" class=\"form-element\" value=\"" + obj.ad_url + "\">";
+                        c_html = c_html + "    </td>";
+                        c_html = c_html + "    <td>";
+                        c_html = c_html + "       <input type=\"text\" name=\"img_sort[]\" id=\"img_sort[]\" class=\"form-element\" value=\"" + obj.sort + "\">";
+                        c_html = c_html + "    </td>";
+                        c_html = c_html + "    <td>";
                         c_html = c_html + "      <label class=\"switch\">";
                         c_html = c_html + "       <input type=\"checkbox\" name=\"img_status_" + i + "\" id=\"img_status_" + i + "\"";
                         if(obj.status == "Y")
@@ -128,11 +136,16 @@
                         chtml += "<table class=\"uploader\">";
                         chtml += "    <colgroup>";
                         chtml += "        <col style=\"width: 15%\">";
-                        chtml += "        <col span=\"3\">";
+                        chtml += "        <col style=\"width: 30%\">";
+                        chtml += "        <col style=\"width: 30%\">";
+                        chtml += "        <col style=\"width: 10%\">";
+                        chtml += "        <col span=\"2\">";
                         chtml += "    </colgroup>";
                         chtml += "    <tr>";
                         chtml += "        <th>圖片</th>";
-                        chtml += "        <th class=\"text-left\">圖說</th>";
+                        chtml += "        <th class=\"text-center\">圖說</th>";
+                        chtml += "        <th class=\"text-center\">連結</th>";
+                        chtml += "        <th class=\"text-center\">排序</th>";
                         chtml += "        <th>啟用/停用</th>";
                         chtml += "        <th class=\"item-edit\">刪除</th>";
                         chtml += "    </tr>";
@@ -243,6 +256,12 @@
                         c_html = c_html + "       <input type=\"text\" name=\"img_desc[]\" id=\"img_desc[]\" class=\"form-element\" value=\"" + obj.ad_memo + "\">";
                         c_html = c_html + "    </td>";
                         c_html = c_html + "    <td>";
+                        c_html = c_html + "       <input type=\"text\" name=\"img_url[]\" id=\"img_url[]\" class=\"form-element\" value=\"" + obj.ad_url + "\">";
+                        c_html = c_html + "    </td>";
+                        c_html = c_html + "    <td>";
+                        c_html = c_html + "       <input type=\"text\" name=\"img_sort[]\" id=\"img_sort[]\" class=\"form-element\" value=\"" + obj.sort + "\">";
+                        c_html = c_html + "    </td>";
+                        c_html = c_html + "    <td>";
                         c_html = c_html + "      <label class=\"switch\">";
                         c_html = c_html + "       <input type=\"checkbox\" name=\"img_status_" + i + "\" id=\"img_status_" + i + "\"";
                         if(obj.status == "Y")
@@ -264,11 +283,16 @@
                         chtml += "<table class=\"uploader\">";
                         chtml += "    <colgroup>";
                         chtml += "        <col style=\"width: 15%\">";
-                        chtml += "        <col span=\"3\">";
+                        chtml += "        <col style=\"width: 30%\">";
+                        chtml += "        <col style=\"width: 30%\">";
+                        chtml += "        <col style=\"width: 10%\">";
+                        chtml += "        <col span=\"2\">";
                         chtml += "    </colgroup>";
                         chtml += "    <tr>";
                         chtml += "        <th>圖片</th>";
-                        chtml += "        <th class=\"text-left\">圖說</th>";
+                        chtml += "        <th class=\"text-center\">圖說</th>";
+                        chtml += "        <th class=\"text-center\">連結</th>";
+                        chtml += "        <th class=\"text-center\">排序</th>";
                         chtml += "        <th>啟用/停用</th>";
                         chtml += "        <th class=\"item-edit\">刪除</th>";
                         chtml += "    </tr>";
@@ -349,11 +373,16 @@
             <table class="uploader">
                 <colgroup>
                     <col style="width: 15%">
-                    <col span="3">
+                    <col style="width: 30%">
+                    <col style="width: 30%">
+                    <col style="width: 10%">
+                    <col colspan="2">
                 </colgroup>
                 <tr>
                     <th>圖片</th>
-                    <th class="text-left">圖說</th>
+                    <th class="text-center">圖說</th>
+                    <th class="text-center">連結</th>
+                    <th class="text-center">排序</th>
                     <th>啟用/停用</th>
                     <th class="item-edit">刪除</th>
                 </tr>
@@ -362,6 +391,8 @@
                     big_img = img_path + d_video.Rows[b]["ad_img"].ToString();
                     img_id = d_video.Rows[b]["ad_id"].ToString();
                     img_desc = d_video.Rows[b]["ad_memo"].ToString();
+                    img_url = d_video.Rows[b]["ad_url"].ToString();
+                    img_sort = d_video.Rows[b]["sort"].ToString();
                     if (d_video.Rows[b]["status"].ToString() == "Y")
                     {
                         img_status = " checked ";
@@ -378,6 +409,12 @@
                         </td>
                         <td>
                             <input type="text" name="img_desc[]" id="img_desc[]" class="form-element" value="@img_desc">
+                        </td>
+                        <td>
+                            <input type="text" name="img_url[]" id="img_url[]" class="form-element" value="@img_url">
+                        </td>
+                        <td>
+                            <input type="text" name="img_sort[]" id="img_sort[]" class="form-element" value="@img_sort">
                         </td>
                         <td>
                             <label class="switch">
