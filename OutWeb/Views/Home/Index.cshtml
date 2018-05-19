@@ -41,6 +41,11 @@
     string ads_pic = "";
     string ads_deplay = "";
 
+    string ad_id = "";
+    string ad_title = "";
+    string ad_pic = "";
+    string ad_url = "";
+
     string ads_html = "";
 
     int ii = 0;
@@ -56,8 +61,19 @@
                 {
                     for (int i = 0; i < d_ad.Rows.Count; i++)
                     {
+                        ad_id = d_ad.Rows[i]["ad_id"].ToString();
+                        ad_pic = d_ad.Rows[i]["ad_img"].ToString();
+                        ad_url = d_ad.Rows[i]["ad_url"].ToString();
+
                         <li data-transition="fade" data-slotamount="10" data-masterspeed="150">
-                            <a href="http://www.iscom.com.tw/News/NewsData?n_id=73"><img src="@Url.Content("~/Images/" + d_ad.Rows[i]["ad_img"].ToString())" data-bgfit="cover" data-bgposition="right center" data-bgrepeat="no-repeat"></a>
+                            @if (ad_url.Trim().Length > 0)
+                            {
+                                <a href="@ad_url"><img src="@Url.Content("~/Images/" + ad_pic)" data-bgfit="cover" data-bgposition="right center" data-bgrepeat="no-repeat"></a>
+                            }
+                            else
+                            {
+                                <img src="@Url.Content("~/Images/" + ad_pic)" data-bgfit="cover" data-bgposition="right center" data-bgrepeat="no-repeat">
+                            }
                         </li>
                     }
                 }

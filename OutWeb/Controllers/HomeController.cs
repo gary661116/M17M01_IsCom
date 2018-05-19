@@ -44,7 +44,7 @@ namespace OutWeb.Controllers
             DataTable d_foot;
             string err_msg = "";
             //抓取大圖廣告
-            d_ad = DB.Ad_Img_List(ref err_msg,"","Y");
+            d_ad = DB.Ad_Img_List(ref err_msg,"","Y","","sort");
 
             //抓取消息資料
             d_news = DB.News_List(ref err_msg, "", "n_date desc", "Y", "", "", "", "Y");

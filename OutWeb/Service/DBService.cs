@@ -1001,7 +1001,7 @@ namespace Lib.Service
         #endregion
 
         #region 首頁廣告圖片陳列 Ad_Img_List
-        public DataTable Ad_Img_List(ref string err_msg, string img_no = "",string status="")
+        public DataTable Ad_Img_List(ref string err_msg, string img_no = "",string status="",string url = "",string sort = "")
         {
             DataSet dt = new DataSet();
             DataTable d_t = new DataTable();
@@ -1041,9 +1041,24 @@ namespace Lib.Service
                 }
 
                 csql = "select * from Advertisement where ad_title = 'img' ";
+
+                if (url.Trim().Length > 0)
+                {
+                    csql += "and ad_url= @url ";
+                }
+
                 if (status.Trim().Length > 0)
                 {
                     csql += "and status = @status ";
+                }
+
+                if (sort.Trim().Length > 0)
+                {
+                    csql = csql + " order by " + sort + " ";
+                }
+                else
+                {
+                    csql = csql + " order by sort ";
                 }
                 //if(imgno_count == 0)
                 //{
@@ -1066,6 +1081,11 @@ namespace Lib.Service
                     cmd.Parameters.AddWithValue("@status", status);
                 }
 
+                if (url.Trim().Length > 0)
+                {
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.AddWithValue("@url", url);
+                }
                 //if(imgno_count == 0)
                 //{
                 //    cmd.Parameters.Clear();

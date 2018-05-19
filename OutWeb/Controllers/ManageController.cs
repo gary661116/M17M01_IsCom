@@ -347,7 +347,7 @@ namespace OutWeb.Controllers
         public ActionResult Advertisement()
         {
             string err_msg = "";
-            DataTable d_video = DB.Ad_Img_List(ref err_msg, "", "");
+            DataTable d_video = DB.Ad_Img_List(ref err_msg, "", "","","sort");
             ViewData["d_video"] = d_video;
             return View();
         }
