@@ -18,6 +18,7 @@
     string img_maxnum = "5";
     string img_url = "";
     string img_sort = "";
+    string b1 = "";
 
     img_no = DateTime.Now.ToString("yyyyMMddHHmmss");
     img_count = d_video.Rows.Count.ToString();
@@ -388,6 +389,7 @@
                 </tr>
                 @for (int b = 0; b < d_video.Rows.Count; b++)
                 {
+                    b1 = (b + 1).ToString();
                     big_img = img_path + d_video.Rows[b]["ad_img"].ToString();
                     img_id = d_video.Rows[b]["ad_id"].ToString();
                     img_desc = d_video.Rows[b]["ad_memo"].ToString();
@@ -405,7 +407,7 @@
                     <tr>
                         <td>
                             <input type="hidden" name="img_id[]" id="img_id[]" value="@img_id" />
-                            <img id="img_B_@b" name="img_B_@b" src="@big_img" alt="">
+                            <img id="img_B_@b1" name="img_B_@b1" src="@big_img" alt="">
                         </td>
                         <td>
                             <input type="text" name="img_desc[]" id="img_desc[]" class="form-element" value="@img_desc">
@@ -418,12 +420,12 @@
                         </td>
                         <td>
                             <label class="switch">
-                                <input type="checkbox" name="img_status_@b" id="img_status_@b" @img_status>
+                                <input type="checkbox" name="img_status_@b1" id="img_status_@b1" @img_status>
                                 <div class="slider round"></div>
                             </label>
                         </td>
                         <td class="item-edit">
-                            <button class="btn-link text-danger hover-text-danger oi" id="btn_close_B_@b" name="btn_close_B_@b" title="刪除" data-glyph="trash" onclick="del_img('@img_id','B');"></button>
+                            <button class="btn-link text-danger hover-text-danger oi" id="btn_close_B_@b1" name="btn_close_B_@b1" title="刪除" data-glyph="trash" onclick="del_img('@img_id','B');"></button>
                         </td>
                     </tr>
                 }
