@@ -1000,6 +1000,7 @@ namespace Lib.Service
         }
         #endregion
 
+        #region 首頁廣告
         #region 首頁廣告圖片陳列 Ad_Img_List
         public DataTable Ad_Img_List(ref string err_msg, string img_no = "",string status="",string url = "",string sort = "")
         {
@@ -1370,9 +1371,10 @@ namespace Lib.Service
 
         }
         #endregion
+        #endregion 首頁廣告
 
         #region 產品
-        
+
         #region 產品資料 Prod_List
         public DataTable Prod_List(ref string err_msg, string prod_id = "", string sort = "", string status = "", string title_query = "", string cateb_id = "", string cates_id = "")
         {
@@ -7473,5 +7475,378 @@ namespace Lib.Service
         #endregion
 
         #endregion
+
+        #region 微軟專區 Microsoft
+        #region 微軟專區圖片陳列 Microsoft_Img_List
+        public DataTable Microsoft_Img_List(ref string err_msg, string img_no = "", string status = "", string url = "", string sort = "")
+        {
+            DataSet dt = new DataSet();
+            DataTable d_t = new DataTable();
+
+            string[] cimg_no;
+            string str_img_no = "";
+            //if(img_no == "")
+            //{
+            //    imgno_count = -1;
+            //}
+            //else
+            //{
+            //    imgno_count = 0;
+            //}
+
+            SqlConnection conn = new SqlConnection(CService.conn_string());
+            if (conn.State == ConnectionState.Closed)
+            {
+                conn.Open();
+            }
+
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = conn;
+
+
+
+            try
+            {
+                cimg_no = img_no.Split(',');
+                for (int i = 0; i < cimg_no.Length; i++)
+                {
+                    if (i > 0)
+                    {
+                        str_img_no = str_img_no + ",";
+                    }
+                    str_img_no = str_img_no + "'" + cimg_no[i] + "'";
+                }
+
+                csql = "select * from Advertisement where ad_title = 'Microsoft' ";
+
+                if (url.Trim().Length > 0)
+                {
+                    csql += "and ad_url= @url ";
+                }
+
+                if (status.Trim().Length > 0)
+                {
+                    csql += "and status = @status ";
+                }
+
+                if (sort.Trim().Length > 0)
+                {
+                    csql = csql + " order by " + sort + " ";
+                }
+                else
+                {
+                    csql = csql + " order by sort ";
+                }
+                //if(imgno_count == 0)
+                //{
+                //    csql = csql + "and ad_no in (";
+                //    for (int i = 0; i < cimg_no.Length; i++)
+                //    {
+                //        if (i > 0)
+                //        {
+                //            csql = csql + ",";
+                //        }
+                //        csql = csql + "@str_img_no" + i.ToString() + " ";
+                //    }
+                //    csql = csql + ") ";
+                //}
+
+                cmd.CommandText = csql;
+                if (status.Trim().Length > 0)
+                {
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.AddWithValue("@status", status);
+                }
+
+                if (url.Trim().Length > 0)
+                {
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.AddWithValue("@url", url);
+                }
+                //if(imgno_count == 0)
+                //{
+                //    cmd.Parameters.Clear();
+                //    for (int i = 0; i < cimg_no.Length; i++)
+                //    {
+                //        cmd.Parameters.AddWithValue("@str_img_no" + i.ToString(), cimg_no[i]);
+                //    }
+                //}
+
+
+                if (dt.Tables["img"] != null)
+                {
+                    dt.Tables["img"].Clear();
+                }
+
+                SqlDataAdapter scenic_ada = new SqlDataAdapter();
+                scenic_ada.SelectCommand = cmd;
+                scenic_ada.Fill(dt, "img");
+                scenic_ada = null;
+
+                d_t = dt.Tables["img"];
+            }
+            catch (Exception ex)
+            {
+                err_msg = ex.Message;
+                logger.Error(ex.Message);
+            }
+            finally
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    conn.Close();
+                }
+                cmd = null;
+                conn = null;
+                dt = null;
+            }
+
+            return d_t;
+        }
+        #endregion
+
+        #region 微軟專區 Microsoft圖片新增 Microsoft_Img_Insert
+        public string Microsoft_Img_Insert(string img_no = "", string img_file = "")
+        {
+            string c_msg = "";
+            SqlConnection conn = new SqlConnection(CService.conn_string());
+            if (conn.State == ConnectionState.Closed)
+            {
+                conn.Open();
+            }
+
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = conn;
+
+            try
+            {
+                csql = @"insert into Advertisement(ad_title,ad_no, ad_img) "
+                     + "values('Microsoft',@img_no ,@img_file)";
+
+                cmd.CommandText = csql;
+
+                cmd.Parameters.Clear();
+                cmd.Parameters.AddWithValue("@img_no", img_no);
+                cmd.Parameters.AddWithValue("@img_file", img_file);
+
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                c_msg = ex.Message;
+                logger.Error(ex.Message);
+            }
+            finally
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    conn.Close();
+                }
+                cmd = null;
+                conn = null;
+            }
+
+            return c_msg;
+        }
+        #endregion
+
+        #region 微軟專區 Microsoft圖片刪除 Microsoft_Img_Delete
+        public string Microsoft_Img_Delete(string img_id = "")
+        {
+            string c_msg = "";
+            SqlConnection conn = new SqlConnection(CService.conn_string());
+            if (conn.State == ConnectionState.Closed)
+            {
+                conn.Open();
+            }
+
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = conn;
+
+            try
+            {
+                csql = @"delete from Advertisement where ad_id = @img_id ";
+
+                cmd.CommandText = csql;
+                cmd.Parameters.Clear();
+                cmd.Parameters.AddWithValue("@img_id", img_id);
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                c_msg = ex.Message;
+                logger.Error(ex.Message);
+            }
+            finally
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    conn.Close();
+                }
+                cmd = null;
+                conn = null;
+            }
+
+            return c_msg;
+        }
+        #endregion
+
+        #region 微軟專區 Microsoft圖片更新 Microsoft_Img_Update
+        public string Microsoft_Img_Update(string img_no = "", string img_file = "")
+        {
+            string c_msg = "";
+            SqlConnection conn = new SqlConnection(CService.conn_string());
+            if (conn.State == ConnectionState.Closed)
+            {
+                conn.Open();
+            }
+
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = conn;
+
+            try
+            {
+                csql = @"update "
+                     + "  Advertisement "
+                     + "set "
+                     + "  ad_img = @img_file "
+                     + "where "
+                     + "  ad_no = @img_no ";
+
+                cmd.CommandText = csql;
+
+                cmd.Parameters.Clear();
+                cmd.Parameters.AddWithValue("@img_file", img_file);
+                cmd.Parameters.AddWithValue("@img_no", img_no);
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                c_msg = ex.Message;
+                logger.Error(ex.Message);
+            }
+            finally
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    conn.Close();
+                }
+                cmd = null;
+                conn = null;
+            }
+
+            return c_msg;
+        }
+        #endregion
+
+        #region 微軟專區 Microsoft圖片說明 & 狀態更新 Microsoft_Update
+        public string Microsoft_Update(string ad_id = "", string ad_memo = "", string ad_status = "", string ad_url = "", string ad_sort = "")
+        {
+            string c_msg = "";
+            string c_sql = "";
+            SqlConnection conn = new SqlConnection(CService.conn_string());
+            if (conn.State == ConnectionState.Closed)
+            {
+                conn.Open();
+            }
+
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = conn;
+
+            try
+            {
+                if (ad_memo.Trim().Length > 0)
+                {
+                    if (c_sql.Trim().Length > 0)
+                    {
+                        c_sql += ",";
+                    }
+                    c_sql += "ad_memo = @ad_memo ";
+                }
+
+                if (ad_url.Trim().Length > 0)
+                {
+                    if (c_sql.Trim().Length > 0)
+                    {
+                        c_sql += ",";
+                    }
+                    c_sql += "ad_url = @ad_url ";
+                }
+
+                if (ad_sort.Trim().Length > 0)
+                {
+                    if (c_sql.Trim().Length > 0)
+                    {
+                        c_sql += ",";
+                    }
+                    c_sql += "sort = @sort ";
+                }
+
+                if (ad_status.Trim().Length > 0)
+                {
+                    if (c_sql.Trim().Length > 0)
+                    {
+                        c_sql += ",";
+                    }
+                    c_sql += "status = @ad_status ";
+                }
+
+                if (c_sql.Trim().Length > 0)
+                {
+                    csql = "update "
+                         + "  Advertisement "
+                         + "set "
+                         + c_sql
+                         + "where "
+                         + "  ad_id = @ad_id";
+                }
+
+
+                cmd.CommandText = csql;
+
+                cmd.Parameters.Clear();
+                if (ad_memo.Trim().Length > 0)
+                {
+                    cmd.Parameters.AddWithValue("@ad_memo", ad_memo);
+                }
+
+                if (ad_url.Trim().Length > 0)
+                {
+                    cmd.Parameters.AddWithValue("@ad_url", ad_url);
+                }
+
+                if (ad_sort.Trim().Length > 0)
+                {
+                    cmd.Parameters.AddWithValue("@sort", ad_sort);
+                }
+
+                if (ad_status.Trim().Length > 0)
+                {
+                    cmd.Parameters.AddWithValue("@ad_status", ad_status);
+                }
+                cmd.Parameters.AddWithValue("@ad_id", ad_id);
+
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                c_msg = ex.Message;
+                logger.Error(ex.Message);
+            }
+            finally
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    conn.Close();
+                }
+                cmd = null;
+                conn = null;
+            }
+
+            return c_msg;
+
+        }
+        #endregion
+        #endregion 微軟專區 Microsoft
     }
 }

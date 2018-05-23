@@ -1,9 +1,9 @@
 ﻿@using System.Data
 @{
     Layout = "~/Views/Shared/_MLayout.cshtml";
-    ViewBag.Crumb = "首頁大圖廣告";
-    ViewBag.subnav = "n1";
-    ViewBag.subnav2 = "Advertisement";
+    ViewBag.Crumb = "微軟產品專區";
+    ViewBag.subnav = "n9";
+    ViewBag.subnav2 = "Microsoft";
 
     DataTable d_video = (DataTable)ViewData["d_video"];
     string mv = "";
@@ -70,7 +70,7 @@
     function del_img(img_id,c_sty)
     {
         var cimg_no = "";
-        var c_cate = "Ad"
+        var c_cate = "Microsoft"
         @*if ($("#prod_id").val().length > 0) {
             cimg_no = $("#prod_id").val();
         }else {
@@ -211,7 +211,7 @@
     function ajaxFileUpload(c_sty) {
         var cimg_no = "";
         var c_img = "pic_" + c_sty;
-        var c_cate = "Ad"
+        var c_cate = "Microsoft"
 
         @*if ($("#prod_id").val().length > 0) {
             cimg_no = $("#prod_id").val();
@@ -353,14 +353,14 @@
         嵌入連結路徑如圖示 (<a href="/Content/images/sys/youtube.jpg" target="new">點選看圖示</a>)
     </div> *@
 
-<form action="Advertisement_Update" class="form" method="post" name="form1" id="form1" enctype="multipart/form-data">
+<form action="Microsoft_Update" class="form" method="post" name="form1" id="form1" enctype="multipart/form-data">
     <input type="hidden" id="img_count" name="img_count" value="@img_count" />
     <input type="hidden" name="img_no" id="img_no" value="@img_no" />
     <input type="hidden" id="img_status" name="img_status" value="" />
     <div class="form-group row">
         <div class="col-xs-6">
             <input type="file" class="form-control form-control-sm" name="pic_B" id="pic_B" accept="image/*">
-            <small class="text-muted">\圖片須為 jpg, png 或 gif 格式<br />建議尺寸為 1680*978px，檔案最大不可超過 600 KB</small>
+            <small class="text-muted">圖片須為 jpg, png 或 gif 格式<br />建議尺寸為 1680*978px，檔案最大不可超過 600 KB</small>
         </div>
         <div class="col-xs-2">
             <button type="button" class="btn btn-sm btn-success oi m-t-small" data-glyph="data-transfer-upload" name="btn_big_pic" onclick="upload('B');">上傳</button>

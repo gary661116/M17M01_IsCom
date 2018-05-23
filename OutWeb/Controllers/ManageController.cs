@@ -500,6 +500,9 @@ namespace OutWeb.Controllers
                 case "Partner":
                     chk_file = DB.Partner_Img_List(ref err_msg, img_no);
                     break;
+                case "Microsoft":
+                    chk_file = DB.Microsoft_Img_List(ref err_msg, img_no);
+                    break;
                 default:
                     chk_file = DB.Img_List(ref err_msg, img_no, img_sta);
                     break;
@@ -526,10 +529,11 @@ namespace OutWeb.Controllers
                             DB.Prod_Img_Insert(img_no, img_no + "_" + img_sta + "_" + filename);
                             break;
                         case "Ad":
-                            if (chk_file.Rows.Count < 5)
-                            {
+                            //解除數量限制
+                            //if (chk_file.Rows.Count < 5)
+                            //{
                                 DB.Ad_Img_Insert(img_no, img_no + "_" + img_sta + "_" + filename);
-                            }
+                            //}
                             break;
                         case "Prod_Cate":
                             DB.Prod_Cate_Img_Insert(img_no, img_no + "_" + img_sta + "_" + filename,img_sty);
@@ -545,6 +549,9 @@ namespace OutWeb.Controllers
                             break;
                         case "Partner":
                             DB.Partner_Img_Insert(img_no, img_no + "_" + img_sta + "_" + filename);
+                            break;
+                        case "Microsoft":
+                            DB.Microsoft_Img_Insert(img_no, img_no + "_" + img_sta + "_" + filename);
                             break;
                         default:
                             //OverlookDB.Img_Insert(img_no, img_no + "_" + img_sta + "_" + filename, img_sta);
@@ -575,6 +582,9 @@ namespace OutWeb.Controllers
                             break;
                         case "Partner":
                             DB.Partner_Img_Update(img_no, img_no + "_" + img_sta + "_" + filename);
+                            break;
+                        case "Microsoft":
+                            DB.Microsoft_Img_Update(img_no, img_no + "_" + img_sta + "_" + filename);
                             break;
                         default:
                             //OverlookDB.Img_Update(chk_file.Rows[0]["_SEQ_ID"].ToString(), img_no + "_" + img_sta + "_" + filename);
@@ -631,6 +641,9 @@ namespace OutWeb.Controllers
                 case "Partner":
                     img_file = DB.Partner_Img_List(ref err_msg, img_no);
                     break;
+                case "Microsoft":
+                    img_file = DB.Microsoft_Img_List(ref err_msg, img_no);
+                    break;
                 default:
                     img_file = DB.Img_List(ref err_msg, img_no, img_sta);
                     break;
@@ -675,6 +688,9 @@ namespace OutWeb.Controllers
                 case "Partner":
                     chk_file = DB.Partner_Img_List(ref err_msg, img_no);
                     break;
+                case "Microsoft":
+                    chk_file = DB.Microsoft_Img_List(ref err_msg, img_no);
+                    break;
                 default:
                     chk_file = DB.Img_List(ref err_msg, img_no, img_sta);
                     break;
@@ -686,7 +702,7 @@ namespace OutWeb.Controllers
             {
                 for (int i = 0; i < chk_file.Rows.Count; i++)
                 {
-                    if (img_cate == "Ad")
+                    if (img_cate == "Ad" | img_cate == "Microsoft")
                     {
                         if (img_id == chk_file.Rows[i]["ad_id"].ToString())
                         {
@@ -746,6 +762,9 @@ namespace OutWeb.Controllers
                 case "Partner":
                     DB.Partner_Img_Delete(img_id);
                     break;
+                case "Microsoft":
+                    DB.Microsoft_Img_Delete(img_id);
+                    break;
                 default:
                     //DB.Img_Delete(img_id);
                     break;
@@ -771,6 +790,9 @@ namespace OutWeb.Controllers
                     break;
                 case "Partner":
                     img_file = DB.Partner_Img_List(ref err_msg, img_no);
+                    break;
+                case "Microsoft":
+                    img_file = DB.Microsoft_Img_List(ref err_msg, img_no);
                     break;
                 default:
                     img_file = DB.Img_List(ref err_msg, img_no, img_sta);
@@ -1879,6 +1901,55 @@ namespace OutWeb.Controllers
             return RedirectToAction("Foot_List");
         }
         #endregion
+        #endregion
+
+        #region 微軟專區
+        public ActionResult Microsoft()
+        {
+            string err_msg = "";
+            DataTable d_video = DB.Microsoft_Img_List(ref err_msg, "", "", "", "sort");
+            ViewData["d_video"] = d_video;
+            return View();
+        }
+        [HttpPost]
+        [ValidateInput(false)]
+        public ActionResult Microsoft_Update(string[] img_id, string[] img_desc, string[] img_url, string[] img_sort, string img_status, string img_count)
+        {
+            int i_count = 0;
+            string str_img_desc = "";
+            string str_img_id = "";
+            string str_status = "";
+            string str_img_url = "";
+            string str_img_sort = "";
+
+            string[] arr_status;
+
+            arr_status = img_status.Split(',');
+
+            i_count = Convert.ToInt32(img_count);
+
+            if (arr_status.Count() < i_count) // 因為刪除選擇取消，還是會跑，但是沒有狀態資料，會造成陣列出錯
+            {
+                return RedirectToAction("Microsoft");
+            }
+
+            //Activity_Img
+            str_img_id = "";
+            str_img_desc = "";
+            str_status = "";
+
+            for (int i = 0; i < i_count; i++)
+            {
+                str_img_id = img_id[i];
+                str_img_desc = img_desc[i];
+                str_status = arr_status[i];
+                str_img_url = img_url[i];
+                str_img_sort = img_sort[i];
+
+                DB.Microsoft_Update(str_img_id, str_img_desc, str_status, str_img_url, str_img_sort);
+            }
+            return RedirectToAction("Microsoft");
+        }
         #endregion
     }
 }

@@ -1208,6 +1208,7 @@
     <Content Include="Views\Manage\Foot_Data.cshtml" />
     <Content Include="Views\Home\Error.cshtml" />
     <Content Include="Views\Home\To_Location.cshtml" />
+    <Content Include="Views\Manage\Microsoft.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\Logs\" />
