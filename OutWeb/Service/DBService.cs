@@ -191,9 +191,10 @@ namespace Lib.Service
         #endregion
 
         #region 消息資料新增 News_Insert
-        public string News_Insert(string n_title = "", string n_date = "", string n_desc = "", string is_show = "", string is_index = "", string sort = "",string n_memo = "")
+        public string News_Insert(string n_title = "", string n_date = "", string n_desc = "", string is_show = "", string is_index = "", string sort = "",string n_memo = "",string n_url = "",string img_no = "")
         {
             string c_msg = "";
+            string n_id = "";
 
             SqlConnection conn = new SqlConnection(CService.conn_string());
             if (conn.State == ConnectionState.Closed)
@@ -229,8 +230,8 @@ namespace Lib.Service
                 }
                 //===============================================================================//
 
-                csql = @"insert into News(n_title,n_date,n_desc,is_index,sort,status,n_memo) "
-                     + "values(@n_title,@n_date,@n_desc,@is_index,@sort,@is_show,@n_memo)";
+                csql = @"insert into News(n_title,n_date,n_desc,is_index,sort,status,n_memo,n_url) "
+                     + "values(@n_title,@n_date,@n_desc,@is_index,@sort,@is_show,@n_memo,@n_url)";
 
                 cmd.CommandText = csql;
 
@@ -243,9 +244,70 @@ namespace Lib.Service
                 cmd.Parameters.AddWithValue("@sort", sort);
                 cmd.Parameters.AddWithValue("@is_show", is_show);
                 cmd.Parameters.AddWithValue("@n_memo", n_memo);
+                cmd.Parameters.AddWithValue("@n_url", n_url);
 
                 cmd.ExecuteNonQuery();
 
+                //抓取其編號
+                csql = @"select distinct "
+                     + "  n_id "
+                     + "from "
+                     + "   News "
+                     + "where "
+                     + "    n_date = @n_date "
+                     + "and n_title = @n_title "
+                     + "and n_desc = @n_desc "
+                     + "and is_index = @is_index "
+                     + "and sort = @sort "
+                     + "and status = @is_show "
+                     + "and n_memo = @n_memo "
+                     + "and n_url = @n_url ";
+
+                cmd.CommandText = csql;
+
+                ////讓ADO.NET自行判斷型別轉換
+                cmd.Parameters.Clear();
+                cmd.Parameters.AddWithValue("@n_title", n_title);
+                cmd.Parameters.AddWithValue("@n_date", n_date);
+                cmd.Parameters.AddWithValue("@n_desc", n_desc);
+                cmd.Parameters.AddWithValue("@is_index", is_index);
+                cmd.Parameters.AddWithValue("@sort", sort);
+                cmd.Parameters.AddWithValue("@is_show", is_show);
+                cmd.Parameters.AddWithValue("@n_memo", n_memo);
+                cmd.Parameters.AddWithValue("@n_url", n_url);
+
+                if (ds.Tables["chk_news"] != null)
+                {
+                    ds.Tables["chk_news"].Clear();
+                }
+
+                SqlDataAdapter prod_chk_ada = new SqlDataAdapter();
+                prod_chk_ada.SelectCommand = cmd;
+                prod_chk_ada.Fill(ds, "chk_news");
+                prod_chk_ada = null;
+
+                if (ds.Tables["chk_news"].Rows.Count > 0)
+                {
+                    n_id = ds.Tables["chk_news"].Rows[0]["n_id"].ToString();
+                    if (img_no.Trim().Length > 0)
+                    {
+                        csql = @"update "
+                             + "  news_img "
+                             + "set "
+                             + "  img_no = @n_id "
+                             + "where "
+                             + "  img_no = @img_no ";
+
+                        cmd.CommandText = csql;
+
+                        ////讓ADO.NET自行判斷型別轉換
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.AddWithValue("@n_id", n_id);
+                        cmd.Parameters.AddWithValue("@img_no", img_no);
+
+                        cmd.ExecuteNonQuery();
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -268,7 +330,7 @@ namespace Lib.Service
 
         #region 消息資料更新 News_Update
         //更新內容
-        public string News_Update(string n_id = "", string n_title = "", string n_date = "", string n_desc = "", string is_show = "", string is_index = "", string sort = "",string n_memo = "")
+        public string News_Update(string n_id = "", string n_title = "", string n_date = "", string n_desc = "", string is_show = "", string is_index = "", string sort = "",string n_memo = "",string n_url = "")
         {
             string c_msg = "";
             SqlConnection conn = new SqlConnection(CService.conn_string());
@@ -292,6 +354,7 @@ namespace Lib.Service
                      + ", is_index = @is_index "
                      + ", sort = @sort "
                      + ", n_memo = @n_memo "
+                     + ", n_url = @n_url "
                      + ", _UPD_ID = 'System' "
                      + ", _UPD_DT = getdate() "
                      + "where "
@@ -308,6 +371,7 @@ namespace Lib.Service
                 cmd.Parameters.AddWithValue("@sort", sort);
                 cmd.Parameters.AddWithValue("@is_show", is_show);
                 cmd.Parameters.AddWithValue("@n_memo", n_memo);
+                cmd.Parameters.AddWithValue("@n_url", n_url);
 
                 cmd.ExecuteNonQuery();
             }
@@ -377,6 +441,227 @@ namespace Lib.Service
             return c_msg;
         }
         #endregion
+
+        #region 消息資料圖片陳列 News_Img_List
+        public DataTable News_Img_List(ref string err_msg, string img_no = "")
+        {
+            DataSet dt = new DataSet();
+            DataTable d_t = new DataTable();
+            SqlConnection conn = new SqlConnection(CService.conn_string());
+            SqlCommand cmd = new SqlCommand();
+            string[] cimg_no;
+            string str_img_no = "";
+
+            try
+            {
+                if (conn.State == ConnectionState.Closed)
+                {
+                    conn.Open();
+                }
+                cmd.Connection = conn;
+
+                cimg_no = img_no.Split(',');
+
+                for (int i = 0; i < cimg_no.Length; i++)
+                {
+                    if (i > 0)
+                    {
+                        str_img_no = str_img_no + ",";
+                    }
+                    str_img_no = str_img_no + "'" + cimg_no[i] + "'";
+                }
+
+                csql = "select * from news_img where status = 'Y' ";
+                if (img_no != "ALL")
+                {
+                    csql = csql + "and img_no in (";
+                    for (int i = 0; i < cimg_no.Length; i++)
+                    {
+                        if (i > 0)
+                        {
+                            csql = csql + ",";
+                        }
+                        csql = csql + "@str_img_no" + i.ToString() + " ";
+                    }
+                    csql = csql + ") ";
+                }
+
+
+                cmd.CommandText = csql;
+
+                cmd.Parameters.Clear();
+                for (int i = 0; i < cimg_no.Length; i++)
+                {
+                    cmd.Parameters.AddWithValue("@str_img_no" + i.ToString(), cimg_no[i]);
+                }
+
+
+                if (dt.Tables["img"] != null)
+                {
+                    dt.Tables["img"].Clear();
+                }
+
+                SqlDataAdapter scenic_ada = new SqlDataAdapter();
+                scenic_ada.SelectCommand = cmd;
+                scenic_ada.Fill(dt, "img");
+                scenic_ada = null;
+
+                d_t = dt.Tables["img"];
+            }
+            catch (Exception ex)
+            {
+                err_msg = ex.Message;
+                logger.Error(ex.Message);
+            }
+            finally
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    conn.Close();
+                }
+                cmd = null;
+                conn = null;
+                dt = null;
+            }
+
+            return d_t;
+        }
+        #endregion
+
+        #region  消息資料圖片刪除 News_Img_Delete
+        public string News_Img_Delete(string img_id = "")
+        {
+            string c_msg = "";
+            SqlConnection conn = new SqlConnection(CService.conn_string());
+            if (conn.State == ConnectionState.Closed)
+            {
+                conn.Open();
+            }
+
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = conn;
+
+            try
+            {
+                csql = @"delete from news_img where img_id = @img_id ";
+
+                cmd.CommandText = csql;
+                cmd.Parameters.Clear();
+                cmd.Parameters.AddWithValue("@img_id", img_id);
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                c_msg = ex.Message;
+                logger.Error(ex.Message);
+            }
+            finally
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    conn.Close();
+                }
+                cmd = null;
+                conn = null;
+            }
+
+            return c_msg;
+        }
+        #endregion
+
+        #region 消息資料圖片更新 News_Img_Update
+        public string News_Img_Update(string img_no = "", string img_file = "")
+        {
+            string c_msg = "";
+            SqlConnection conn = new SqlConnection(CService.conn_string());
+            if (conn.State == ConnectionState.Closed)
+            {
+                conn.Open();
+            }
+
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = conn;
+
+            try
+            {
+                csql = @"update "
+                     + "  news_img "
+                     + "set "
+                     + "  img_file = @img_file "
+                     + "where "
+                     + "  img_no = @img_no ";
+
+                cmd.CommandText = csql;
+
+                cmd.Parameters.Clear();
+                cmd.Parameters.AddWithValue("@img_file", img_file);
+                cmd.Parameters.AddWithValue("@img_no", img_no);
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                c_msg = ex.Message;
+                logger.Error(ex.Message);
+            }
+            finally
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    conn.Close();
+                }
+                cmd = null;
+                conn = null;
+            }
+
+            return c_msg;
+        }
+        #endregion
+
+        #region 消息資料圖片新增 News_Img_Insert
+        public string News_Img_Insert(string img_no = "", string img_file = "")
+        {
+            string c_msg = "";
+            SqlConnection conn = new SqlConnection(CService.conn_string());
+            if (conn.State == ConnectionState.Closed)
+            {
+                conn.Open();
+            }
+
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = conn;
+
+            try
+            {
+                csql = @"insert into news_img(img_no, img_file) "
+                     + "values(@img_no ,@img_file)";
+
+                cmd.CommandText = csql;
+
+                cmd.Parameters.Clear();
+                cmd.Parameters.AddWithValue("@img_no", img_no);
+                cmd.Parameters.AddWithValue("@img_file", img_file);
+
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                c_msg = ex.Message;
+                logger.Error(ex.Message);
+            }
+            finally
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    conn.Close();
+                }
+                cmd = null;
+                conn = null;
+            }
+
+            return c_msg;
+        }
+        #endregion
+
         #endregion
 
         #region 首頁影片資料 Video_List

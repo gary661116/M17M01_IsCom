@@ -202,8 +202,11 @@ namespace OutWeb.Controllers
         #region 最新消息新增 News_Add
         public ActionResult News_Add()
         {
+            string err_msg = "";
+            
+            DataTable d_img = DB.News_Img_List(ref err_msg, "");
+            ViewData["d_img"] = d_img;
             ViewData["action_sty"] = "add";
-
             return View("News_Data");
         }
         #endregion
@@ -213,6 +216,9 @@ namespace OutWeb.Controllers
         {
             string err_msg = "";
             DataTable d_news = DB.News_List(ref err_msg, n_id);
+            DataTable d_img = DB.News_Img_List(ref err_msg, n_id);
+
+            ViewData["d_img"] = d_img;
             ViewData["d_news"] = d_news;
             ViewData["action_sty"] = "edit";
 
@@ -232,17 +238,17 @@ namespace OutWeb.Controllers
         #region 最新消息儲存 News_Save
         [HttpPost]
         [ValidateInput(false)]
-        public ActionResult News_Save(string action_sty, string n_id, string n_title, string n_date, string n_desc, string show, string hot, string sort, string n_memo)
+        public ActionResult News_Save(string action_sty, string n_id, string n_title, string n_date, string n_desc, string show, string hot, string sort, string n_memo,string img_no,string n_url)
         {
             //OverlookDBService OverlookDB = new OverlookDBService();
 
             switch (action_sty)
             {
                 case "add":
-                    DB.News_Insert(n_title, n_date, n_desc, show, hot, sort,n_memo);
+                    DB.News_Insert(n_title, n_date, n_desc, show, hot, sort,n_memo, n_url, img_no);
                     break;
                 case "edit":
-                    DB.News_Update(n_id, n_title, n_date, n_desc, show, hot, sort,n_memo);
+                    DB.News_Update(n_id, n_title, n_date, n_desc, show, hot, sort,n_memo, n_url);
                     break;
             }
 
@@ -503,6 +509,9 @@ namespace OutWeb.Controllers
                 case "Microsoft":
                     chk_file = DB.Microsoft_Img_List(ref err_msg, img_no);
                     break;
+                case "News":
+                    chk_file = DB.News_Img_List(ref err_msg, img_no);
+                    break;
                 default:
                     chk_file = DB.Img_List(ref err_msg, img_no, img_sta);
                     break;
@@ -553,6 +562,9 @@ namespace OutWeb.Controllers
                         case "Microsoft":
                             DB.Microsoft_Img_Insert(img_no, img_no + "_" + img_sta + "_" + filename);
                             break;
+                        case "News":
+                            DB.News_Img_Insert(img_no, img_no + "_" + img_sta + "_" + filename);
+                            break;
                         default:
                             //OverlookDB.Img_Insert(img_no, img_no + "_" + img_sta + "_" + filename, img_sta);
                             break;
@@ -585,6 +597,9 @@ namespace OutWeb.Controllers
                             break;
                         case "Microsoft":
                             DB.Microsoft_Img_Update(img_no, img_no + "_" + img_sta + "_" + filename);
+                            break;
+                        case "News":
+                            DB.News_Img_Update(img_no, img_no + "_" + img_sta + "_" + filename);
                             break;
                         default:
                             //OverlookDB.Img_Update(chk_file.Rows[0]["_SEQ_ID"].ToString(), img_no + "_" + img_sta + "_" + filename);
@@ -644,6 +659,9 @@ namespace OutWeb.Controllers
                 case "Microsoft":
                     img_file = DB.Microsoft_Img_List(ref err_msg, img_no);
                     break;
+                case "News":
+                    img_file = DB.His_Img_List(ref err_msg, img_no);
+                    break;
                 default:
                     img_file = DB.Img_List(ref err_msg, img_no, img_sta);
                     break;
@@ -690,6 +708,9 @@ namespace OutWeb.Controllers
                     break;
                 case "Microsoft":
                     chk_file = DB.Microsoft_Img_List(ref err_msg, img_no);
+                    break;
+                case "News":
+                    chk_file = DB.News_Img_List(ref err_msg, img_no);
                     break;
                 default:
                     chk_file = DB.Img_List(ref err_msg, img_no, img_sta);
@@ -765,6 +786,9 @@ namespace OutWeb.Controllers
                 case "Microsoft":
                     DB.Microsoft_Img_Delete(img_id);
                     break;
+                case "News":
+                    DB.News_Img_Delete(img_id);
+                    break;
                 default:
                     //DB.Img_Delete(img_id);
                     break;
@@ -793,6 +817,9 @@ namespace OutWeb.Controllers
                     break;
                 case "Microsoft":
                     img_file = DB.Microsoft_Img_List(ref err_msg, img_no);
+                    break;
+                case "News":
+                    img_file = DB.News_Img_List(ref err_msg, img_no);
                     break;
                 default:
                     img_file = DB.Img_List(ref err_msg, img_no, img_sta);
