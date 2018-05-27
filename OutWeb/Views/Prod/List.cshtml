@@ -117,7 +117,65 @@
         e_page = total_page;
     }
     //========================================================//
+    if (dt_b.Rows.Count > 0)
+    {
+        now_cate_name = "";
+        for (int i = 0; i < dt_b.Rows.Count; i++)
+        {
+            cate_b_id = dt_b.Rows[i]["cate_b_id"].ToString();
+            cate_b_name = dt_b.Rows[i]["cate_name"].ToString();
+            ccb_url = "~/Prod?cateb_id=" + cate_b_id;
+            if (cate_b_id == cateb_id)
+            {
+                if (now_cate_name.Trim().Length > 0)
+                {
+                    now_cate_name += "-";
+                }
 
+                now_cate_name += cate_b_name;
+            }
+
+            //--Temp檔--建立---------//
+            DataTable cates1;
+            //----------------------------------------------------------------------//
+            DataRow[] cate_Rows1 = dt_s.Select("cate_b_id=" + cate_b_id);
+            //----------------------------------------------------------------------//
+            if (cate_Rows1.Any())
+            {
+                cates1 = cate_Rows1.CopyToDataTable();
+            }
+            else
+            {
+                cates1 = dt_s.Clone();
+                cates1.Clear();
+            }
+
+
+            if (cates1.Rows.Count > 0)
+            {
+                for (int j = 0; j < cates1.Rows.Count; j++)
+                {
+                    cate_s_id = cates1.Rows[j]["cate_s_id"].ToString();
+                    cate_s_name = cates1.Rows[j]["cate_name"].ToString();
+                    ccs_url = "~/Prod?cateb_id=" + cate_b_id + "&cates_id=" + cate_s_id;
+                    if (cate_s_id == cates_id)
+                    {
+                        if (now_cate_name.Trim().Length > 0)
+                        {
+                            now_cate_name += "-";
+                        }
+                        now_cate_name += cate_s_name;
+                    }
+                }
+            }
+
+            //--Temp檔--釋放-------//
+            cates1.Dispose();
+            cates1 = null;
+
+        }
+    }
+    //========================================================//
 }
 
 <div role="main" class="main">
@@ -135,7 +193,7 @@
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <h1>@ViewBag.Title</h1>
+                    <h1>@now_cate_name</h1>
                 </div>
             </div>
         </div>
@@ -159,12 +217,12 @@
                             if (cate_b_id == cateb_id)
                             {
                                 cateb_active = " active";
-                                if(now_cate_name.Trim().Length > 0)
-                                {
-                                    now_cate_name += "-";
-                                }
+                                //if(now_cate_name.Trim().Length > 0)
+                                //{
+                                //    now_cate_name += "-";
+                                //}
 
-                                now_cate_name += cate_b_name;
+                                //now_cate_name += cate_b_name;
                                 now_cate_desc = dt_b.Rows[i]["cate_desc"].ToString();
                             }
                             else
@@ -173,8 +231,17 @@
                             }
 
                             cc_cate += "<section class=\"toggle" + cateb_active + "\">";
-                            //cc_cate += "    <label><a href=\"" + Url.Content(ccb_url) + "\">" + cate_b_name + "</a></label>";
-                            cc_cate += "    <label>" + cate_b_name + "</label>";
+                            cc_cate += "    <label onclick=\"location.href='" + Url.Content(ccb_url) + "';\" >";
+                            if(cateb_active == " active")
+                            {
+                                cc_cate += "<font color=\"white\" >" + cate_b_name + "</font>";
+                            }
+                            else
+                            {
+                                cc_cate += cate_b_name;
+                            }
+                            cc_cate += "</label>";
+                            //cc_cate += "    <label>" + cate_b_name + "</label>";
 
                             //--Temp檔--建立---------//
                             DataTable cates;
@@ -205,11 +272,11 @@
                                     if (cate_s_id == cates_id)
                                     {
                                         cates_active = "class=\"active\" ";
-                                        if (now_cate_name.Trim().Length > 0)
-                                        {
-                                            now_cate_name += "-";
-                                        }
-                                        now_cate_name += cate_s_name;
+                                        //if (now_cate_name.Trim().Length > 0)
+                                        //{
+                                        //    now_cate_name += "-";
+                                        //}
+                                        //now_cate_name += cate_s_name;
                                         now_cate_desc = cates.Rows[j]["cate_desc"].ToString();
                                     }
                                     else
@@ -292,6 +359,8 @@
                             }
                         
                         <!-- Page Start -->
+                        @if (e_page > 0)
+                        {
                             <ul class="pagination pagination-lg pull-left">
 
                                 <li><a href="@Url.Content("~/Prod/?page=" + top_page.ToString() + UrlPara)">|<</a></li>
@@ -310,7 +379,8 @@
                                 }
                                 <li><a href="@Url.Content("~/Prod/?page=" + next_page.ToString() + UrlPara)">>></a></li>
                                 <li><a href="@Url.Content("~/Prod/?page=" + end_page.ToString() + UrlPara)">>|</a></li>
-                            </ul>                        
+                            </ul>
+                        }
                         <!-- Page End -->
                         </div>
                     </div>

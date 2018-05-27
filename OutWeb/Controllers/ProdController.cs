@@ -43,6 +43,7 @@ namespace OutWeb.Controllers
             DataTable d_foot;
             DataTable dt_b;
             DataTable dt_s;
+            DataTable d_microsoft;
             string err_msg = "";
             
             if(cateb_id.Length == 0)
@@ -61,6 +62,8 @@ namespace OutWeb.Controllers
             chk_menu();
             //Foot
             d_foot = DB.Foot_List(ref err_msg, "", "sort", "Y", "");
+            //抓取微軟專區
+            d_microsoft = DB.Microsoft_Img_List(ref err_msg, "", "Y", "", "sort");
 
             //抓取產品資料
             dt = DB.Prod_List(ref err_msg, "", "sort", "Y", "", cateb_id, cates_id);
@@ -77,6 +80,7 @@ namespace OutWeb.Controllers
             ViewData["cateb_id"] = cateb_id;
             ViewData["cates_id"] = cates_id;
             ViewData["d_foot"] = d_foot;
+            ViewData["d_microsoft"] = d_microsoft;
 
             return View();
         }
@@ -92,6 +96,7 @@ namespace OutWeb.Controllers
             DataTable d_foot;
             DataTable dt_b;
             DataTable dt_s;
+            DataTable d_microsoft;
             string err_msg = "";
             //Menu
             //d_menub = DB.Prod_CateB_List("", "sort", "Y", "");
@@ -102,6 +107,8 @@ namespace OutWeb.Controllers
             dt_s = DB.Prod_CateS_List(ref err_msg, "", "sort", "Y", "", "");
             //Foot
             d_foot = DB.Foot_List(ref err_msg, "", "sort", "Y", "");
+            //抓取微軟專區
+            d_microsoft = DB.Microsoft_Img_List(ref err_msg, "", "Y", "", "sort");
 
             if (dt.Rows.Count > 0)
             {
@@ -111,6 +118,7 @@ namespace OutWeb.Controllers
                 ViewData["dt_b"] = dt_b;
                 ViewData["dt_s"] = dt_s;
                 ViewData["d_foot"] = d_foot;
+                ViewData["d_microsoft"] = d_microsoft;
 
                 return View("Content");
             }

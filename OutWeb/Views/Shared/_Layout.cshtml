@@ -6,6 +6,7 @@
     DataTable d_menub = (DataTable)Session["d_menub"];
     DataTable d_menus = (DataTable)Session["d_menus"];
     DataTable d_foot = (DataTable)ViewData["d_foot"];
+    DataTable d_microsoft = (DataTable)ViewData["d_microsoft"];
     //string menub = "";
     //string menu_url = "";
     string cateb_id = "";
@@ -17,6 +18,11 @@
     string foot_title = "";
     string foot_url = "";
     string foot_blank = "";
+
+    string microsoft_id = "";
+    string microsoft_title = "";
+    string microsoft_pic = "";
+    string microsoft_url = "";
 }
 <!DOCTYPE html>
 <html>
@@ -222,16 +228,33 @@
         </header>
 
         @RenderBody()
+        @* Microsoft 專區 *@
+        @for (int i = 0; i < d_microsoft.Rows.Count; i++)
+        {
+            microsoft_id = d_microsoft.Rows[i]["ad_id"].ToString();
+            microsoft_pic = d_microsoft.Rows[i]["ad_img"].ToString();
+            microsoft_url = d_microsoft.Rows[i]["ad_url"].ToString();
+            <div class="container">
+               <div class="col-xs-12" style="padding: 0px 5px;">              
+                   @if (microsoft_url.Trim().Length > 0)
+                   {
+                       <a class="h-banner" href="@microsoft_url"><img src="@Url.Content("~/Images/" + microsoft_pic)" class="img-responsive" alt=""></a>
+                   }
+                   else
+                   {            
+                       <img src="@Url.Content("~/Images/" + microsoft_pic)" class="img-responsive" alt="">
+                   }        
+               </div>
+            </div>
+        }
+        @*
         <div class="container">
             <div class="col-xs-12" style="padding: 0px 5px;">
                 <a class="h-banner" href="http://www.iscom.com.tw/Prod/List?page=1&cateb_id=7&cates_id=33"><img src="~/img/banners.jpg" class="img-responsive"  alt=""></a>
             </div>
         </div>
-        <div class="container">
-            <div class="col-xs-12" style="padding: 0px 5px;">
-                <a class="h-banner" href="http://www.iscom.com.tw/Prod/List?page=1&cateb_id=7&cates_id=33"><img src="~/img/banners.jpg" class="img-responsive" alt=""></a>
-            </div>
-        </div>
+        *@
+        @* Foot *@
         <footer id="footer">
             <div class="container footerbg">
                 <div class="row">

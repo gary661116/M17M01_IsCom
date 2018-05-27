@@ -1021,6 +1021,7 @@ ul.sitemap.list ul {
 .toggle.active > label {
 	background: #F4F4F4;
 	border-color: #CCC;
+    color:#FFF;
 }
 
 .toggle.active > label:before {
@@ -1029,6 +1030,7 @@ ul.sitemap.list ul {
 	margin-top: -3px;
 	right: 10px;
 }
+
 
 .toggle.active > p {
 	white-space: normal;
