@@ -33,6 +33,7 @@
     string cc_cate = "";
     string cateb_active = "";
     string cates_active = "";
+    string catep_active = "";
     string ccb_url = "";
     string ccs_url = "";
     string cc_prod = "";
@@ -283,7 +284,37 @@
                                     {
                                         cates_active = "";
                                     }
-                                    cc_cate += "            <li " + cates_active + "><a href=\"" + Url.Content(ccs_url) + "\">" + cate_s_name + "</a></li>";
+                                    cc_cate += "            <li " + cates_active + "><a href=\"" + Url.Content(ccs_url) + "\">" + cate_s_name + "</a>";
+                                    //----產品清單 -- //
+                                    //--Temp檔--建立---------//
+                                    DataTable Prod;
+                                    //------------------------------------------------------------------//
+                                    DataRow[] Prod_Rows = dt.Select("cate_b_id=" + cate_b_id + " and cate_s_id=" + cate_s_id);
+                                    //------------------------------------------------------------------//
+                                    if (Prod_Rows.Any())
+                                    {
+                                        Prod = Prod_Rows.CopyToDataTable();
+                                    }
+                                    else
+                                    {
+                                        Prod = dt_s.Clone();
+                                        Prod.Clear();
+                                    }
+
+                                    if(Prod.Rows.Count > 0)
+                                    {
+                                        cc_cate += "        <ul class=\"nav nav-list primary push-bottom\">";
+                                        for(int k = 0; k < Prod.Rows.Count;k++)
+                                        {
+                                            prod_id = Prod.Rows[k]["prod_id"].ToString();
+                                            prod_name = Prod.Rows[k]["prod_name"].ToString();
+                                            prod_desc = Prod.Rows[k]["prod_desc"].ToString();
+                                            cc_cate += "            <li><a href=\"" + Url.Content("~/Prod/ProdData?prod_id=" + prod_id) + "\">" + prod_name + "</a></li>";
+                                        }
+                                        cc_cate += "        </ul>";
+                                    }
+
+                                    cc_cate += "</li>";
 
                                 }
                                 cc_cate += "        </ul>";
