@@ -50,7 +50,7 @@ namespace Lib.Service
                      + "("
                      + "select distinct "
                      + "  a1.n_id, a1.n_title, convert(nvarchar(10),a1.n_date,23) as n_date, a1.n_url, a1.n_desc, a1.n_memo "
-                     + ", a1.is_index, a1.sort, a1.status "
+                     + ", a1.is_index, a1.sort, a1.status, a1.n_url "
                      + ", a4.img_id, a4.img_file, a4.img_desc "
                      + "from "
                      + "   news a1 "

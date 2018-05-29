@@ -28,8 +28,12 @@
     string n_date = "";
     string n_desc = "";
     string n_memo = "";
+    string n_year = "";
     string n_month = "";
     string n_day = "";
+    string n_pic = "";
+    string n_url = "";
+    string img_path = "~/Images/";
     string nmonth = "AAA,Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec";
     string[] array_month = nmonth.Split(',');
 
@@ -129,11 +133,12 @@
                     @* 套程式 *@
                     @if (d_news.Rows.Count > 0)
                     {
-                        for (int i = min_row-1; i < max_row; i++)
+                        for (int i = min_row - 1; i < max_row; i++)
                         {
                             n_id = d_news.Rows[i]["n_id"].ToString();
                             n_title = d_news.Rows[i]["n_title"].ToString();
                             n_date = d_news.Rows[i]["n_date"].ToString();
+                            n_year = n_date.Substring(0, 4);
                             n_month = array_month[Convert.ToInt16(n_date.Substring(5, 2))];
                             n_day = n_date.Substring(8, 2);
                             n_desc = RemoveHTMLTag(d_news.Rows[i]["n_desc"].ToString());
@@ -142,140 +147,97 @@
                             {
                                 n_desc = n_desc.Substring(0, 120) + "...";
                             }
+                            n_url = d_news.Rows[i]["n_url"].ToString();
+                            if (d_news.Rows[i]["img_file"].ToString().Trim().Length > 0)
+                            {
+                                n_pic = img_path + d_news.Rows[i]["img_file"].ToString();
+                            }
+                            else
+                            {
+                                n_pic = "";
+                            }
 
+                            if (n_url.Trim().Length == 0 && n_pic.Trim().Length == 0)
+                            {
+                                <!-- 皆無 -->
+                                <article class="post post-large">
+                                    <div class="post-date">
+                                        <span class="day">@n_day</span>
+                                        <span class="month">@n_month</span>
+                                    </div>
+                                    <div class="post-content">
 
-                            <article class="post post-large">
-                                <div class="post-date">
-                                    <span class="day">@n_day</span>
-                                    <span class="month">@n_month</span>
-                                </div>
-                                <div class="post-content">
+                                        <h2><a href="@Url.Content("~/News/NewsData?n_id=" + n_id)">@n_title</a></h2>
+                                        <p>@Html.Raw(n_desc)</p>
+                                            <div class="post-meta">
+                                                <a href="@Url.Content("~/News/NewsData?n_id=" + n_id)" class="btn btn-xs btn-primary pull-right">Read more...</a>
+                                            </div>
+                                    </div>
+                                </article>
+                            }
+                            else if (n_url.Trim().Length == 0 && n_pic.Trim().Length > 0)
+                            {
+                                <!-- 圖片 -->
+                                <article class="post post-medium">
+                                    <div class="row">
 
-                                    <h2><a href="@Url.Content("~/News/NewsData?n_id=" + n_id)">@n_title</a></h2>
-                                    <p>
-                                        @Html.Raw(n_desc)
-                                        <div class="post-meta">
-                                            <a href="@Url.Content("~/News/NewsData?n_id=" + n_id)" class="btn btn-xs btn-primary pull-right">Read more...</a>
+                                        <div class="col-md-4">
+                                            <div class="post-image">
+                                                <img src="@n_pic" class="img-responsive" alt="">
+                                                <!--建議尺吋為16:9的比例-->
+                                            </div>
                                         </div>
-                                </div>
-                            </article>
+                                        <div class="col-md-8">
+
+                                            <div class="post-content">
+                                                <h2><a href="@Url.Content("~/News/NewsData?n_id=" + n_id)">@n_title</a></h2>
+                                                <p>@Html.Raw(n_desc)</p>
+                                            </div>
+                                            <div class="post-meta">
+                                                <span><i class="fa fa-calendar"></i> @n_month @n_day, @n_year </span>
+                                                <a href="@Url.Content("~/News/NewsData?n_id=" + n_id)" class="btn btn-xs btn-primary pull-right">Read more...</a>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+
+                                </article>
+                            }
+                            else
+                            {
+                                <!-- Youtube -->
+                                <article class="post post-medium">
+                                    <div class="row">
+
+                                        <div class="col-md-4">
+                                            <div class="post-image">
+
+                                                <div class="embed-responsive embed-responsive-16by9">
+                                                    <iframe src="@n_url" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="col-md-8">
+
+                                            <div class="post-content">
+                                                <h2><a href="@Url.Content("~/News/NewsData?n_id=" + n_id)">@n_title</a></h2>
+                                                <p>@Html.Raw(n_desc)</p>
+                                            </div>
+                                            <div class="post-meta">
+                                                <span><i class="fa fa-calendar"></i> @n_month @n_day, @n_year </span>
+                                                <a href="@Url.Content("~/News/NewsData?n_id=" + n_id)" class="btn btn-xs btn-primary pull-right">Read more...</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </article>
+                            }
+
+
                         }
                     }
-        <!--新增切版區塊 最新消息&經典案例皆比照-->
-                    <article class="post post-medium">
-                        <div class="row">
 
-                            <div class="col-md-4">
-                                <div class="post-image">
-                                    <img src="~/img/test.jpg" class="img-responsive" alt="">
-                                    <!--建議尺吋為16:9的比例-->
-                                </div>
-                            </div>
-                            <div class="col-md-8">
-
-                                <div class="post-content">
-
-                                    <h2><a href="blog-post.html">無各片海定色先記，但品大教立頭有……</a></h2>
-                                    <p>無各片海定色先記，但品大教立……頭有的使另……計寶可原不制業法始言計寶可原不制業法始言極大極大人...</p>
-
-                                </div>
-                                <div class="post-meta">
-                                    <span><i class="fa fa-calendar"></i> January 10, 2013 </span>
-                                    <a href="blog-post.html" class="btn btn-xs btn-primary pull-right">Read more...</a>
-                                </div>
-                            </div>
-
-                        </div>
-
-
-                    </article>
-
-                    <article class="post post-medium">
-                        <div class="row">
-
-                            <div class="col-md-4">
-                                <div class="post-image">
-                                    
-                                    <div class="embed-responsive embed-responsive-16by9">
-                                      <iframe src="https://www.youtube.com/embed/-C_rvt0SwLE" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-                                    </div>
-                                    
-                                </div>
-                            </div>
-                            <div class="col-md-8">
-
-                                <div class="post-content">
-
-                                    <h2><a href="blog-post.html">無各片海定色先記，但品大教立頭有……</a></h2>
-                                    <p>無各片海定色先記，但品大教立……頭有的使計寶可原不制業法始言極大另……計寶可原不制業法始言極大人...</p>
-                                    
-                                </div>
-                                <div class="post-meta">
-                                    <span><i class="fa fa-calendar"></i> January 10, 2013 </span>
-                                    <a href="blog-post.html" class="btn btn-xs btn-primary pull-right">Read more...</a>
-                                </div>
-                            </div>
-
-                        </div>
-
-                    </article>
-
-                    <article class="post post-medium">
-                        <div class="row">
-
-                            <div class="col-md-4">
-                                <div class="post-image">
-                                    <img src="~/img/test.jpg" class="img-responsive" alt="">
-                                    <!--建議尺吋為16:9的比例-->
-                                </div>
-                            </div>
-                            <div class="col-md-8">
-
-                                <div class="post-content">
-
-                                    <h2><a href="blog-post.html">無各片海定色先記，但品大教立頭有……</a></h2>
-                                    <p>無各片海定色先記，但品大教立……頭有的使另……計寶可原不制業法始言計寶可原不制業法始言極大極大人...</p>
-
-                                </div>
-                                <div class="post-meta">
-                                    <span><i class="fa fa-calendar"></i> January 10, 2013 </span>
-                                    <a href="blog-post.html" class="btn btn-xs btn-primary pull-right">Read more...</a>
-                                </div>
-                            </div>
-
-                        </div>
-
-
-                    </article>
-
-                    <article class="post post-medium">
-                        <div class="row">
-
-                            <div class="col-md-4">
-                                <div class="post-image">
-                                    <img src="~/img/test.jpg" class="img-responsive" alt="">
-                                    <!--建議尺吋為16:9的比例-->
-                                </div>
-                            </div>
-                            <div class="col-md-8">
-
-                                <div class="post-content">
-
-                                    <h2><a href="blog-post.html">無各片海定色先記，但品大教立頭有……</a></h2>
-                                    <p>無各片海定色先記，但品大教立……頭有的使另……計寶可原不制業法始言計寶可原不制業法始言極大極大人...</p>
-
-                                </div>
-                                <div class="post-meta">
-                                    <span><i class="fa fa-calendar"></i> January 10, 2013 </span>
-                                    <a href="blog-post.html" class="btn btn-xs btn-primary pull-right">Read more...</a>
-                                </div>
-                            </div>
-
-                        </div>
-
-
-                    </article>
-        <!--新增切版區塊end-->
                     <ul class="pagination pagination-lg pull-left">
                         
                         <li><a href="@Url.Content("~/News/?page=" + top_page.ToString())">|<</a></li>
