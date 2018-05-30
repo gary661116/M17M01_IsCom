@@ -30,7 +30,8 @@
     string now_cate_desc = "";
     string prod_pic = "";
     string img_path = "~/Images/";
-
+    string cprod = "";
+    
 
     string cateb_id = "";
     string cates_id = "";
@@ -189,10 +190,18 @@
                                         cc_cate += "        <ul class=\"nav nav-list primary push-bottom\">";
                                         for (int k = 0; k < Prod.Rows.Count; k++)
                                         {
-                                            prod_id = Prod.Rows[k]["prod_id"].ToString();
+                                            cprod = Prod.Rows[k]["prod_id"].ToString();
                                             prod_name = Prod.Rows[k]["prod_name"].ToString();
                                             prod_desc = Prod.Rows[k]["prod_desc"].ToString();
-                                            cc_cate += "            <li><a href=\"" + Url.Content("~/Prod/ProdData?prod_id=" + prod_id) + "\">" + prod_name + "</a></li>";
+                                            if (prod_id == cprod)
+                                            {
+                                                catep_active = "class=\"active\" ";
+                                            }
+                                            else
+                                            {
+                                                catep_active = "";
+                                            }
+                                            cc_cate += "            <li " + catep_active + "><a href=\"" + Url.Content("~/Prod/ProdData?prod_id=" + prod_id) + "\">&nbsp;&nbsp;&nbsp;&nbsp;" + prod_name + "</a></li>";
                                         }
                                         cc_cate += "        </ul>";
                                     }

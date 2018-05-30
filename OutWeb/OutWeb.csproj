@@ -140,6 +140,7 @@
   <ItemGroup>
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\ClassicController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\NewsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -1214,6 +1215,7 @@
     <Folder Include="App_Data\Logs\" />
     <Folder Include="Images\" />
     <Folder Include="Models\" />
+    <Folder Include="Views\Classic\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
