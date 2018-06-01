@@ -1,0 +1,172 @@
+﻿@using System.Data
+@{
+    Layout = "~/Views/Shared/_MLayout.cshtml";
+    ViewBag.Crumb = "經典案例類別-管理";
+    ViewBag.subnav = "Classic";
+    ViewBag.subnav2 = "Classic_Cate_List";
+
+    //變數設定
+
+    DataTable dt = (DataTable)ViewData["dt"];
+    DataTable d_img = (DataTable)ViewData["d_img"];
+
+    string cate_id = "";
+    string cate_name = "";
+    string cate_desc = "";
+    string cate_pic = "";
+    string cate_pic_id = "";
+    string sort = "";
+    string action_sty = (string)ViewData["action_sty"];
+    string action_name = "";
+    string c_status = "";
+    string c_front_status = "";
+
+    string img_no = "";
+    string img_path = "../Images/";
+    string small_img = "";
+    string big_img = "";
+    string img_id = "";
+
+    img_no = DateTime.Now.ToString("yyyyMMddHHmmss");
+
+    if (action_sty == "add")
+    {
+        action_name = "新增";
+
+        cate_id = "";
+        cate_name = "";
+        cate_desc = "";
+        //n_date = DateTime.Today.ToString("yyyy-MM-dd");
+        c_status = "Y";
+        c_front_status = "checked";
+
+        sort = "0";
+    }
+    else if (action_sty == "edit")
+    {
+        action_name = "修改";
+
+        //d_news = (DataTable)ViewData["d_news"];
+
+        //d_scenic_img_b = (DataTable)ViewData["d_scenic_img_b"];
+        //d_scenic_img_s = (DataTable)ViewData["d_scenic_img_s"];
+
+        cate_id = dt.Rows[0]["cate_id"].ToString();
+        cate_name = dt.Rows[0]["cate_name"].ToString();
+        cate_desc = dt.Rows[0]["cate_desc"].ToString();
+        c_status = dt.Rows[0]["status"].ToString();
+        sort = dt.Rows[0]["sort"].ToString();
+
+        switch (c_status)
+        {
+            case "Y":
+                c_front_status = "checked";
+                break;
+            case "N":
+                c_front_status = "";
+                break;
+        }
+    }
+
+}
+
+@section Breadcrumb {
+    <ul class="breadcrumb">
+        <li>@ViewBag.Crumb</li>
+    </ul>
+}
+
+<h3 class="title">@ViewBag.Crumb <small class="oi" data-glyph="tags">編輯</small></h3>
+@* 引用 ajaxfileupload *@
+<script src="~/Scripts/ajaxfileupload.js"></script>
+@* 引用 ajax_lib *@
+<script src="~/Scripts/ajax_lib.js"></script>
+<script>
+    function form_ok() {
+        //檢查資料
+        var sshow = "";
+        var shot = "";
+        var cmsg = "";
+        var cate_name = "";
+        cate_name = $("#cate_name").val();
+        if (cate_name == "") {
+            cmsg = "請輸入類別名稱";
+        }
+
+        if ($("#cshow").prop("checked")) {
+            $("#show").val("Y");
+            sshow = "Y";
+        }
+        else
+        {
+            $("#show").val("N");
+            sshow = "N";
+        }
+
+
+        //alert("show:" + $("#show").val() + ";hot:" + $("#hot").val());
+        if (cmsg != "")
+        {
+            alert(cmsg);
+        }
+        else
+        {
+            form1.submit();
+        }
+    }
+</script>
+
+<form class="form-list" action="Classic_Cate_Save" name="form1" id="form1" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="action_sty" id="action_sty" value="@action_sty" />
+    <input type="hidden" name="cate_id" id="cate_id" value="@cate_id" />
+    <input type="hidden" name="img_no" id="img_no" value="@img_no" />
+    <input type="hidden" name="show" id="show" value="" />
+    <input type="hidden" name="hot" id="hot" value="" />
+
+    @if (action_sty == "add")
+    {
+        <input type="hidden" name="sort" id="sort" value="" />
+    }
+
+    <dl class="fields">
+        <dt class="col-2">*類別名稱</dt>
+        <dd class="col-10">
+            <input type="text" class="form-control form-control-sm" required id="cate_name" name="cate_name" value="@cate_name">
+        </dd>
+    </dl>
+    <dl class="fields">
+        <dt class="col-2">類別描述</dt>
+        <dd class="col-10">
+            <input type="text" class="form-control form-control-sm" required id="cate_desc" name="cate_desc" value="@cate_desc">
+        </dd>
+    </dl>
+
+    @if (action_sty == "edit")
+    {
+        <dl class="fields">
+            <dt class="col-2">排序</dt>
+            <dd class="col-4">
+                <input type="number" min="0" class="inline" id="sort" name="sort" value="@sort">
+                <small>數字愈小愈前面</small>
+            </dd>
+        </dl>
+    }
+
+    <dl class="fields">
+        <dt class="col-2">前台顯示</dt>
+        <dd class="col-4">
+            <label class="switch">
+                <input type="checkbox" name="cshow" id="cshow" @c_front_status>
+                <div class="slider round"></div>
+            </label>
+        </dd>
+    </dl>
+    <footer class="submit-bar clear m-t-24">
+        <button type="button" name="btn_ok" onclick="form_ok();" class="btn success oi" data-glyph="circle-check">
+            確認儲存
+        </button>
+        <button type="button" id="btn_back" name="btn_back" onclick="location.href='Classic_Cate_List'" class="btn warning oi" data-glyph="circle-x">
+            回列表
+        </button>
+    </footer>
+</form>

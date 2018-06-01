@@ -8135,5 +8135,1091 @@ namespace Lib.Service
         }
         #endregion
         #endregion 微軟專區 Microsoft
+
+        #region 經典案例類別
+        #region 經典案例類別 Classic_Cate_List
+        public DataTable Classic_Cate_List(ref string err_msg, string cate_id = "", string sort = "", string status = "", string title_query = "")
+        {
+            DataTable dt = new DataTable();
+            SqlConnection conn = new SqlConnection(CService.conn_string());
+            SqlCommand cmd = new SqlCommand();
+
+            string[] Array_cate_id;
+            string[] Array_title_query;
+
+            try
+            {
+                if (conn.State == ConnectionState.Closed)
+                {
+                    conn.Open();
+                }
+
+                cmd.Connection = conn;
+
+                Array_cate_id = cate_id.Split(',');
+                Array_title_query = title_query.Split(',');
+
+                csql = "select "
+                     + "  a1.* "
+                     + "from "
+                     + "("
+                     + "select distinct "
+                     + "  a1.cate_id, a1.cate_name, a1.cate_desc "
+                     + ", a1.sort, a1.status "
+                     //+ ", a4.img_id, a4.img_file, a4.img_desc "
+                     + "from "
+                     + "   Classic_Cate a1 "
+                     //+ "left join Partner_cate_img a4 on Convert(nvarchar,a1.cate_id) = a4.img_no "
+                     + "where "
+                     + "  a1.status <> 'D' ";
+
+                if (status.Trim().Length > 0)
+                {
+                    csql = csql + " and a1.status = @status ";
+                }
+
+                if (cate_id.Trim().Length > 0)
+                {
+                    csql = csql + " and a1.cate_id in (";
+                    for (int i = 0; i < Array_cate_id.Length; i++)
+                    {
+                        if (i > 0)
+                        {
+                            csql = csql + ",";
+                        }
+                        csql = csql + "@str_cate_id" + i.ToString();
+                    }
+                    csql = csql + ") ";
+                }
+
+                if (title_query.Trim().Length > 0)
+                {
+                    csql = csql + " and (";
+                    for (int i = 0; i < Array_title_query.Length; i++)
+                    {
+                        if (i > 0)
+                        {
+                            csql = csql + " or ";
+                        }
+                        csql = csql + " a1.cate_name like @str_title_query" + i.ToString() + " ";
+                    }
+                    csql = csql + ") ";
+                }
+
+                csql = csql + ")a1 ";
+
+                if (sort.Trim().Length > 0)
+                {
+                    csql = csql + " order by " + sort + " ";
+                }
+                else
+                {
+                    csql = csql + " order by a1.sort ";
+                }
+
+                cmd.CommandText = csql;
+
+                //---------------------------------------------------------------//
+                cmd.Parameters.Clear();
+                if (status.Trim().Length > 0)
+                {
+                    cmd.Parameters.AddWithValue("@status", status);
+                }
+
+                if (cate_id.Trim().Length > 0)
+                {
+                    for (int i = 0; i < Array_cate_id.Length; i++)
+                    {
+                        cmd.Parameters.AddWithValue("@str_cate_id" + i.ToString(), Array_cate_id[i]);
+                    }
+                }
+
+                if (title_query.Trim().Length > 0)
+                {
+                    for (int i = 0; i < Array_title_query.Length; i++)
+                    {
+                        cmd.Parameters.AddWithValue("@str_title_query" + i.ToString(), "%" + Array_title_query[i] + "%");
+                    }
+                }
+
+                //--------------------------------------------------------------//
+
+                if (ds.Tables["Classic_cate"] != null)
+                {
+                    ds.Tables["Classic_cate"].Clear();
+                }
+
+                SqlDataAdapter ADS_cate_ada = new SqlDataAdapter();
+                ADS_cate_ada.SelectCommand = cmd;
+                ADS_cate_ada.Fill(ds, "Classic_cate");
+                ADS_cate_ada = null;
+
+                dt = ds.Tables["Classic_cate"];
+            }
+            catch (Exception ex)
+            {
+                err_msg = ex.Message;
+                logger.Error(ex.Message);
+            }
+            finally
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    conn.Close();
+                }
+                cmd = null;
+                conn = null;
+            }
+
+            return dt;
+        }
+        #endregion
+
+        #region 經典案例類別新增 Classic_Cate_Insert
+        public string Classic_Cate_Insert(string cate_name = "", string cate_desc = "", string is_show = "", string sort = "", string img_no = "")
+        {
+            string c_msg = "";
+
+            SqlConnection conn = new SqlConnection(CService.conn_string());
+            if (conn.State == ConnectionState.Closed)
+            {
+                conn.Open();
+            }
+
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = conn;
+
+            try
+            {
+                //========抓取sort==============================================================//
+                csql = "select (max(sort) + 1) as sort from Classic_Cate";
+                cmd.CommandText = csql;
+
+                if (ds.Tables["chk_sort"] != null)
+                {
+                    ds.Tables["chk_sort"].Clear();
+                }
+
+                SqlDataAdapter chk_sort_ada = new SqlDataAdapter();
+                chk_sort_ada.SelectCommand = cmd;
+                chk_sort_ada.Fill(ds, "chk_sort");
+                chk_sort_ada = null;
+                if (ds.Tables["chk_sort"].Rows.Count > 0)
+                {
+                    sort = ds.Tables["chk_sort"].Rows[0]["sort"].ToString();
+                }
+                else
+                {
+                    sort = "0";
+                }
+                //===============================================================================//
+
+                csql = @"insert into Classic_Cate(cate_name,cate_desc,sort,status) "
+                     + "values(@cate_name,@cate_desc,@sort,@is_show)";
+
+                cmd.CommandText = csql;
+
+                ////讓ADO.NET自行判斷型別轉換
+                cmd.Parameters.Clear();
+                cmd.Parameters.AddWithValue("@cate_name", cate_name);
+                cmd.Parameters.AddWithValue("@cate_desc", cate_name);
+                cmd.Parameters.AddWithValue("@sort", sort);
+                cmd.Parameters.AddWithValue("@is_show", is_show);
+
+                cmd.ExecuteNonQuery();
+
+                ////抓取其編號
+                //csql = @"select distinct "
+                //     + "  cate_id "
+                //     + "from "
+                //     + "   Partner_Cate "
+                //     + "where "
+                //     + "    cate_name = @cate_name "
+                //     + "and cate_desc = @cate_desc "
+                //     + "and sort = @sort "
+                //     + "and status = @is_show ";
+
+                //cmd.CommandText = csql;
+
+                //////讓ADO.NET自行判斷型別轉換
+                //cmd.Parameters.Clear();
+                //cmd.Parameters.AddWithValue("@cate_name", cate_name);
+                //cmd.Parameters.AddWithValue("@cate_desc", cate_desc);
+                //cmd.Parameters.AddWithValue("@sort", sort);
+                //cmd.Parameters.AddWithValue("@is_show", is_show);
+
+                //if (ds.Tables["chk_Partner_Cate"] != null)
+                //{
+                //    ds.Tables["chk_Partner_Cate"].Clear();
+                //}
+
+                //SqlDataAdapter prod_chk_ada = new SqlDataAdapter();
+                //prod_chk_ada.SelectCommand = cmd;
+                //prod_chk_ada.Fill(ds, "chk_Partner_Cate");
+                //prod_chk_ada = null;
+
+                //if (ds.Tables["chk_Partner_Cate"].Rows.Count > 0)
+                //{
+                //    cate_id = ds.Tables["chk_Partner_Cate"].Rows[0]["cate_id"].ToString();
+                //    if (img_no.Trim().Length > 0)
+                //    {
+                //        csql = @"update "
+                //             + "  Partner_Cate_img "
+                //             + "set "
+                //             + "  img_no = @cate_id "
+                //             + "where "
+                //             + "  img_no = @img_no ";
+
+                //        cmd.CommandText = csql;
+
+                //        ////讓ADO.NET自行判斷型別轉換
+                //        cmd.Parameters.Clear();
+                //        cmd.Parameters.AddWithValue("@cate_id", cate_id);
+                //        cmd.Parameters.AddWithValue("@img_no", img_no);
+
+                //        cmd.ExecuteNonQuery();
+                //    }
+                //}
+
+
+            }
+            catch (Exception ex)
+            {
+                c_msg = ex.Message;
+                logger.Error(ex.Message);
+            }
+            finally
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    conn.Close();
+                }
+                cmd = null;
+                conn = null;
+            }
+
+            return c_msg;
+        }
+        #endregion
+
+        #region 經典案例類別更新 Classic_Cate_Update
+        //更新內容
+        public string Classic_Cate_Update(string cate_id = "", string cate_name = "", string cate_desc = "", string is_show = "", string sort = "")
+        {
+            string c_msg = "";
+            SqlConnection conn = new SqlConnection(CService.conn_string());
+            if (conn.State == ConnectionState.Closed)
+            {
+                conn.Open();
+            }
+
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = conn;
+
+            try
+            {
+                csql = @"update "
+                     + "  Classic_Cate "
+                     + "set "
+                     + "  cate_name = @cate_name "
+                     + ", cate_desc = @cate_desc "
+                     + ", status = @is_show "
+                     + ", sort = @sort "
+                     + ", _UPD_ID = 'System' "
+                     + ", _UPD_DT = getdate() "
+                     + "where "
+                     + "  cate_id = @cate_id ";
+
+                cmd.CommandText = csql;
+
+                cmd.Parameters.Clear();
+                cmd.Parameters.AddWithValue("@cate_id", cate_id);
+                cmd.Parameters.AddWithValue("@cate_name", cate_name);
+                cmd.Parameters.AddWithValue("@cate_desc", cate_desc);
+                cmd.Parameters.AddWithValue("@sort", sort);
+                cmd.Parameters.AddWithValue("@is_show", is_show);
+
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                c_msg = ex.Message;
+                logger.Error(ex.Message);
+            }
+            finally
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    conn.Close();
+                }
+                cmd = null;
+                conn = null;
+            }
+
+            return c_msg;
+
+        }
+        #endregion
+
+        #region 經典案例類別刪除 Classic_Cate_Del
+        public string Classic_Cate_Del(string cate_id = "")
+        {
+            string c_msg = "";
+
+            SqlConnection conn = new SqlConnection(CService.conn_string());
+            if (conn.State == ConnectionState.Closed)
+            {
+                conn.Open();
+            }
+
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = conn;
+
+            try
+            {
+                //刪除經典案例圖片
+                csql = "delete from "
+                     + "  Classic_Img "
+                     + "where "
+                     + "  img_no in ("
+                     + "    select "
+                     + "      Convert(nvarchar,a1.n_id) "
+                     + "    from "
+                     + "      Classic a1 "
+                     + "    where "
+                     + "      a1.cate_id = @cate_id "
+                     + "  ) ";
+
+
+                cmd.CommandText = csql;
+
+                cmd.Parameters.Clear();
+                cmd.Parameters.AddWithValue("@cate_id", cate_id);
+
+                cmd.ExecuteNonQuery();
+                //刪除經典案例資料
+                csql = "delete from "
+                     + "  Classic "
+                     + "where "
+                     + "  cate_id = @cate_id ";
+
+                cmd.CommandText = csql;
+
+                cmd.Parameters.Clear();
+                cmd.Parameters.AddWithValue("@cate_id", cate_id);
+
+                cmd.ExecuteNonQuery();
+
+                //刪除經典案例類別資料
+                csql = @"delete from "
+                     + "  Classic_Cate "
+                     + "where "
+                     + "  cate_id = @cate_id ";
+
+                cmd.CommandText = csql;
+
+                cmd.Parameters.Clear();
+                cmd.Parameters.AddWithValue("@cate_id", cate_id);
+
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                c_msg = ex.Message;
+                logger.Error(ex.Message);
+            }
+            finally
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    conn.Close();
+                }
+                cmd = null;
+                conn = null;
+            }
+
+            return c_msg;
+        }
+        #endregion
+        #endregion
+
+
+        #region 經典案例 Classic
+
+        #region 經典案例資料抓取 Classic_List
+        public DataTable Classic_List(ref string err_msg, string news_id = "", string sort = "", string status = "", string title_query = "", string start_date = "", string end_date = "", string is_index = "",string cate_id = "")
+        {
+            DataTable dt = new DataTable();
+
+            SqlConnection conn = new SqlConnection(CService.conn_string());
+
+            if (conn.State == ConnectionState.Closed)
+            {
+                conn.Open();
+            }
+
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = conn;
+
+            string[] Array_news_id;
+            string[] Array_title_query;
+            string[] Array_cate_id;
+
+            try
+            {
+                Array_news_id = news_id.Split(',');
+                Array_title_query = title_query.Split(',');
+                Array_cate_id = cate_id.Split(',');
+
+                csql = "select "
+                     + "  a1.* "
+                     + "from "
+                     + "("
+                     + "select distinct "
+                     + "  a1.n_id, a1.n_title, convert(nvarchar(10),a1.n_date,23) as n_date, a1.n_url, a1.n_desc, a1.n_memo "
+                     + ", a1.is_index, a1.sort, a1.status, a1.n_url "
+                     + ", a4.img_id, a4.img_file, a4.img_desc "
+                     + ", a1.cate_id, a2.cate_name "
+                     + "from "
+                     + "   Classic a1 "
+                     + "left join Classic_Cate a2 on a1.cate_id = a2.cate_id "
+                     + "left join Classic_img a4 on Convert(nvarchar,a1.n_id) = a4.img_no "
+                     + "where "
+                     + "  a1.status <> 'D' ";
+
+                if (status.Trim().Length > 0)
+                {
+                    csql = csql + " and a1.status = @status ";
+                }
+
+                if (news_id.Trim().Length > 0)
+                {
+                    csql = csql + " and a1.n_id in (";
+                    for (int i = 0; i < Array_news_id.Length; i++)
+                    {
+                        if (i > 0)
+                        {
+                            csql = csql + ",";
+                        }
+                        csql = csql + "@str_news_id" + i.ToString();
+                    }
+                    csql = csql + ") ";
+                }
+
+                if (title_query.Trim().Length > 0)
+                {
+                    csql = csql + " and (";
+                    for (int i = 0; i < Array_title_query.Length; i++)
+                    {
+                        if (i > 0)
+                        {
+                            csql = csql + " or ";
+                        }
+                        csql = csql + " a1.n_title like @str_title_query" + i.ToString() + " ";
+                    }
+                    csql = csql + ") ";
+                }
+
+                if (cate_id.Trim().Length > 0)
+                {
+                    csql = csql + " and a1.cate_id in (";
+                    for (int i = 0; i < Array_cate_id.Length; i++)
+                    {
+                        if (i > 0)
+                        {
+                            csql = csql + ",";
+                        }
+                        csql = csql + "@str_cate_id" + i.ToString();
+                    }
+                    csql = csql + ") ";
+                }
+
+                if (start_date.Trim().Length > 0)
+                {
+
+                    csql = csql + "and a1.n_date >= @start_date ";
+                }
+
+                if (end_date.Trim().Length > 0)
+                {
+
+                    csql = csql + "and a1.n_date <= @end_date ";
+                }
+
+                if (is_index.Trim().Length > 0)
+                {
+                    csql = csql + "and a1.is_index = @is_index ";
+                }
+
+                csql = csql + ")a1 ";
+
+                if (sort.Trim().Length > 0)
+                {
+                    csql = csql + " order by " + sort + " ";
+                }
+                else
+                {
+                    csql = csql + " order by a1.n_date desc ";
+                }
+
+                cmd.CommandText = csql;
+
+                //---------------------------------------------------------------//
+                cmd.Parameters.Clear();
+                if (status.Trim().Length > 0)
+                {
+                    cmd.Parameters.AddWithValue("@status", status);
+                }
+
+                if (start_date.Trim().Length > 0)
+                {
+                    cmd.Parameters.AddWithValue("@start_date", start_date);
+                }
+
+                if (end_date.Trim().Length > 0)
+                {
+                    cmd.Parameters.AddWithValue("@end_date", end_date);
+                }
+
+                if (news_id.Trim().Length > 0)
+                {
+                    for (int i = 0; i < Array_news_id.Length; i++)
+                    {
+                        cmd.Parameters.AddWithValue("@str_news_id" + i.ToString(), Array_news_id[i]);
+                    }
+                }
+
+                if (title_query.Trim().Length > 0)
+                {
+                    for (int i = 0; i < Array_title_query.Length; i++)
+                    {
+                        cmd.Parameters.AddWithValue("@str_title_query" + i.ToString(), "%" + Array_title_query[i] + "%");
+                    }
+                }
+
+                if (cate_id.Trim().Length > 0)
+                {
+                    for (int i = 0; i < Array_cate_id.Length; i++)
+                    {
+                        cmd.Parameters.AddWithValue("@str_cate_id" + i.ToString(), Array_cate_id[i]);
+                    }
+                }
+
+                if (is_index.Trim().Length > 0)
+                {
+                    cmd.Parameters.AddWithValue("@is_index", is_index);
+                }
+                //--------------------------------------------------------------//
+
+                if (ds.Tables["classic"] != null)
+                {
+                    ds.Tables["classic"].Clear();
+                }
+
+                SqlDataAdapter news_ada = new SqlDataAdapter();
+                news_ada.SelectCommand = cmd;
+                news_ada.Fill(ds, "classic");
+                news_ada = null;
+
+                dt = ds.Tables["classic"];
+
+            }
+            catch (Exception ex)
+            {
+                err_msg = ex.Message;
+                logger.Error(ex.Message);
+            }
+            finally
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    conn.Close();
+                }
+                cmd = null;
+                conn = null;
+            }
+
+            return dt;
+        }
+        #endregion
+
+        #region 經典案例新增 Classic_Insert
+        public string Classic_Insert(string n_title = "", string n_date = "", string n_desc = "", string is_show = "", string is_index = "", string sort = "", string n_memo = "", string n_url = "", string img_no = "", string cate_id = "")
+        {
+            string c_msg = "";
+            string n_id = "";
+
+            SqlConnection conn = new SqlConnection(CService.conn_string());
+            if (conn.State == ConnectionState.Closed)
+            {
+                conn.Open();
+            }
+
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = conn;
+
+            try
+            {
+                //========抓取sort==============================================================//
+                csql = "select (max(sort) + 1) as sort from News";
+                cmd.CommandText = csql;
+
+                if (ds.Tables["chk_sort"] != null)
+                {
+                    ds.Tables["chk_sort"].Clear();
+                }
+
+                SqlDataAdapter chk_sort_ada = new SqlDataAdapter();
+                chk_sort_ada.SelectCommand = cmd;
+                chk_sort_ada.Fill(ds, "chk_sort");
+                chk_sort_ada = null;
+                if (ds.Tables["chk_sort"].Rows.Count > 0)
+                {
+                    sort = ds.Tables["chk_sort"].Rows[0]["sort"].ToString();
+                }
+                else
+                {
+                    sort = "0";
+                }
+                //===============================================================================//
+
+                csql = @"insert into Classic(n_title,n_date,n_desc,is_index,sort,status,n_memo,n_url, cate_id) "
+                     + "values(@n_title,@n_date,@n_desc,@is_index,@sort,@is_show,@n_memo,@n_url, @cate_id)";
+
+                cmd.CommandText = csql;
+
+                ////讓ADO.NET自行判斷型別轉換
+                cmd.Parameters.Clear();
+                cmd.Parameters.AddWithValue("@n_title", n_title);
+                cmd.Parameters.AddWithValue("@n_date", n_date);
+                cmd.Parameters.AddWithValue("@n_desc", n_desc);
+                cmd.Parameters.AddWithValue("@is_index", is_index);
+                cmd.Parameters.AddWithValue("@sort", sort);
+                cmd.Parameters.AddWithValue("@is_show", is_show);
+                cmd.Parameters.AddWithValue("@n_memo", n_memo);
+                cmd.Parameters.AddWithValue("@n_url", n_url);
+                cmd.Parameters.AddWithValue("@cate_id", cate_id);
+
+                cmd.ExecuteNonQuery();
+
+                //抓取其編號
+                csql = @"select distinct "
+                     + "  n_id "
+                     + "from "
+                     + "   Classic "
+                     + "where "
+                     + "    n_date = @n_date "
+                     + "and n_title = @n_title "
+                     + "and n_desc = @n_desc "
+                     + "and is_index = @is_index "
+                     + "and sort = @sort "
+                     + "and status = @is_show "
+                     + "and n_memo = @n_memo "
+                     + "and n_url = @n_url "
+                     + "and cate_id = @cate_id ";
+
+                cmd.CommandText = csql;
+
+                ////讓ADO.NET自行判斷型別轉換
+                cmd.Parameters.Clear();
+                cmd.Parameters.AddWithValue("@n_title", n_title);
+                cmd.Parameters.AddWithValue("@n_date", n_date);
+                cmd.Parameters.AddWithValue("@n_desc", n_desc);
+                cmd.Parameters.AddWithValue("@is_index", is_index);
+                cmd.Parameters.AddWithValue("@sort", sort);
+                cmd.Parameters.AddWithValue("@is_show", is_show);
+                cmd.Parameters.AddWithValue("@n_memo", n_memo);
+                cmd.Parameters.AddWithValue("@n_url", n_url);
+                cmd.Parameters.AddWithValue("@cate_id", cate_id);
+
+                if (ds.Tables["chk_classic"] != null)
+                {
+                    ds.Tables["chk_classic"].Clear();
+                }
+
+                SqlDataAdapter prod_chk_ada = new SqlDataAdapter();
+                prod_chk_ada.SelectCommand = cmd;
+                prod_chk_ada.Fill(ds, "chk_classic");
+                prod_chk_ada = null;
+
+                if (ds.Tables["chk_classic"].Rows.Count > 0)
+                {
+                    n_id = ds.Tables["chk_classic"].Rows[0]["n_id"].ToString();
+                    if (img_no.Trim().Length > 0)
+                    {
+                        csql = @"update "
+                             + "  classic_img "
+                             + "set "
+                             + "  img_no = @n_id "
+                             + "where "
+                             + "  img_no = @img_no ";
+
+                        cmd.CommandText = csql;
+
+                        ////讓ADO.NET自行判斷型別轉換
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.AddWithValue("@n_id", n_id);
+                        cmd.Parameters.AddWithValue("@img_no", img_no);
+
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                c_msg = ex.Message;
+                logger.Error(ex.Message);
+            }
+            finally
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    conn.Close();
+                }
+                cmd = null;
+                conn = null;
+            }
+
+            return c_msg;
+        }
+        #endregion
+
+        #region 經典案例更新 Classic_Update
+        //更新內容
+        public string Classic_Update(string n_id = "", string n_title = "", string n_date = "", string n_desc = "", string is_show = "", string is_index = "", string sort = "", string n_memo = "", string n_url = "", string cate_id = "")
+        {
+            string c_msg = "";
+            SqlConnection conn = new SqlConnection(CService.conn_string());
+            if (conn.State == ConnectionState.Closed)
+            {
+                conn.Open();
+            }
+
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = conn;
+
+            try
+            {
+                csql = @"update "
+                     + "  news "
+                     + "set "
+                     + "  n_title = @n_title "
+                     + ", n_date = @n_date "
+                     + ", n_desc = @n_desc "
+                     + ", status = @is_show "
+                     + ", is_index = @is_index "
+                     + ", sort = @sort "
+                     + ", n_memo = @n_memo "
+                     + ", n_url = @n_url "
+                     + ", _UPD_ID = 'System' "
+                     + ", _UPD_DT = getdate() "
+                     + ", cate_id = @cate_id "
+                     + "where "
+                     + "  n_id = @n_id ";
+
+                cmd.CommandText = csql;
+
+                cmd.Parameters.Clear();
+                cmd.Parameters.AddWithValue("@n_id", n_id);
+                cmd.Parameters.AddWithValue("@n_title", n_title);
+                cmd.Parameters.AddWithValue("@n_date", n_date);
+                cmd.Parameters.AddWithValue("@n_desc", n_desc);
+                cmd.Parameters.AddWithValue("@is_index", is_index);
+                cmd.Parameters.AddWithValue("@sort", sort);
+                cmd.Parameters.AddWithValue("@is_show", is_show);
+                cmd.Parameters.AddWithValue("@n_memo", n_memo);
+                cmd.Parameters.AddWithValue("@n_url", n_url);
+                cmd.Parameters.AddWithValue("@cate_id", n_url);
+
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                c_msg = ex.Message;
+                logger.Error(ex.Message);
+            }
+            finally
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    conn.Close();
+                }
+                cmd = null;
+                conn = null;
+            }
+
+            return c_msg;
+
+        }
+        #endregion
+
+        #region 經典案例資料刪除 Classic_Del
+        public string Classic_Del(string n_id = "")
+        {
+            string c_msg = "";
+
+            SqlConnection conn = new SqlConnection(CService.conn_string());
+            if (conn.State == ConnectionState.Closed)
+            {
+                conn.Open();
+            }
+
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = conn;
+
+            try
+            {
+                csql = @"delete from "
+                     + "  Classic "
+                     + "where "
+                     + "  n_id = @n_id ";
+
+                cmd.CommandText = csql;
+
+                cmd.Parameters.Clear();
+                cmd.Parameters.AddWithValue("@n_id", n_id);
+
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                c_msg = ex.Message;
+                logger.Error(ex.Message);
+            }
+            finally
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    conn.Close();
+                }
+                cmd = null;
+                conn = null;
+            }
+
+            return c_msg;
+        }
+        #endregion
+
+        #region 經典案例資料圖片陳列 Classic_Img_List
+        public DataTable Classic_Img_List(ref string err_msg, string img_no = "")
+        {
+            DataSet dt = new DataSet();
+            DataTable d_t = new DataTable();
+            SqlConnection conn = new SqlConnection(CService.conn_string());
+            SqlCommand cmd = new SqlCommand();
+            string[] cimg_no;
+            string str_img_no = "";
+
+            try
+            {
+                if (conn.State == ConnectionState.Closed)
+                {
+                    conn.Open();
+                }
+                cmd.Connection = conn;
+
+                cimg_no = img_no.Split(',');
+
+                for (int i = 0; i < cimg_no.Length; i++)
+                {
+                    if (i > 0)
+                    {
+                        str_img_no = str_img_no + ",";
+                    }
+                    str_img_no = str_img_no + "'" + cimg_no[i] + "'";
+                }
+
+                csql = "select * from classic_img where status = 'Y' ";
+                if (img_no != "ALL")
+                {
+                    csql = csql + "and img_no in (";
+                    for (int i = 0; i < cimg_no.Length; i++)
+                    {
+                        if (i > 0)
+                        {
+                            csql = csql + ",";
+                        }
+                        csql = csql + "@str_img_no" + i.ToString() + " ";
+                    }
+                    csql = csql + ") ";
+                }
+
+
+                cmd.CommandText = csql;
+
+                cmd.Parameters.Clear();
+                for (int i = 0; i < cimg_no.Length; i++)
+                {
+                    cmd.Parameters.AddWithValue("@str_img_no" + i.ToString(), cimg_no[i]);
+                }
+
+
+                if (dt.Tables["img"] != null)
+                {
+                    dt.Tables["img"].Clear();
+                }
+
+                SqlDataAdapter scenic_ada = new SqlDataAdapter();
+                scenic_ada.SelectCommand = cmd;
+                scenic_ada.Fill(dt, "img");
+                scenic_ada = null;
+
+                d_t = dt.Tables["img"];
+            }
+            catch (Exception ex)
+            {
+                err_msg = ex.Message;
+                logger.Error(ex.Message);
+            }
+            finally
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    conn.Close();
+                }
+                cmd = null;
+                conn = null;
+                dt = null;
+            }
+
+            return d_t;
+        }
+        #endregion
+
+        #region  經典案例資料圖片刪除 Classic_Img_Delete
+        public string Classic_Img_Delete(string img_id = "")
+        {
+            string c_msg = "";
+            SqlConnection conn = new SqlConnection(CService.conn_string());
+            if (conn.State == ConnectionState.Closed)
+            {
+                conn.Open();
+            }
+
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = conn;
+
+            try
+            {
+                csql = @"delete from classic_img where img_id = @img_id ";
+
+                cmd.CommandText = csql;
+                cmd.Parameters.Clear();
+                cmd.Parameters.AddWithValue("@img_id", img_id);
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                c_msg = ex.Message;
+                logger.Error(ex.Message);
+            }
+            finally
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    conn.Close();
+                }
+                cmd = null;
+                conn = null;
+            }
+
+            return c_msg;
+        }
+        #endregion
+
+        #region 經典案例資料圖片更新 Classic_Img_Update
+        public string Classic_Img_Update(string img_no = "", string img_file = "")
+        {
+            string c_msg = "";
+            SqlConnection conn = new SqlConnection(CService.conn_string());
+            if (conn.State == ConnectionState.Closed)
+            {
+                conn.Open();
+            }
+
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = conn;
+
+            try
+            {
+                csql = @"update "
+                     + "  classic_img "
+                     + "set "
+                     + "  img_file = @img_file "
+                     + "where "
+                     + "  img_no = @img_no ";
+
+                cmd.CommandText = csql;
+
+                cmd.Parameters.Clear();
+                cmd.Parameters.AddWithValue("@img_file", img_file);
+                cmd.Parameters.AddWithValue("@img_no", img_no);
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                c_msg = ex.Message;
+                logger.Error(ex.Message);
+            }
+            finally
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    conn.Close();
+                }
+                cmd = null;
+                conn = null;
+            }
+
+            return c_msg;
+        }
+        #endregion
+
+        #region 經典案例資料圖片新增 Classic_Img_Insert
+        public string Classic_Img_Insert(string img_no = "", string img_file = "")
+        {
+            string c_msg = "";
+            SqlConnection conn = new SqlConnection(CService.conn_string());
+            if (conn.State == ConnectionState.Closed)
+            {
+                conn.Open();
+            }
+
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = conn;
+
+            try
+            {
+                csql = @"insert into Classic_img(img_no, img_file) "
+                     + "values(@img_no ,@img_file)";
+
+                cmd.CommandText = csql;
+
+                cmd.Parameters.Clear();
+                cmd.Parameters.AddWithValue("@img_no", img_no);
+                cmd.Parameters.AddWithValue("@img_file", img_file);
+
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                c_msg = ex.Message;
+                logger.Error(ex.Message);
+            }
+            finally
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    conn.Close();
+                }
+                cmd = null;
+                conn = null;
+            }
+
+            return c_msg;
+        }
+        #endregion
+
+        #endregion
     }
 }

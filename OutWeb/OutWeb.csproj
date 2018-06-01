@@ -1210,6 +1210,10 @@
     <Content Include="Views\Home\Error.cshtml" />
     <Content Include="Views\Home\To_Location.cshtml" />
     <Content Include="Views\Manage\Microsoft.cshtml" />
+    <Content Include="Views\Manage\Classic_Cate_Data.cshtml" />
+    <Content Include="Views\Manage\Classic_Cate_List.cshtml" />
+    <Content Include="Views\Manage\Classic_List.cshtml" />
+    <Content Include="Views\Manage\Classic_Data.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\Logs\" />

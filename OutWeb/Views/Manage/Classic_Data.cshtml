@@ -1,11 +1,13 @@
 ﻿@using System.Data
 @{
     Layout = "~/Views/Shared/_MLayout.cshtml";
-    ViewBag.Crumb = "最新消息管理";
-    ViewBag.subnav = "n2";
+    ViewBag.Crumb = "經典案例管理";
+
+    ViewBag.subnav = "Classic";
+    ViewBag.subnav2 = "Classic_List";
 
     //變數設定
-
+    DataTable dt_b = (DataTable)ViewData["dt_b"];
     DataTable d_news = (DataTable)ViewData["d_news"];
     DataTable d_img = (DataTable)ViewData["d_img"];
 
@@ -24,6 +26,8 @@
     string c_front_status = "";
     string is_index = "";
     string c_index_status = "";
+    string cate_id = "";
+    string cate_selected = "";
 
     string img_no = "";
     string img_path = "../Images/";
@@ -50,6 +54,7 @@
         sort = "0";
         n_pic = "";
         n_pic_id = "";
+        cate_id = "";
     }
     else if (action_sty == "edit")
     {
@@ -71,6 +76,7 @@
         sort = d_news.Rows[0]["sort"].ToString();
         n_pic = img_path + d_news.Rows[0]["img_file"].ToString();
         n_pic_id = d_news.Rows[0]["img_id"].ToString();
+        cate_id = d_news.Rows[0]["cate_id"].ToString();
 
         switch (c_status)
         {
@@ -168,7 +174,7 @@
     function del_img(img_id,c_sty)
     {
         var cimg_no = "";
-        var c_cate = "News";
+        var c_cate = "Classic";
         var c_img_sty = "B";
 
         if (confirm("確定刪除??")) {
@@ -233,7 +239,7 @@
     function ajaxFileUpload(c_sty) {
         var cimg_no = "";
         var c_img = "pic_" + c_sty;
-        var c_cate = "News";
+        var c_cate = "Classic";
         var c_img_sty = "B";
 
         if ($("#n_id").val().length > 0) {
@@ -314,118 +320,138 @@
         return newData;
     }
 </script>
-    <form class="form-list" action="News_Save" name="form1" id="form1" method="post" enctype="multipart/form-data" >
-        <input type="hidden" name="action_sty" id="action_sty" value="@action_sty" />
-        <input type="hidden" name="n_id" id="n_id" value="@n_id" />
-        <input type="hidden" name="show" id="show" value="" />
-        <input type="hidden" name="hot" id="hot" value="" />
-        <input type="hidden" name="n_memo" id="n_memo" value="" />
-        <input type="hidden" name="img_no" id="img_no" value="@img_no" />
-        @if (action_sty == "add")
-        {
-            <input type="hidden" name="sort" id="sort" value="" />
-        }
+<form class="form-list" action="Classic_Save" name="form1" id="form1" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="action_sty" id="action_sty" value="@action_sty" />
+    <input type="hidden" name="n_id" id="n_id" value="@n_id" />
+    <input type="hidden" name="show" id="show" value="" />
+    <input type="hidden" name="hot" id="hot" value="" />
+    <input type="hidden" name="n_memo" id="n_memo" value="" />
+    <input type="hidden" name="img_no" id="img_no" value="@img_no" />
+    @if (action_sty == "add")
+    {
+        <input type="hidden" name="sort" id="sort" value="" />
+    }
 
-        <dl class="fields">
-            <dt class="col-2">*發佈日期</dt>
-            <dd class="col-4">
-                <input type="date" required id="n_date" name="n_date" value="@n_date" >@* 用 datetimepicker (之類的東西) 選日期 *@
-            </dd>
-        </dl>
-        <dl class="fields">
-            <dt class="col-2">*標題</dt>
-            <dd class="col-10">
-                <input type="text" class="form-control form-control-sm" required id="n_title" name="n_title" value="@n_title">
-            </dd>
-        </dl>
-        
-        <dl class="fields">
-            <dt class="col-2">影音連結</dt>
-            <dd class="col-10">
-                <input type="text" class="form-control form-control-sm" required id="n_url" name="n_url" value="@n_url">
-            </dd>
-        </dl>
-
-        <dl class="fields">
-            <dt class="col-2">圖片</dt>
-            <dd class="col-10">
-                @* 瀏覽&上傳檔案 *@
-                <input type="file" name="pic_S" id="pic_S" accept="image/*" class="form-control form-control-sm">
-                <button type="button" name="btn_small_pic" onclick="upload('S');" class="btn btn-sm btn-success oi m-t-small" data-glyph="data-transfer-upload">
-                    上傳
-                </button>
-                <br>
-                @* 照片縮圖(上傳圖片後顯示) *@
-                <ol class="upload-img list-inline" id="c_img_S" name="c_img_small">
-                    @for (int s = 0; s < d_img.Rows.Count; s++)
+    <dl class="fields">
+        <dt class="col-2">*發佈日期</dt>
+        <dd class="col-4">
+            <input type="date" required id="n_date" name="n_date" value="@n_date">@* 用 datetimepicker (之類的東西) 選日期 *@
+        </dd>
+    </dl>
+    <dl class="fields">
+        <dt class="col-2">類別</dt>
+        <dd class="col-10">
+            <select id="cate_id" name="cate_id">
+                @for (int i = 0; i < dt_b.Rows.Count; i++)
+                {
+                    if (dt_b.Rows[i]["cate_id"].ToString() == cate_id)
                     {
-                        small_img = img_path + d_img.Rows[s]["img_file"].ToString();
-                        img_id = d_img.Rows[s]["img_id"].ToString();
-                        <li>
-                            <button class="close" id="btn_close_s_@s" name="btn_close_s_@s" onclick="del_img('@img_id','S');">&times;</button>
-                            <img id="img_S_@s" name="img_S_@s" src="@small_img" alt="">
-                        </li>
+                        cate_selected = "selected";
+                    }
+                    else
+                    {
+                        cate_selected = "";
                     }
 
-                </ol>
+                    <option value="@dt_b.Rows[i]["cate_id"].ToString()" @cate_selected>@dt_b.Rows[i]["cate_name"].ToString()</option>
+                }
+            </select>
+        </dd>
+    </dl>
+    <dl class="fields">
+        <dt class="col-2">*標題</dt>
+        <dd class="col-10">
+            <input type="text" class="form-control form-control-sm" required id="n_title" name="n_title" value="@n_title">
+        </dd>
+    </dl>
 
-                <small class="text-muted">可上傳 1 張照片，建議尺寸為 795px*503px 或等比例長寬，每張圖最大不可超過 500kb</small>
-            </dd>
-        </dl>
-        @if (action_sty == "edit")
-        {
-            <dl class="fields">
-                <dt class="col-2">排序</dt>
-                <dd class="col-4">
-                    <input type="number" min="0" class="inline" id="sort" name="sort" value="@sort">
-                    <small>數字愈大愈前面</small>
-                </dd>
-            </dl>
-        }
-        
+    <dl class="fields">
+        <dt class="col-2">影音連結</dt>
+        <dd class="col-10">
+            <input type="text" class="form-control form-control-sm" required id="n_url" name="n_url" value="@n_url">
+        </dd>
+    </dl>
 
+    <dl class="fields">
+        <dt class="col-2">圖片</dt>
+        <dd class="col-10">
+            @* 瀏覽&上傳檔案 *@
+            <input type="file" name="pic_S" id="pic_S" accept="image/*" class="form-control form-control-sm">
+            <button type="button" name="btn_small_pic" onclick="upload('S');" class="btn btn-sm btn-success oi m-t-small" data-glyph="data-transfer-upload">
+                上傳
+            </button>
+            <br>
+            @* 照片縮圖(上傳圖片後顯示) *@
+            <ol class="upload-img list-inline" id="c_img_S" name="c_img_small">
+                @for (int s = 0; s < d_img.Rows.Count; s++)
+                {
+                    small_img = img_path + d_img.Rows[s]["img_file"].ToString();
+                    img_id = d_img.Rows[s]["img_id"].ToString();
+                    <li>
+                        <button class="close" id="btn_close_s_@s" name="btn_close_s_@s" onclick="del_img('@img_id','S');">&times;</button>
+                        <img id="img_S_@s" name="img_S_@s" src="@small_img" alt="">
+                    </li>
+                }
+
+            </ol>
+
+            <small class="text-muted">可上傳 1 張照片，建議尺寸為 795px*503px 或等比例長寬，每張圖最大不可超過 500kb</small>
+        </dd>
+    </dl>
+    @if (action_sty == "edit")
+    {
         <dl class="fields">
-            <dt class="col-2">前台顯示</dt>
+            <dt class="col-2">排序</dt>
             <dd class="col-4">
-                <label class="switch">
-                    <input type="checkbox" name="cshow" id="cshow" @c_front_status>
-                    <div class="slider round"></div>
-                </label>
+                <input type="number" min="0" class="inline" id="sort" name="sort" value="@sort">
+                <small>數字愈大愈前面</small>
             </dd>
         </dl>
-        <dl class="fields">
-            <dt class="col-2">首頁顯示</dt>
-            <dd class="col-4">
-                <label class="switch">
-                    <input type="checkbox" name="chot" id="chot" @c_index_status>
-                    <div class="slider round"></div>
-                </label>
-            </dd>
-        </dl>
-        <fieldset class="m-t-24">
-            <legend class="underline">[ 內容 ]</legend>
-            <div class="alert-warning font-sm m-b-16">
-                <strong>編輯器注意事項:</strong><br>
-                從 WORD 複製文字時，請使用下方的 <img src="/Content/images/icon-word.jpg" /> 圖示來貼上 WORD 文字，避免跑版<br />
-                編輯器上傳圖片或新增表格等時，請勿設定寬度及高度(將數字刪除) ，以免行動裝置顯示時會跑版。<br />
-                檔案尺寸寬度超過 1600 或 高度超過1200 的圖片會被壓縮(PNG透明背景會變成不透明) <br />
-                youtube 可勾選「用自適應縮放模式」
-            </div>
-            @* 編輯器(含圖片上傳功能) *@
-            <textarea class="ckeditor form-control" rows="12" placeholder="請輸入最新消息內容" name="n_desc" id="n_desc">@n_desc</textarea>
-            @*加入圖片上傳頁籤，放在頁面底下，放在頁面head區的話，會抓不到myText DOM*@
-            <script type="text/javascript">
+    }
+
+
+    <dl class="fields">
+        <dt class="col-2">前台顯示</dt>
+        <dd class="col-4">
+            <label class="switch">
+                <input type="checkbox" name="cshow" id="cshow" @c_front_status>
+                <div class="slider round"></div>
+            </label>
+        </dd>
+    </dl>
+    <dl class="fields">
+        <dt class="col-2">首頁顯示</dt>
+        <dd class="col-4">
+            <label class="switch">
+                <input type="checkbox" name="chot" id="chot" @c_index_status>
+                <div class="slider round"></div>
+            </label>
+        </dd>
+    </dl>
+    <fieldset class="m-t-24">
+        <legend class="underline">[ 內容 ]</legend>
+        <div class="alert-warning font-sm m-b-16">
+            <strong>編輯器注意事項:</strong><br>
+            從 WORD 複製文字時，請使用下方的 <img src="/Content/images/icon-word.jpg" /> 圖示來貼上 WORD 文字，避免跑版<br />
+            編輯器上傳圖片或新增表格等時，請勿設定寬度及高度(將數字刪除) ，以免行動裝置顯示時會跑版。<br />
+            檔案尺寸寬度超過 1600 或 高度超過1200 的圖片會被壓縮(PNG透明背景會變成不透明) <br />
+            youtube 可勾選「用自適應縮放模式」
+        </div>
+        @* 編輯器(含圖片上傳功能) *@
+        <textarea class="ckeditor form-control" rows="12" placeholder="請輸入最新消息內容" name="n_desc" id="n_desc">@n_desc</textarea>
+        @*加入圖片上傳頁籤，放在頁面底下，放在頁面head區的話，會抓不到myText DOM*@
+        <script type="text/javascript">
                     CKEDITOR.replace('n_desc'
                 , { filebrowserImageUploadUrl: '@Url.Content("~/Manage/UploadPicture")' }
                 );
-            </script>
-        </fieldset>
-        <footer class="submit-bar clear m-t-24">
-            <button type="button" name="btn_ok" onclick="form_ok();" class="btn success oi" data-glyph="circle-check">
-                    確認儲存
-            </button>
-            <button type="button" id="btn_back" name="btn_back" onclick="location.href='News_List'" class="btn warning oi" data-glyph="circle-x">
-                    回列表
-            </button>
-        </footer>
-    </form>
+        </script>
+    </fieldset>
+    <footer class="submit-bar clear m-t-24">
+        <button type="button" name="btn_ok" onclick="form_ok();" class="btn success oi" data-glyph="circle-check">
+            確認儲存
+        </button>
+        <button type="button" id="btn_back" name="btn_back" onclick="location.href='Classic_List'" class="btn warning oi" data-glyph="circle-x">
+            回列表
+        </button>
+    </footer>
+</form>

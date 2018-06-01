@@ -512,6 +512,9 @@ namespace OutWeb.Controllers
                 case "News":
                     chk_file = DB.News_Img_List(ref err_msg, img_no);
                     break;
+                case "Classic":
+                    chk_file = DB.Classic_Img_List(ref err_msg, img_no);
+                    break;
                 default:
                     chk_file = DB.Img_List(ref err_msg, img_no, img_sta);
                     break;
@@ -565,6 +568,9 @@ namespace OutWeb.Controllers
                         case "News":
                             DB.News_Img_Insert(img_no, img_no + "_" + img_sta + "_" + filename);
                             break;
+                        case "Classic":
+                            DB.Classic_Img_Insert(img_no, img_no + "_" + img_sta + "_" + filename);
+                            break;
                         default:
                             //OverlookDB.Img_Insert(img_no, img_no + "_" + img_sta + "_" + filename, img_sta);
                             break;
@@ -600,6 +606,9 @@ namespace OutWeb.Controllers
                             break;
                         case "News":
                             DB.News_Img_Update(img_no, img_no + "_" + img_sta + "_" + filename);
+                            break;
+                        case "Classic":
+                            DB.Classic_Img_Update(img_no, img_no + "_" + img_sta + "_" + filename);
                             break;
                         default:
                             //OverlookDB.Img_Update(chk_file.Rows[0]["_SEQ_ID"].ToString(), img_no + "_" + img_sta + "_" + filename);
@@ -660,7 +669,10 @@ namespace OutWeb.Controllers
                     img_file = DB.Microsoft_Img_List(ref err_msg, img_no);
                     break;
                 case "News":
-                    img_file = DB.His_Img_List(ref err_msg, img_no);
+                    img_file = DB.News_Img_List(ref err_msg, img_no);
+                    break;
+                case "Classic":
+                    img_file = DB.Classic_Img_List(ref err_msg, img_no);
                     break;
                 default:
                     img_file = DB.Img_List(ref err_msg, img_no, img_sta);
@@ -711,6 +723,9 @@ namespace OutWeb.Controllers
                     break;
                 case "News":
                     chk_file = DB.News_Img_List(ref err_msg, img_no);
+                    break;
+                case "Classic":
+                    chk_file = DB.Classic_Img_List(ref err_msg, img_no);
                     break;
                 default:
                     chk_file = DB.Img_List(ref err_msg, img_no, img_sta);
@@ -789,6 +804,9 @@ namespace OutWeb.Controllers
                 case "News":
                     DB.News_Img_Delete(img_id);
                     break;
+                case "Classic":
+                    DB.Classic_Img_Delete(img_id);
+                    break;
                 default:
                     //DB.Img_Delete(img_id);
                     break;
@@ -820,6 +838,9 @@ namespace OutWeb.Controllers
                     break;
                 case "News":
                     img_file = DB.News_Img_List(ref err_msg, img_no);
+                    break;
+                case "Classic":
+                    img_file = DB.Classic_Img_List(ref err_msg, img_no);
                     break;
                 default:
                     img_file = DB.Img_List(ref err_msg, img_no, img_sta);
@@ -1977,6 +1998,196 @@ namespace OutWeb.Controllers
             }
             return RedirectToAction("Microsoft");
         }
+        #endregion
+
+        #region 經典案例類別
+        #region 經典案例類別_陳列 Classic_Cate_List()
+        public ActionResult Classic_Cate_List(string txt_title_query = "", int page = 1, string txt_sort = "", string txt_a_d = "", string txt_show = "")
+        {
+            //定義變數
+            string c_sort = "";
+            string err_msg = "";
+            DataTable dt;
+
+            //排序設定
+            if (txt_sort.Trim().Length > 0)
+            {
+                c_sort = c_sort + "a1." + txt_sort;
+            }
+            if (txt_a_d.Trim().Length > 0)
+            {
+                c_sort = c_sort + " " + txt_a_d;
+            }
+
+            //抓取經典案例類別資料
+            dt = DB.Classic_Cate_List(ref err_msg, "", c_sort, txt_show, txt_title_query);
+
+            //設定傳值
+            ViewData["page"] = page;
+            ViewData["dt"] = dt;
+            ViewData["txt_title_query"] = txt_title_query;
+            ViewData["txt_sort"] = txt_sort;
+            ViewData["txt_a_d"] = txt_a_d;
+
+            return View();
+        }
+        #endregion
+
+        #region 經典案例類別_新增 Classic_Cate_Add
+        public ActionResult Classic_Cate_Add()
+        {
+            ViewData["action_sty"] = "add";
+            return View("Classic_Cate_Data");
+        }
+        #endregion
+
+        #region 經典案例類別_修改 Classic_Cate_Edit
+        public ActionResult Classic_Cate_Edit(string cate_id = "")
+        {
+            string err_msg = "";
+            DataTable dt = DB.Classic_Cate_List(ref err_msg, cate_id);
+            ViewData["dt"] = dt;
+
+            ViewData["action_sty"] = "edit";
+
+            return View("Classic_Cate_Data");
+        }
+        #endregion
+
+        #region 經典案例類別_刪除 Classic_Cate_Del
+        public ActionResult Classic_Cate_Del(string cate_id = "")
+        {
+            //OverlookDBService OverlookDB = new OverlookDBService();
+            DB.Classic_Cate_Del(cate_id);
+            return RedirectToAction("Classic_Cate_List");
+        }
+        #endregion
+
+        #region 經典案例類別_儲存 Classic_Cate_Save
+        [HttpPost]
+        [ValidateInput(false)]
+        public ActionResult Classic_Cate_Save(string action_sty, string cate_id, string cate_name, string cate_desc, string show, string sort)
+        {
+            //OverlookDBService OverlookDB = new OverlookDBService();
+
+            switch (action_sty)
+            {
+                case "add":
+                    DB.Classic_Cate_Insert(cate_name, cate_desc, show, sort);
+                    break;
+                case "edit":
+                    DB.Classic_Cate_Update(cate_id, cate_name, cate_desc, show, sort);
+                    break;
+            }
+
+            return RedirectToAction("Classic_Cate_List");
+        }
+
+        #endregion
+        #endregion
+
+        #region 經典案例
+
+        #region 經典案例 Classic_List
+        public ActionResult Classic_List(string txt_title_query = "", int page = 1, string txt_sort = "", string txt_a_d = "", string txt_start_date = "", string txt_end_date = "", string txt_show = "", string txt_index = "", string cate_id = "")
+        {
+            //定義變數
+            string c_sort = "";
+            DataTable dt;
+            DataTable dt_b;
+            string err_msg = "";
+
+            //排序設定
+            if (txt_sort.Trim().Length > 0)
+            {
+                c_sort = c_sort + "a1." + txt_sort;
+            }
+            if (txt_a_d.Trim().Length > 0)
+            {
+                c_sort = c_sort + " " + txt_a_d;
+            }
+
+            //抓取經典案例資料
+            dt = DB.Classic_List(ref err_msg, "", c_sort, txt_show, txt_title_query, txt_start_date, txt_end_date, txt_index,cate_id);
+            //抓取經典案例類別
+            dt_b = DB.Classic_Cate_List(ref err_msg, "", "sort", "Y", "");
+            //設定傳值
+            ViewData["page"] = page;
+            ViewData["dt"] = dt;
+            ViewData["dt_b"] = dt_b;
+            ViewData["txt_title_query"] = txt_title_query;
+            ViewData["txt_start_date"] = txt_start_date;
+            ViewData["txt_end_date"] = txt_end_date;
+            ViewData["txt_sort"] = txt_sort;
+            ViewData["txt_a_d"] = txt_a_d;
+            ViewData["txt_cate_id"] = cate_id;
+
+            return View();
+        }
+        #endregion
+
+        #region 經典案例新增 Classic_Add
+        public ActionResult Classic_Add()
+        {
+            string err_msg = "";
+
+            DataTable d_img = DB.Classic_Img_List(ref err_msg, "");
+            DataTable dt_b = DB.Classic_Cate_List(ref err_msg, "", "sort", "Y", "");
+            ViewData["dt_b"] = dt_b;
+            ViewData["d_img"] = d_img;
+            ViewData["action_sty"] = "add";
+            return View("Classic_Data");
+        }
+        #endregion
+
+        #region 經典案例修改 Classic_Edit
+        public ActionResult Classic_Edit(string n_id = "")
+        {
+            string err_msg = "";
+            DataTable d_news = DB.Classic_List(ref err_msg, n_id);
+            DataTable dt_b = DB.Classic_Cate_List(ref err_msg, "", "sort", "Y", "");
+            DataTable d_img = DB.Classic_Img_List(ref err_msg, n_id);
+
+            ViewData["d_img"] = d_img;
+            ViewData["dt_b"] = dt_b;
+            ViewData["d_news"] = d_news;
+            ViewData["action_sty"] = "edit";
+
+            return View("Classic_Data");
+        }
+        #endregion
+
+        #region 經典案例刪除 Classic_Del
+        public ActionResult Classic_Del(string n_id = "")
+        {
+            //OverlookDBService OverlookDB = new OverlookDBService();
+            DB.Classic_Del(n_id);
+            return RedirectToAction("Classic_List");
+        }
+        #endregion
+
+        #region 經典案例儲存 Classic_Save
+        [HttpPost]
+        [ValidateInput(false)]
+        public ActionResult Classic_Save(string action_sty, string n_id, string n_title, string n_date, string n_desc, string show, string hot, string sort, string n_memo, string img_no, string n_url,string cate_id)
+        {
+            //OverlookDBService OverlookDB = new OverlookDBService();
+
+            switch (action_sty)
+            {
+                case "add":
+                    DB.Classic_Insert(n_title, n_date, n_desc, show, hot, sort, n_memo, n_url, img_no,cate_id);
+                    break;
+                case "edit":
+                    DB.Classic_Update(n_id, n_title, n_date, n_desc, show, hot, sort, n_memo, n_url,cate_id);
+                    break;
+            }
+
+            return RedirectToAction("Classic_List");
+        }
+
+        #endregion
+
         #endregion
     }
 }
