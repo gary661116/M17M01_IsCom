@@ -1,0 +1,182 @@
+﻿@using System.Data
+@{
+    ViewBag.Title = "經典案例";
+    ViewBag.BodyClass = "Classic";
+    ViewBag.subnav = "Classic";
+
+    DataTable d_news = (DataTable)ViewData["d_news"];
+    DataTable dt = (DataTable)ViewData["dt"];
+    DataTable d_cate = (DataTable)ViewData["d_cate"];
+    string n_id = "";
+    string n_title = "";
+    string n_desc = "";
+    string n_date = "";
+    string n_url = "";
+    string sort = "";
+    string is_index = "";
+    string c_status = "";
+    string nmonth = "AAA,Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec";
+    string[] array_month = nmonth.Split(',');
+    string n_month = "";
+    string n_day = "";
+    string cate_id = "";
+
+    string cc_cate = "";
+    string cate_cid = "";
+    string cate_cname = "";
+    string ccs_url = "";
+    string cate_active = "";
+    string now_cate_desc = "";
+    string cn_id = "";
+    string cn_title = "";
+    string classic_active = "";
+
+    if (d_news.Rows.Count > 0)
+    {
+        n_id = d_news.Rows[0]["n_id"].ToString();
+        n_title = d_news.Rows[0]["n_title"].ToString();
+        n_desc = d_news.Rows[0]["n_desc"].ToString();
+        n_date = d_news.Rows[0]["n_date"].ToString();
+        n_month = array_month[Convert.ToInt16(n_date.Substring(5, 2))];
+        n_day = n_date.Substring(8, 2);
+        n_url = d_news.Rows[0]["n_url"].ToString();
+        is_index = d_news.Rows[0]["is_index"].ToString();
+        c_status = d_news.Rows[0]["status"].ToString();
+        sort = d_news.Rows[0]["sort"].ToString();
+        cate_id = d_news.Rows[0]["cate_id"].ToString();
+    }
+}
+
+
+<div role="main" class="main">
+
+    <section class="page-top">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <ul class="breadcrumb">
+                        <li><a href="~/">Home</a></li>
+                        <li class="active">@ViewBag.Title</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <h1>@ViewBag.Title</h1>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+
+        <div class="row">
+            <div class="col-md-3">
+                <aside class="sidebar">
+                    <h4>采威</h4>
+                    <div class="toggle" data-plugin-toggle data-plugin-options='{"isAccordion":true}'>
+                        <section class="toggle">
+                            <label onclick="location.href ='@Url.Content("~/News")' ;">最新消息</label>
+                        </section>
+                        <section class="toggle active">
+                            <label onclick="location.href ='@Url.Content("~/Classic")' ;"><font color="white">經典案例</font></label>
+                            @if (d_cate.Rows.Count > 0)
+                            {
+                                cc_cate = "";
+                                cc_cate += "    <div class=\"toggle-content\">";
+                                cc_cate += "        <ul class=\"nav nav-list primary push-bottom\">";
+                                for (int j = 0; j < d_cate.Rows.Count; j++)
+                                {
+                                    cate_cid = d_cate.Rows[j]["cate_id"].ToString();
+                                    cate_cname = d_cate.Rows[j]["cate_name"].ToString();
+                                    ccs_url = "~/Classic?cate_id=" + cate_cid;
+                                    if (cate_cid == cate_id)
+                                    {
+                                        cate_active = "class=\"active\" ";
+                                        //if (now_cate_name.Trim().Length > 0)
+                                        //{
+                                        //    now_cate_name += "-";
+                                        //}
+                                        //now_cate_name += cate_s_name;
+                                        now_cate_desc = d_cate.Rows[j]["cate_desc"].ToString();
+                                    }
+                                    else
+                                    {
+                                        cate_active = "";
+                                    }
+                                    cc_cate += "            <li " + cate_active + "><a href=\"" + Url.Content(ccs_url) + "\">" + cate_cname + "</a>";
+                                    if (cate_cid == cate_id)
+                                    {
+                                        //----經典案例清單 -- //
+                                        //--Temp檔--建立---------//
+                                        DataTable Cnews;
+                                        //----------------------------------------------------------------------//
+                                        DataRow[] Cnews_Rows = dt.Select("cate_id=" + cate_cid);
+                                        //----------------------------------------------------------------------//
+                                        if (Cnews_Rows.Any())
+                                        {
+                                            Cnews = Cnews_Rows.CopyToDataTable();
+                                        }
+                                        else
+                                        {
+                                            Cnews = d_news.Clone();
+                                            Cnews.Clear();
+                                        }
+                                        if (Cnews.Rows.Count > 0)
+                                        {
+                                            cc_cate += "        <ul class=\"nav nav-list secondary push-bottom\">";
+                                            for (int k = 0; k < Cnews.Rows.Count; k++)
+                                            {
+                                                cn_id = Cnews.Rows[k]["n_id"].ToString();
+                                                cn_title = Cnews.Rows[k]["n_title"].ToString();
+
+
+                                                if (n_id == cn_id)
+                                                {
+                                                    classic_active = "class=\"active\" ";
+                                                }
+                                                else
+                                                {
+                                                    classic_active = "";
+                                                }
+                                                cc_cate += "            <li " + classic_active + "><a href=\"" + Url.Content("~/Classic/ClassicData?n_id=" + cn_id) + "\">&nbsp;&nbsp;&nbsp;&nbsp;" + cn_title + "</a></li>";
+                                            }
+                                            cc_cate += "        </ul>";
+                                        }
+                                    }
+                                    cc_cate += "</li>";
+
+                                }
+                                cc_cate += "        </ul>";
+                                cc_cate += "    </div>";
+                            }
+                            @Html.Raw(cc_cate)
+                        </section>
+                        <section class="toggle">
+                            <label onclick="location.href ='@Url.Content("~/Project")' ;">成交歷程</label>
+                        </section>
+                    </div>				                    
+                </aside>
+            </div>
+            <div class="col-md-9">
+                <div class="blog-posts single-post">
+
+                    <article class="post post-large blog-single-post">
+                        <div class="post-date">
+                            <span class="day">@n_day</span>
+                            <span class="month">@n_month</span>
+                        </div>
+                        <div class="post-content">
+                            <h2>@n_title</h2>
+                            <p>@Html.Raw(@n_desc)</p>
+                        </div>
+                    </article>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

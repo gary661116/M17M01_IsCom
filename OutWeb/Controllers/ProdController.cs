@@ -90,6 +90,7 @@ namespace OutWeb.Controllers
         {
             //定義變數
             DataTable dt;
+            DataTable dt1;
             //變數設定 
             //DataTable d_menub;
             //DataTable d_menus;
@@ -102,7 +103,9 @@ namespace OutWeb.Controllers
             //d_menub = DB.Prod_CateB_List("", "sort", "Y", "");
             //d_menus = DB.Prod_CateS_List("", "sort", "Y", "", "");
             chk_menu();
-            dt = DB.Prod_List(ref err_msg, prod_id, "", "Y", "", "", "");
+            dt1 = DB.Prod_List(ref err_msg, "", "", "Y", "", "", "");
+            dt = DB.DB_Select(dt1, "prod_id=" + prod_id);
+            //dt = DB.Prod_List(ref err_msg, prod_id, "", "Y", "", "", "");
             dt_b = DB.Prod_CateB_List(ref err_msg, "", "sort", "Y", "");
             dt_s = DB.Prod_CateS_List(ref err_msg, "", "sort", "Y", "", "");
             //Foot
@@ -115,6 +118,7 @@ namespace OutWeb.Controllers
                 ViewData["dt"] = dt;
                 //ViewData["d_menub"] = d_menub;
                 //ViewData["d_menus"] = d_menus;
+                ViewData["dt1"] = dt1;
                 ViewData["dt_b"] = dt_b;
                 ViewData["dt_s"] = dt_s;
                 ViewData["d_foot"] = d_foot;

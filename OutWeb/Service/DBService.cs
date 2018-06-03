@@ -19,6 +19,38 @@ namespace Lib.Service
 
         //Log 記錄
         private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+
+        #region DB_Function
+        public DataTable DB_Select(DataTable dt,string select = "")
+        {
+            string err_msg = "";
+            //--Temp檔--建立---------//
+            DataTable dt1 = new DataTable();
+            try
+            {
+                //----------------------------------------------------------------------//
+                DataRow[] dt1_Rows = dt.Select(select);
+                //----------------------------------------------------------------------//
+                if (dt1_Rows.Any())
+                {
+                    dt1 = dt1_Rows.CopyToDataTable();
+                }
+                else
+                {
+                    dt1 = dt.Clone();
+                    dt1.Clear();
+                }
+            }
+            catch(Exception ex)
+            {
+                err_msg = ex.Message;
+                logger.Error(ex.Message);
+            }
+
+            return dt1;
+        }
+        #endregion DB_Function
+
         #region 最新消息 News
 
         #region 消息資料抓取 News_List
@@ -49,8 +81,9 @@ namespace Lib.Service
                      + "from "
                      + "("
                      + "select distinct "
-                     + "  a1.n_id, a1.n_title, convert(nvarchar(10),a1.n_date,23) as n_date, a1.n_url, a1.n_desc, a1.n_memo "
-                     + ", a1.is_index, a1.sort, a1.status, a1.n_url "
+                     + "  a1.n_id, a1.n_title, convert(nvarchar(10),a1.n_date,23) as n_date"
+                     + ", a1.n_url, a1.n_desc, a1.n_memo "
+                     + ", a1.is_index, a1.sort, a1.status "
                      + ", a4.img_id, a4.img_file, a4.img_desc "
                      + "from "
                      + "   news a1 "
@@ -8543,7 +8576,6 @@ namespace Lib.Service
         #endregion
         #endregion
 
-
         #region 經典案例 Classic
 
         #region 經典案例資料抓取 Classic_List
@@ -8576,8 +8608,9 @@ namespace Lib.Service
                      + "from "
                      + "("
                      + "select distinct "
-                     + "  a1.n_id, a1.n_title, convert(nvarchar(10),a1.n_date,23) as n_date, a1.n_url, a1.n_desc, a1.n_memo "
-                     + ", a1.is_index, a1.sort, a1.status, a1.n_url "
+                     + "  a1.n_id, a1.n_title, convert(nvarchar(10),a1.n_date,23) as n_date"
+                     + ", a1.n_url, a1.n_desc, a1.n_memo "
+                     + ", a1.is_index, a1.sort, a1.status "
                      + ", a4.img_id, a4.img_file, a4.img_desc "
                      + ", a1.cate_id, a2.cate_name "
                      + "from "
@@ -8664,6 +8697,10 @@ namespace Lib.Service
 
                 cmd.CommandText = csql;
 
+                if(IsDebug == "On")
+                {
+                    logger.Debug("Classic->Sql:" + csql);
+                }
                 //---------------------------------------------------------------//
                 cmd.Parameters.Clear();
                 if (status.Trim().Length > 0)
@@ -8761,8 +8798,12 @@ namespace Lib.Service
             try
             {
                 //========抓取sort==============================================================//
-                csql = "select (max(sort) + 1) as sort from News";
+                csql = "select (max(sort) + 1) as sort from Classic where cate_id = @cate_id ";
                 cmd.CommandText = csql;
+
+                ////讓ADO.NET自行判斷型別轉換
+                cmd.Parameters.Clear();
+                cmd.Parameters.AddWithValue("@cate_id", cate_id);
 
                 if (ds.Tables["chk_sort"] != null)
                 {
@@ -8773,6 +8814,7 @@ namespace Lib.Service
                 chk_sort_ada.SelectCommand = cmd;
                 chk_sort_ada.Fill(ds, "chk_sort");
                 chk_sort_ada = null;
+
                 if (ds.Tables["chk_sort"].Rows.Count > 0)
                 {
                     sort = ds.Tables["chk_sort"].Rows[0]["sort"].ToString();

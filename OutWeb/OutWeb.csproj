@@ -1214,12 +1214,13 @@
     <Content Include="Views\Manage\Classic_Cate_List.cshtml" />
     <Content Include="Views\Manage\Classic_List.cshtml" />
     <Content Include="Views\Manage\Classic_Data.cshtml" />
+    <Content Include="Views\Classic\Content.cshtml" />
+    <Content Include="Views\Classic\List.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\Logs\" />
     <Folder Include="Images\" />
     <Folder Include="Models\" />
-    <Folder Include="Views\Classic\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

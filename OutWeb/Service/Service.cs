@@ -229,5 +229,6 @@ namespace Lib.Service
             return connstr;
         }
         #endregion 連結字串取得 conn_string
+
     }
 }

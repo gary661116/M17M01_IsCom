@@ -102,7 +102,7 @@
                 <div class="col-md-12">
                     <ul class="breadcrumb">
                         <li><a href="~/">Home</a></li>
-                        <li class="active">@ViewBag.Title</li>
+                        <li class="active">采威動向</li>
                     </ul>
                 </div>
             </div>
@@ -121,10 +121,17 @@
                 <aside class="sidebar">
 
                     <h4>采威</h4>
-                    <ul class="nav nav-list primary push-bottom">
-                        <li><a href="~/News">最新消息</a></li>
-                        <li><a href="~/Project">成交案例</a></li>
-                    </ul>
+                    <div class="toggle" data-plugin-toggle data-plugin-options='{"isAccordion":true}'>
+                        <section class="toggle active">
+                            <label onclick="location.href ='@Url.Content("~/News")' ;"><font color="white">最新消息</font></label>
+                        </section>
+                        <section class="toggle">
+                            <label onclick="location.href ='@Url.Content("~/Classic")' ;">經典案例</label>
+                        </section>
+                        <section class="toggle">
+                            <label onclick="location.href ='@Url.Content("~/Project")' ;">成交歷程</label>
+                        </section>
+                    </div>				             
 
                 </aside>
             </div>
