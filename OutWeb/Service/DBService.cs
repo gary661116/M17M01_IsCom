@@ -1599,75 +1599,89 @@ namespace Lib.Service
 
             try
             {
-                if(ad_memo.Trim().Length > 0)
-                {
-                    if(c_sql.Trim().Length > 0)
-                    {
-                        c_sql += ",";
-                    }
-                    c_sql += "ad_memo = @ad_memo ";
-                }
+                //if(ad_memo.Trim().Length > 0)
+                //{
+                //    if(c_sql.Trim().Length > 0)
+                //    {
+                //        c_sql += ",";
+                //    }
+                //    c_sql += "ad_memo = @ad_memo ";
+                //}
 
-                if (ad_url.Trim().Length > 0)
-                {
-                    if (c_sql.Trim().Length > 0)
-                    {
-                        c_sql += ",";
-                    }
-                    c_sql += "ad_url = @ad_url ";
-                }
+                //if (ad_url.Trim().Length > 0)
+                //{
+                //    if (c_sql.Trim().Length > 0)
+                //    {
+                //        c_sql += ",";
+                //    }
+                //    c_sql += "ad_url = @ad_url ";
+                //}
 
-                if (ad_sort.Trim().Length > 0)
-                {
-                    if (c_sql.Trim().Length > 0)
-                    {
-                        c_sql += ",";
-                    }
-                    c_sql += "sort = @sort ";
-                }
+                //if (ad_sort.Trim().Length > 0)
+                //{
+                //    if (c_sql.Trim().Length > 0)
+                //    {
+                //        c_sql += ",";
+                //    }
+                //    c_sql += "sort = @sort ";
+                //}
 
-                if (ad_status.Trim().Length > 0)
-                {
-                    if (c_sql.Trim().Length > 0)
-                    {
-                        c_sql += ",";
-                    }
-                    c_sql += "status = @ad_status ";
-                }
+                //if (ad_status.Trim().Length > 0)
+                //{
+                //    if (c_sql.Trim().Length > 0)
+                //    {
+                //        c_sql += ",";
+                //    }
+                //    c_sql += "status = @ad_status ";
+                //}
 
-                if(c_sql.Trim().Length > 0)
-                {
-                    csql = "update "
-                         + "  Advertisement "
-                         + "set "
-                         + c_sql
-                         + "where "
-                         + "  ad_id = @ad_id";
-                }
+                //if(c_sql.Trim().Length > 0)
+                //{
+                //    csql = "update "
+                //         + "  Advertisement "
+                //         + "set "
+                //         + c_sql
+                //         + "where "
+                //         + "  ad_id = @ad_id";
+                //}
 
+                csql = "update "
+                     + "  Advertisement "
+                     + "set "
+                     + "  ad_memo = @ad_memo "
+                     + ", ad_url = @ad_url "
+                     + ", sort = @sort "
+                     + ", status = @ad_status "
+                     + "where "
+                     + "  ad_id = @ad_id";
 
                 cmd.CommandText = csql;
 
                 cmd.Parameters.Clear();
-                if (ad_memo.Trim().Length > 0)
-                {
-                    cmd.Parameters.AddWithValue("@ad_memo", ad_memo);
-                }
+                //if (ad_memo.Trim().Length > 0)
+                //{
+                //    cmd.Parameters.AddWithValue("@ad_memo", ad_memo);
+                //}
 
-                if (ad_url.Trim().Length > 0)
-                {
-                    cmd.Parameters.AddWithValue("@ad_url", ad_url);
-                }
+                //if (ad_url.Trim().Length > 0)
+                //{
+                //    cmd.Parameters.AddWithValue("@ad_url", ad_url);
+                //}
 
-                if (ad_sort.Trim().Length > 0)
-                {
-                    cmd.Parameters.AddWithValue("@sort", ad_sort);
-                }
+                //if (ad_sort.Trim().Length > 0)
+                //{
+                //    cmd.Parameters.AddWithValue("@sort", ad_sort);
+                //}
 
-                if (ad_status.Trim().Length > 0)
-                {
-                    cmd.Parameters.AddWithValue("@ad_status", ad_status);
-                }
+                //if (ad_status.Trim().Length > 0)
+                //{
+                //    cmd.Parameters.AddWithValue("@ad_status", ad_status);
+                //}
+
+                cmd.Parameters.AddWithValue("@ad_memo", ad_memo);
+                cmd.Parameters.AddWithValue("@ad_url", ad_url);
+                cmd.Parameters.AddWithValue("@sort", ad_sort);
+                cmd.Parameters.AddWithValue("@ad_status", ad_status);
                 cmd.Parameters.AddWithValue("@ad_id", ad_id);
 
                 cmd.ExecuteNonQuery();
@@ -8075,75 +8089,88 @@ namespace Lib.Service
 
             try
             {
-                if (ad_memo.Trim().Length > 0)
-                {
-                    if (c_sql.Trim().Length > 0)
-                    {
-                        c_sql += ",";
-                    }
-                    c_sql += "ad_memo = @ad_memo ";
-                }
+                //if (ad_memo.Trim().Length > 0)
+                //{
+                //    if (c_sql.Trim().Length > 0)
+                //    {
+                //        c_sql += ",";
+                //    }
+                //    c_sql += "ad_memo = @ad_memo ";
+                //}
 
-                if (ad_url.Trim().Length > 0)
-                {
-                    if (c_sql.Trim().Length > 0)
-                    {
-                        c_sql += ",";
-                    }
-                    c_sql += "ad_url = @ad_url ";
-                }
+                //if (ad_url.Trim().Length > 0)
+                //{
+                //    if (c_sql.Trim().Length > 0)
+                //    {
+                //        c_sql += ",";
+                //    }
+                //    c_sql += "ad_url = @ad_url ";
+                //}
 
-                if (ad_sort.Trim().Length > 0)
-                {
-                    if (c_sql.Trim().Length > 0)
-                    {
-                        c_sql += ",";
-                    }
-                    c_sql += "sort = @sort ";
-                }
+                //if (ad_sort.Trim().Length > 0)
+                //{
+                //    if (c_sql.Trim().Length > 0)
+                //    {
+                //        c_sql += ",";
+                //    }
+                //    c_sql += "sort = @sort ";
+                //}
 
-                if (ad_status.Trim().Length > 0)
-                {
-                    if (c_sql.Trim().Length > 0)
-                    {
-                        c_sql += ",";
-                    }
-                    c_sql += "status = @ad_status ";
-                }
+                //if (ad_status.Trim().Length > 0)
+                //{
+                //    if (c_sql.Trim().Length > 0)
+                //    {
+                //        c_sql += ",";
+                //    }
+                //    c_sql += "status = @ad_status ";
+                //}
 
-                if (c_sql.Trim().Length > 0)
-                {
-                    csql = "update "
-                         + "  Advertisement "
-                         + "set "
-                         + c_sql
-                         + "where "
-                         + "  ad_id = @ad_id";
-                }
+                //if (c_sql.Trim().Length > 0)
+                //{
+                //    csql = "update "
+                //         + "  Advertisement "
+                //         + "set "
+                //         + c_sql
+                //         + "where "
+                //         + "  ad_id = @ad_id";
+                //}
 
+                csql = "update "
+                     + "  Advertisement "
+                     + "set "
+                     + "  ad_memo = @ad_memo "
+                     + ", ad_url = @ad_url "
+                     + ", sort = @sort "
+                     + ", status = @ad_status "
+                     + "where "
+                     + "  ad_id = @ad_id";
 
                 cmd.CommandText = csql;
 
                 cmd.Parameters.Clear();
-                if (ad_memo.Trim().Length > 0)
-                {
-                    cmd.Parameters.AddWithValue("@ad_memo", ad_memo);
-                }
+                //if (ad_memo.Trim().Length > 0)
+                //{
+                //    cmd.Parameters.AddWithValue("@ad_memo", ad_memo);
+                //}
 
-                if (ad_url.Trim().Length > 0)
-                {
-                    cmd.Parameters.AddWithValue("@ad_url", ad_url);
-                }
+                //if (ad_url.Trim().Length > 0)
+                //{
+                //    cmd.Parameters.AddWithValue("@ad_url", ad_url);
+                //}
 
-                if (ad_sort.Trim().Length > 0)
-                {
-                    cmd.Parameters.AddWithValue("@sort", ad_sort);
-                }
+                //if (ad_sort.Trim().Length > 0)
+                //{
+                //    cmd.Parameters.AddWithValue("@sort", ad_sort);
+                //}
 
-                if (ad_status.Trim().Length > 0)
-                {
-                    cmd.Parameters.AddWithValue("@ad_status", ad_status);
-                }
+                //if (ad_status.Trim().Length > 0)
+                //{
+                //    cmd.Parameters.AddWithValue("@ad_status", ad_status);
+                //}
+                cmd.Parameters.AddWithValue("@ad_memo", ad_memo);
+                cmd.Parameters.AddWithValue("@ad_url", ad_url);
+                cmd.Parameters.AddWithValue("@sort", ad_sort);
+                cmd.Parameters.AddWithValue("@ad_status", ad_status);
                 cmd.Parameters.AddWithValue("@ad_id", ad_id);
 
                 cmd.ExecuteNonQuery();
@@ -8943,7 +8970,7 @@ namespace Lib.Service
             try
             {
                 csql = @"update "
-                     + "  news "
+                     + "  classic "
                      + "set "
                      + "  n_title = @n_title "
                      + ", n_date = @n_date "
@@ -8971,7 +8998,7 @@ namespace Lib.Service
                 cmd.Parameters.AddWithValue("@is_show", is_show);
                 cmd.Parameters.AddWithValue("@n_memo", n_memo);
                 cmd.Parameters.AddWithValue("@n_url", n_url);
-                cmd.Parameters.AddWithValue("@cate_id", n_url);
+                cmd.Parameters.AddWithValue("@cate_id", cate_id);
 
                 cmd.ExecuteNonQuery();
             }
