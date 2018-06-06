@@ -55,7 +55,33 @@
     string nmonth = "AAA,Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec";
     string[] array_month = nmonth.Split(',');
 
-    row_count = d_news.Rows.Count;
+    //row_count = d_news.Rows.Count;
+
+    //----經典案例清單 -- //
+    //--Temp檔--建立---------//
+    DataTable Cnews1;
+    if (cate_id == "")
+    {
+        Cnews1 = d_news.Clone();
+    }
+    else
+    {
+        //----------------------------------------------------------------------//
+        DataRow[] Cnews1_Rows = d_news.Select("cate_id=" + cate_id);
+        //----------------------------------------------------------------------//
+        if (Cnews1_Rows.Any())
+        {
+            Cnews1 = Cnews1_Rows.CopyToDataTable();
+        }
+        else
+        {
+            Cnews1 = d_news.Clone();
+            Cnews1.Clear();
+        }
+    }
+
+    row_count = Cnews1.Rows.Count;
+
     if (row_count % page_count > 0)
     {
         total_page = (row_count / page_count) + 1;
@@ -111,28 +137,9 @@
         e_page = total_page;
     }
 
-    //----經典案例清單 -- //
-    //--Temp檔--建立---------//
-    DataTable Cnews1;
-    if (cate_id == "")
-    {
-        Cnews1 = d_news.Clone();
-    }
-    else
-    {
-        //----------------------------------------------------------------------//
-        DataRow[] Cnews1_Rows = d_news.Select("cate_id=" + cate_id);
-        //----------------------------------------------------------------------//
-        if (Cnews1_Rows.Any())
-        {
-            Cnews1 = Cnews1_Rows.CopyToDataTable();
-        }
-        else
-        {
-            Cnews1 = d_news.Clone();
-            Cnews1.Clear();
-        }
-    }
+
+
+
 }
 <div role="main" class="main">
 
