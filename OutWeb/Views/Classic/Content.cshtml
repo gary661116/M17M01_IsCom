@@ -105,7 +105,7 @@
                                         cate_active = "";
                                     }
                                     cc_cate += "            <li " + cate_active + "><a href=\"" + Url.Content(ccs_url) + "\">" + cate_cname + "</a>";
-                                    if (cate_cid == cate_id)
+                                    if (cate_id.Trim().Length == 0 || cate_cid == cate_id)
                                     {
                                         //----經典案例清單 -- //
                                         //--Temp檔--建立---------//
