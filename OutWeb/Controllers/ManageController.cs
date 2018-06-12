@@ -2189,5 +2189,95 @@ namespace OutWeb.Controllers
         #endregion
 
         #endregion
+
+        #region EDM
+
+        #region EDM陳列 Edm_List
+        public ActionResult Edm_List(string txt_title_query = "", int page = 1, string txt_sort = "", string txt_a_d = "", string txt_start_date = "", string txt_end_date = "", string txt_show = "", string txt_index = "")
+        {
+            //定義變數
+            string c_sort = "";
+            DataTable dt;
+            string err_msg = "";
+
+            //排序設定
+            if (txt_sort.Trim().Length > 0)
+            {
+                c_sort = c_sort + "a1." + txt_sort;
+            }
+            if (txt_a_d.Trim().Length > 0)
+            {
+                c_sort = c_sort + " " + txt_a_d;
+            }
+
+            //抓取Edm資料
+            dt = DB.Edm_List(ref err_msg, "", c_sort, txt_show, txt_title_query, txt_start_date, txt_end_date, txt_index);
+
+            //設定傳值
+            ViewData["page"] = page;
+            ViewData["dt"] = dt;
+            ViewData["txt_title_query"] = txt_title_query;
+            ViewData["txt_start_date"] = txt_start_date;
+            ViewData["txt_end_date"] = txt_end_date;
+            ViewData["txt_sort"] = txt_sort;
+            ViewData["txt_a_d"] = txt_a_d;
+
+            return View();
+        }
+        #endregion
+
+        #region EDM新增 Edm_Add
+        public ActionResult Edm_Add()
+        {
+            ViewData["action_sty"] = "add";
+
+            return View("Edm_Data");
+        }
+        #endregion
+
+        #region EDM修改 Edm_Edit
+        public ActionResult Edm_Edit(string edm_id = "")
+        {
+            string err_msg = "";
+            DataTable d_edm = DB.Edm_List(ref err_msg, edm_id);
+            ViewData["d_edm"] = d_edm;
+            ViewData["action_sty"] = "edit";
+
+            return View("Edm_Data");
+        }
+        #endregion
+
+        #region EDM刪除 Edm_Del
+        public ActionResult Edm_Del(string edm_id = "")
+        {
+            //OverlookDBService OverlookDB = new OverlookDBService();
+            DB.Edm_Del(edm_id);
+            return RedirectToAction("Edm_List");
+        }
+        #endregion
+
+        #region EDM儲存 Edm_Save
+        [HttpPost]
+        [ValidateInput(false)]
+        public ActionResult Edm_Save(string action_sty, string edm_id, string edm_title, string edm_date, string edm_desc, string show, string hot, string sort, string edm_memo)
+        {
+            //OverlookDBService OverlookDB = new OverlookDBService();
+
+            switch (action_sty)
+            {
+                case "add":
+                    DB.Edm_Insert(edm_title, edm_date, edm_desc, show, hot, sort, edm_memo);
+                    break;
+                case "edit":
+                    DB.Edm_Update(edm_id, edm_title, edm_date, edm_desc, show, hot, sort, edm_memo);
+                    break;
+            }
+
+            return RedirectToAction("Edm_List");
+        }
+
+        #endregion
+
+        #endregion
     }
 }

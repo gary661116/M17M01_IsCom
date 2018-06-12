@@ -334,6 +334,52 @@ namespace OutWeb.Controllers
             return View();
         }
 
+        //EDM
+        public ActionResult Edm()
+        {
+            //變數設定 
+            //DataTable d_menub;
+            //DataTable d_menus;
+            DataTable d_foot;
+            DataTable dt;
+            DataTable d_microsoft;
+
+            string err_msg = "";
+            //Menu
+            //d_menub = DB.Prod_CateB_List("", "sort", "Y", "");
+            //d_menus = DB.Prod_CateS_List("", "sort", "Y", "", "");
+            chk_menu();
+
+            //抓取微軟專區
+            d_microsoft = DB.Microsoft_Img_List(ref err_msg, "", "Y", "", "sort");
+
+            //Foot
+            d_foot = DB.Foot_List(ref err_msg, "", "sort", "Y", "");
+
+            //Edm
+            dt = DB.Edm_List(ref err_msg, "", "sort", "Y", "");
+
+            //-------------------------------------------------//
+            string cTitle = "";
+            if (d_foot.Rows.Count > 0)
+            {
+                DataTable dr = d_foot.Select("foot_url='~/Home/Edm'").CopyToDataTable();
+                if (dr.Rows.Count > 0)
+                {
+                    cTitle = dr.Rows[0]["foot_title"].ToString();
+                }
+            }
+
+            ViewData["cTitle"] = cTitle;
+            //--------------------------------------------------//
+            //ViewData["d_menub"] = d_menub;
+            //ViewData["d_menus"] = d_menus;
+            ViewData["d_foot"] = d_foot;
+            ViewData["dt"] = dt;
+            ViewData["d_microsoft"] = d_microsoft;
+
+            return View();
+        }
 
         public ActionResult Privacy()
         {

@@ -9290,5 +9290,365 @@ namespace Lib.Service
         #endregion
 
         #endregion
+
+        #region EDM
+
+        #region EDM抓取 Edm_List
+        public DataTable Edm_List(ref string err_msg, string cedm_id = "", string sort = "", string status = "", string title_query = "", string start_date = "", string end_date = "", string is_index = "")
+        {
+            DataTable dt = new DataTable();
+            SqlConnection conn = new SqlConnection(CService.conn_string());
+            SqlCommand cmd = new SqlCommand();
+            string[] Array_edm_id;
+            string[] Array_title_query;
+
+            try
+            {
+                if (conn.State == ConnectionState.Closed)
+                {
+                    conn.Open();
+                }
+                cmd.Connection = conn;
+
+                Array_edm_id = cedm_id.Split(',');
+                Array_title_query = title_query.Split(',');
+
+                csql = "select "
+                     + "  a1.* "
+                     + "from "
+                     + "("
+                     + "select distinct "
+                     + "  a1.edm_id, a1.edm_title, convert(nvarchar(10),a1.edm_date,23) as edm_date, a1.edm_url, a1.edm_desc, a1.edm_memo "
+                     + ", a1.is_index, a1.sort, a1.status "
+                     + "from "
+                     + "   edm a1 "
+                     + "where "
+                     + "  a1.status <> 'D' ";
+
+                if (status.Trim().Length > 0)
+                {
+                    csql = csql + " and a1.status = @status ";
+                }
+
+                if (cedm_id.Trim().Length > 0)
+                {
+                    csql = csql + " and a1.edm_id in (";
+                    for (int i = 0; i < Array_edm_id.Length; i++)
+                    {
+                        if (i > 0)
+                        {
+                            csql = csql + ",";
+                        }
+                        csql = csql + "@str_edm_id" + i.ToString();
+                    }
+                    csql = csql + ") ";
+                }
+
+                if (title_query.Trim().Length > 0)
+                {
+                    csql = csql + " and (";
+                    for (int i = 0; i < Array_title_query.Length; i++)
+                    {
+                        if (i > 0)
+                        {
+                            csql = csql + " or ";
+                        }
+                        csql = csql + " a1.edm_title like @str_title_query" + i.ToString() + " ";
+                    }
+                    csql = csql + ") ";
+                }
+
+                if (start_date.Trim().Length > 0)
+                {
+
+                    csql = csql + "and a1.edm_date >= @start_date ";
+                }
+
+                if (end_date.Trim().Length > 0)
+                {
+
+                    csql = csql + "and a1.edm_date <= @end_date ";
+                }
+
+                if (is_index.Trim().Length > 0)
+                {
+                    csql = csql + "and a1.is_index = @is_index ";
+                }
+
+                csql = csql + ")a1 ";
+
+                if (sort.Trim().Length > 0)
+                {
+                    csql = csql + " order by " + sort + " ";
+                }
+                else
+                {
+                    csql = csql + " order by a1.edm_date desc ";
+                }
+
+                cmd.CommandText = csql;
+
+                //---------------------------------------------------------------//
+                cmd.Parameters.Clear();
+                if (status.Trim().Length > 0)
+                {
+                    cmd.Parameters.AddWithValue("@status", status);
+                }
+
+                if (start_date.Trim().Length > 0)
+                {
+                    cmd.Parameters.AddWithValue("@start_date", start_date);
+                }
+
+                if (end_date.Trim().Length > 0)
+                {
+                    cmd.Parameters.AddWithValue("@end_date", end_date);
+                }
+
+                if (cedm_id.Trim().Length > 0)
+                {
+                    for (int i = 0; i < Array_edm_id.Length; i++)
+                    {
+                        cmd.Parameters.AddWithValue("@str_edm_id" + i.ToString(), Array_edm_id[i]);
+                    }
+                }
+
+                if (title_query.Trim().Length > 0)
+                {
+                    for (int i = 0; i < Array_title_query.Length; i++)
+                    {
+                        cmd.Parameters.AddWithValue("@str_title_query" + i.ToString(), "%" + Array_title_query[i] + "%");
+                    }
+                }
+
+                if (is_index.Trim().Length > 0)
+                {
+                    cmd.Parameters.AddWithValue("@is_index", is_index);
+                }
+                //--------------------------------------------------------------//
+
+                if (ds.Tables["edm"] != null)
+                {
+                    ds.Tables["edm"].Clear();
+                }
+
+                SqlDataAdapter news_ada = new SqlDataAdapter();
+                news_ada.SelectCommand = cmd;
+                news_ada.Fill(ds, "edm");
+                news_ada = null;
+
+                dt = ds.Tables["edm"];
+            }
+            catch (Exception ex)
+            {
+                err_msg = ex.Message;
+                logger.Error(ex.Message);
+            }
+            finally
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    conn.Close();
+                }
+                cmd = null;
+                conn = null;
+            }
+
+            return dt;
+        }
+        #endregion
+
+        #region EDM新增 Edm_Insert
+        public string Edm_Insert(string edm_title = "", string edm_date = "", string edm_desc = "", string is_show = "", string is_index = "", string sort = "", string edm_memo = "", string edm_url = "")
+        {
+            string c_msg = "";
+
+            SqlConnection conn = new SqlConnection(CService.conn_string());
+            if (conn.State == ConnectionState.Closed)
+            {
+                conn.Open();
+            }
+
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = conn;
+
+            try
+            {
+                //========抓取sort==============================================================//
+                csql = "select (max(sort) + 1) as sort from Edm";
+                cmd.CommandText = csql;
+
+                if (ds.Tables["chk_sort"] != null)
+                {
+                    ds.Tables["chk_sort"].Clear();
+                }
+
+                SqlDataAdapter chk_sort_ada = new SqlDataAdapter();
+                chk_sort_ada.SelectCommand = cmd;
+                chk_sort_ada.Fill(ds, "chk_sort");
+                chk_sort_ada = null;
+                if (ds.Tables["chk_sort"].Rows.Count > 0)
+                {
+                    sort = ds.Tables["chk_sort"].Rows[0]["sort"].ToString();
+                }
+                else
+                {
+                    sort = "0";
+                }
+                //===============================================================================//
+
+                csql = @"insert into Edm(edm_title,edm_date,edm_desc,is_index,sort,status,edm_memo,edm_url) "
+                     + "values(@edm_title,@edm_date,@edm_desc,@is_index,@sort,@is_show,@edm_memo,@edm_url)";
+
+                cmd.CommandText = csql;
+
+                ////讓ADO.NET自行判斷型別轉換
+                cmd.Parameters.Clear();
+                cmd.Parameters.AddWithValue("@edm_title", edm_title);
+                cmd.Parameters.AddWithValue("@edm_date", edm_date);
+                cmd.Parameters.AddWithValue("@edm_desc", edm_desc);
+                cmd.Parameters.AddWithValue("@is_index", is_index);
+                cmd.Parameters.AddWithValue("@sort", sort);
+                cmd.Parameters.AddWithValue("@is_show", is_show);
+                cmd.Parameters.AddWithValue("@edm_memo", edm_memo);
+                cmd.Parameters.AddWithValue("@edm_url", edm_url);
+
+
+                cmd.ExecuteNonQuery();
+
+            }
+            catch (Exception ex)
+            {
+                c_msg = ex.Message;
+                logger.Error(ex.Message);
+            }
+            finally
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    conn.Close();
+                }
+                cmd = null;
+                conn = null;
+            }
+
+            return c_msg;
+        }
+        #endregion
+
+        #region EDM更新 Edm_Update
+        //更新內容
+        public string Edm_Update(string edm_id = "", string edm_title = "", string edm_date = "", string edm_desc = "", string is_show = "", string is_index = "", string sort = "", string edm_memo = "", string edm_url = "")
+        {
+            string c_msg = "";
+            SqlConnection conn = new SqlConnection(CService.conn_string());
+            if (conn.State == ConnectionState.Closed)
+            {
+                conn.Open();
+            }
+
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = conn;
+
+            try
+            {
+                csql = @"update "
+                     + "  edm "
+                     + "set "
+                     + "  edm_title = @edm_title "
+                     + ", edm_date = @edm_date "
+                     + ", edm_desc = @edm_desc "
+                     + ", status = @is_show "
+                     + ", is_index = @is_index "
+                     + ", sort = @sort "
+                     + ", edm_memo = @edm_memo "
+                     + ", edm_url = @edm_url "
+                     + ", _UPD_ID = 'System' "
+                     + ", _UPD_DT = getdate() "
+                     + "where "
+                     + "  proj_id = @proj_id ";
+
+                cmd.CommandText = csql;
+
+                cmd.Parameters.Clear();
+                cmd.Parameters.AddWithValue("@edm_id", edm_id);
+                cmd.Parameters.AddWithValue("@edm_title", edm_title);
+                cmd.Parameters.AddWithValue("@edm_date", edm_date);
+                cmd.Parameters.AddWithValue("@edm_desc", edm_desc);
+                cmd.Parameters.AddWithValue("@is_index", is_index);
+                cmd.Parameters.AddWithValue("@sort", sort);
+                cmd.Parameters.AddWithValue("@is_show", is_show);
+                cmd.Parameters.AddWithValue("@edm_memo", edm_memo);
+                cmd.Parameters.AddWithValue("@edm_url", edm_memo);
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                c_msg = ex.Message;
+                logger.Error(ex.Message);
+            }
+            finally
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    conn.Close();
+                }
+                cmd = null;
+                conn = null;
+            }
+
+            return c_msg;
+
+        }
+        #endregion
+
+        #region EDM刪除 Edm_Del
+        public string Edm_Del(string edm_id = "")
+        {
+            string c_msg = "";
+
+            SqlConnection conn = new SqlConnection(CService.conn_string());
+            if (conn.State == ConnectionState.Closed)
+            {
+                conn.Open();
+            }
+
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = conn;
+
+            try
+            {
+                csql = @"delete from "
+                     + "  edm "
+                     + "where "
+                     + "  edm_id = @edm_id ";
+
+                cmd.CommandText = csql;
+
+                cmd.Parameters.Clear();
+                cmd.Parameters.AddWithValue("@edm_id", edm_id);
+
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                c_msg = ex.Message;
+                logger.Error(ex.Message);
+            }
+            finally
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    conn.Close();
+                }
+                cmd = null;
+                conn = null;
+            }
+
+            return c_msg;
+        }
+        #endregion
+
+        #endregion
     }
 }

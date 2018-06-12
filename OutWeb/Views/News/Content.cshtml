@@ -17,6 +17,9 @@
     string[] array_month = nmonth.Split(',');
     string n_month = "";
     string n_day = "";
+    string img_path = "~/Images/";
+    string n_pic = "";
+
 
     if (d_news.Rows.Count > 0)
     {
@@ -30,6 +33,16 @@
         is_index = d_news.Rows[0]["is_index"].ToString();
         c_status = d_news.Rows[0]["status"].ToString();
         sort = d_news.Rows[0]["sort"].ToString();
+        if (d_news.Rows[0]["img_file"].ToString().Trim().Length > 0)
+        {
+            n_pic = img_path + d_news.Rows[0]["img_file"].ToString();
+        }
+        else
+        {
+            n_pic = "";
+        }
+
+
     }
 }
 
@@ -83,6 +96,27 @@
                         </div>
                         <div class="post-content">
                             <h2>@n_title</h2>
+                            @if (n_url.Trim().Length == 0 && n_pic.Trim().Length == 0)
+                            {
+
+                            }
+                            else if (n_url.Trim().Length == 0 && n_pic.Trim().Length > 0)
+                            {
+                                    <div class="post-image">
+                                        <img src="@Url.Content(n_pic)" class="img-responsive" alt="">
+                                        <!--建議尺吋為16:9的比例-->
+                                    </div>
+                            }
+                            else
+                            {
+                                    <div class="post-image">
+
+                                        <div class="embed-responsive embed-responsive-16by9">
+                                            <iframe src="@n_url" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                                        </div>
+
+                                    </div>
+                            }
                             <p>@Html.Raw(@n_desc)</p>
                         </div>
                     </article>

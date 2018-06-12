@@ -1216,6 +1216,9 @@
     <Content Include="Views\Manage\Classic_Data.cshtml" />
     <Content Include="Views\Classic\Content.cshtml" />
     <Content Include="Views\Classic\List.cshtml" />
+    <Content Include="Views\Manage\Edm_List.cshtml" />
+    <Content Include="Views\Manage\Edm_Data.cshtml" />
+    <Content Include="Views\Home\Edm.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\Logs\" />

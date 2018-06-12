@@ -1,0 +1,68 @@
+﻿@using System.Data
+@{
+    ViewBag.Title = "EDM";
+    ViewBag.BodyClass = "EDM";
+    string cTitle = (string)ViewData["cTitle"];
+
+    DataTable d_edm = (DataTable)ViewData["dt"];
+    string edm_id = "";
+    string edm_title = "";
+    string edm_desc = "";
+    string edm_date = "";
+    string edm_url = "";
+    string sort = "";
+    string is_index = "";
+    string c_status = "";
+    string nmonth = "AAA,Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec";
+    string[] array_month = nmonth.Split(',');
+    string edm_month = "";
+    string edm_day = "";
+
+    if (d_edm.Rows.Count > 0)
+    {
+        edm_id = d_edm.Rows[0]["edm_id"].ToString();
+        edm_title = d_edm.Rows[0]["edm_title"].ToString();
+        edm_desc = d_edm.Rows[0]["edm_desc"].ToString();
+        edm_date = d_edm.Rows[0]["edm_date"].ToString();
+        edm_month = array_month[Convert.ToInt16(edm_date.Substring(5, 2))];
+        edm_day = edm_date.Substring(8, 2);
+        edm_url = d_edm.Rows[0]["edm_url"].ToString();
+        is_index = d_edm.Rows[0]["is_index"].ToString();
+        c_status = d_edm.Rows[0]["status"].ToString();
+        sort = d_edm.Rows[0]["sort"].ToString();
+    }
+}
+
+<div role="main" class="main">
+
+    <section class="page-top">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <ul class="breadcrumb">
+                        <li><a href="~/">Home</a></li>
+                        <li class="active">@cTitle</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <h1>@cTitle</h1>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+
+        <h2>@edm_title</h2>
+
+        <div class="row">
+            <div class="col-md-12">
+                @Html.Raw(edm_desc)
+            </div>
+        </div>
+
+    </div>
+
+</div>
