@@ -335,7 +335,7 @@ namespace OutWeb.Controllers
         }
 
         //EDM
-        public ActionResult Edm()
+        public ActionResult Edm(int page = 1)
         {
             //變數設定 
             //DataTable d_menub;
@@ -374,6 +374,7 @@ namespace OutWeb.Controllers
             //--------------------------------------------------//
             //ViewData["d_menub"] = d_menub;
             //ViewData["d_menus"] = d_menus;
+            ViewData["page"] = page;
             ViewData["d_foot"] = d_foot;
             ViewData["dt"] = dt;
             ViewData["d_microsoft"] = d_microsoft;

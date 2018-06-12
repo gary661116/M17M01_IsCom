@@ -96,9 +96,11 @@
         var cmsg = "";
         var edm_title = "";
         var edm_date = "";
+        var edm_url = "";
 
         edm_title = $("#edm_title").val();
         edm_date = $("#edm_date").val();
+        edm_url = $("#edm_url").val();
 
         if (edm_date == "")
         {
@@ -116,6 +118,13 @@
                 cmsg += "\n";
             }
             cmsg += "請輸入標題";
+        }
+
+        if (edm_url == "") {
+            if (cmsg != "") {
+                cmsg += "\n";
+            }
+            cmsg += "請輸入網址";
         }
 
         if ($("#cshow").prop("checked")) {
@@ -154,6 +163,7 @@
     <input type="hidden" name="show" id="show" value="" />
     <input type="hidden" name="hot" id="hot" value="" />
     <input type="hidden" name="edm_memo" id="edm_memo" value="" />
+    <input type="hidden" name="edm_desc" id="edm_desc" value="" />
 
     @if (action_sty == "add")
     {
@@ -172,7 +182,12 @@
             <input type="text" class="form-control form-control-sm" required id="edm_title" name="edm_title" value="@edm_title">
         </dd>
     </dl>
-
+    <dl class="fields">
+        <dt class="col-2">*網址</dt>
+        <dd class="col-10">
+            <input type="text" class="form-control form-control-sm" required id="edm_url" name="edm_url" value="@edm_url">
+        </dd>
+    </dl>
     @if (action_sty == "edit")
     {
         <dl class="fields">
@@ -193,24 +208,6 @@
             </label>
         </dd>
     </dl>
-    <fieldset class="m-t-24">
-        <legend class="underline">[ 內容 ]</legend>
-        <div class="alert-warning font-sm m-b-16">
-            <strong>編輯器注意事項:</strong><br>
-            從 WORD 複製文字時，請使用下方的 <img src="/Content/images/icon-word.jpg" /> 圖示來貼上 WORD 文字，避免跑版<br />
-            編輯器上傳圖片或新增表格等時，請勿設定寬度及高度(將數字刪除) ，以免行動裝置顯示時會跑版。<br />
-            檔案尺寸寬度超過 1600 或 高度超過1200 的圖片會被壓縮(PNG透明背景會變成不透明) <br />
-            youtube 可勾選「用自適應縮放模式」
-        </div>
-        @* 編輯器(含圖片上傳功能) *@
-        <textarea class="ckeditor form-control" rows="12" placeholder="請輸入最新消息內容" name="edm_desc" id="edm_desc">@edm_desc</textarea>
-        @*加入圖片上傳頁籤，放在頁面底下，放在頁面head區的話，會抓不到myText DOM*@
-        <script type="text/javascript">
-                    CKEDITOR.replace('edm_desc'
-                , { filebrowserImageUploadUrl: '@Url.Content("~/Manage/UploadPicture")' }
-                );
-        </script>
-    </fieldset>
     <footer class="submit-bar clear m-t-24">
         <button type="button" name="btn_ok" onclick="form_ok();" class="btn success oi" data-glyph="circle-check">
             確認儲存

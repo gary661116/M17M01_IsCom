@@ -2259,17 +2259,17 @@ namespace OutWeb.Controllers
         #region EDM儲存 Edm_Save
         [HttpPost]
         [ValidateInput(false)]
-        public ActionResult Edm_Save(string action_sty, string edm_id, string edm_title, string edm_date, string edm_desc, string show, string hot, string sort, string edm_memo)
+        public ActionResult Edm_Save(string action_sty, string edm_id, string edm_title, string edm_date, string edm_desc, string show, string hot, string sort, string edm_memo,string edm_url)
         {
             //OverlookDBService OverlookDB = new OverlookDBService();
 
             switch (action_sty)
             {
                 case "add":
-                    DB.Edm_Insert(edm_title, edm_date, edm_desc, show, hot, sort, edm_memo);
+                    DB.Edm_Insert(edm_title, edm_date, edm_desc, show, hot, sort, edm_memo,edm_url);
                     break;
                 case "edit":
-                    DB.Edm_Update(edm_id, edm_title, edm_date, edm_desc, show, hot, sort, edm_memo);
+                    DB.Edm_Update(edm_id, edm_title, edm_date, edm_desc, show, hot, sort, edm_memo,edm_url);
                     break;
             }
 

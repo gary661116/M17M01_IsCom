@@ -1,35 +1,93 @@
 ﻿@using System.Data
+@using System.Text.RegularExpressions
+
 @{
     ViewBag.Title = "EDM";
     ViewBag.BodyClass = "EDM";
-    string cTitle = (string)ViewData["cTitle"];
+    ViewBag.subnav = "EDM";
 
     DataTable d_edm = (DataTable)ViewData["dt"];
+
+    int row_count = 0;
+    int page_count = 10;
+    int page = (int)ViewData["page"];
+    int pre_page = 0;
+    int top_page = 0;
+    int next_page = 0;
+    int end_page = 0;
+    int min_row = 0;
+    int max_row = 0;
+    int total_page = 0;
+    int s_page = 0;
+    int e_page = 0;
+    int pp_count = 0;
+    string page_active = "";
+
     string edm_id = "";
     string edm_title = "";
-    string edm_desc = "";
     string edm_date = "";
-    string edm_url = "";
-    string sort = "";
-    string is_index = "";
-    string c_status = "";
-    string nmonth = "AAA,Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec";
-    string[] array_month = nmonth.Split(',');
+    string edm_desc = "";
+    string edm_memo = "";
     string edm_month = "";
     string edm_day = "";
+    string edm_url = "";
+    string nmonth = "AAA,Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec";
+    string[] array_month = nmonth.Split(',');
 
-    if (d_edm.Rows.Count > 0)
+    row_count = d_edm.Rows.Count;
+    if (row_count % page_count > 0)
     {
-        edm_id = d_edm.Rows[0]["edm_id"].ToString();
-        edm_title = d_edm.Rows[0]["edm_title"].ToString();
-        edm_desc = d_edm.Rows[0]["edm_desc"].ToString();
-        edm_date = d_edm.Rows[0]["edm_date"].ToString();
-        edm_month = array_month[Convert.ToInt16(edm_date.Substring(5, 2))];
-        edm_day = edm_date.Substring(8, 2);
-        edm_url = d_edm.Rows[0]["edm_url"].ToString();
-        is_index = d_edm.Rows[0]["is_index"].ToString();
-        c_status = d_edm.Rows[0]["status"].ToString();
-        sort = d_edm.Rows[0]["sort"].ToString();
+        total_page = (row_count / page_count) + 1;
+    }
+    else
+    {
+        total_page = row_count / page_count;
+    }
+
+    if (page > total_page)
+    {
+        page = total_page;
+    }
+    else if (page < 1)
+    {
+        page = 1;
+    }
+
+    top_page = 1;
+
+    if (page > 1)
+    {
+        pre_page = page - 1;
+    }
+    else
+    {
+        pre_page = 1;
+    }
+
+    if (total_page > page)
+    {
+        next_page = page + 1;
+    }
+    else
+    {
+        next_page = total_page;
+    }
+
+    end_page = total_page;
+
+    min_row = 10 * (page - 1) + 1;
+    max_row = 10 * page;
+    if (max_row > row_count)
+    {
+        max_row = row_count;
+    }
+
+    pp_count = Convert.ToInt16(page / 10);
+    s_page = pp_count * 10 + 1;
+    e_page = (pp_count + 1) * 10;
+    if (e_page > total_page)
+    {
+        e_page = total_page;
     }
 }
 
@@ -41,13 +99,14 @@
                 <div class="col-md-12">
                     <ul class="breadcrumb">
                         <li><a href="~/">Home</a></li>
-                        <li class="active">@cTitle</li>
+                        <li>采威動向</li>
+                        <!--<li class="active">@ViewBag.Title</li>-->
                     </ul>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <h1>@cTitle</h1>
+                    <h1>@ViewBag.Title</h1>
                 </div>
             </div>
         </div>
@@ -55,14 +114,106 @@
 
     <div class="container">
 
-        <h2>@edm_title</h2>
-
         <div class="row">
-            <div class="col-md-12">
-                @Html.Raw(edm_desc)
+           @*
+                <div class="col-md-3">
+                    <aside class="sidebar">
+
+                        <h4>采威</h4>
+                        <div class="toggle" data-plugin-toggle data-plugin-options='{"isAccordion":true}'>
+                            <section class="toggle">
+                                <label onclick="location.href ='@Url.Content("~/News")' ;">最新消息</label>
+                            </section>
+                            <section class="toggle">
+                                <label onclick="location.href ='@Url.Content("~/Classic")' ;">經典案例</label>
+                            </section>
+                            <section class="toggle active">
+                                <label onclick="location.href ='@Url.Content("~/edmect")' ;"><font color="white">成交歷程</font></label>
+                            </section>
+                        </div>
+
+                    </aside>
+                </div>
+           *@ 
+             <div class="col-md-9">
+                <div class="blog-posts">
+                    @* 套程式 *@
+                    @if (d_edm.Rows.Count > 0)
+                    {
+                        for (int i = min_row - 1; i < max_row; i++)
+                        {
+                            edm_id = d_edm.Rows[i]["edm_id"].ToString();
+                            edm_title = d_edm.Rows[i]["edm_title"].ToString();
+                            edm_date = d_edm.Rows[i]["edm_date"].ToString();
+                            edm_month = array_month[Convert.ToInt16(edm_date.Substring(5, 2))];
+                            edm_day = edm_date.Substring(8, 2);
+                            edm_desc = RemoveHTMLTag(d_edm.Rows[i]["edm_desc"].ToString());
+                            edm_memo = d_edm.Rows[i]["edm_memo"].ToString();
+                            edm_url = d_edm.Rows[i]["edm_url"].ToString();
+                            if (edm_desc.Length > 120)
+                            {
+                                edm_desc = edm_desc.Substring(0, 120) + "...";
+                            }
+
+
+                            <article class="post post-large">
+                                <div class="post-date">
+                                    <span class="day">@edm_day</span>
+                                    <span class="month">@edm_month</span>
+                                </div>
+                                <div class="post-content">
+
+                                    <h2><a href="@edm_url" target="_blank">@edm_title</a></h2>
+                                </div>
+                            </article>
+                        }
+                    }
+                    @if (d_edm.Rows.Count > 0)
+                    {
+                        <ul class="pagination pagination-lg pull-left">
+
+                            <li><a href="@Url.Content("~/Home/Edm?page=" + top_page.ToString())">|<</a></li>
+                            <li><a href="@Url.Content("~/Home/Edm?page=" + pre_page.ToString())"><<</a></li>
+                            @for (int i = s_page; i <= e_page; i++)
+                            {
+                                if (i == page)
+                                {
+                                    page_active = " class=\"active\" ";
+                                }
+                                else
+                                {
+                                    page_active = "";
+                                }
+                                <li @Html.Raw(page_active)><a href="@Url.Content("~/Home/Edm?page=" + i.ToString())">@i.ToString()</a></li>
+                            }
+                            <li><a href="@Url.Content("~/Home/Edm?page=" + next_page.ToString())">>></a></li>
+                            <li><a href="@Url.Content("~/Home/Edm?page=" + end_page.ToString())">>|</a></li>
+                        </ul>
+                    }
+                </div>
             </div>
+
+
         </div>
 
     </div>
 
 </div>
+
+@functions
+{
+    /// <summary>
+    /// 移除html tag
+    /// </summary>
+    /// <param name="htmlSource"></param>
+    /// <returns></returns>
+    public static string RemoveHTMLTag(string htmlSource)
+    {
+        //移除  javascript code.
+        htmlSource = Regex.Replace(htmlSource, @"<script[\d\D]*?>[\d\D]*?</script>", String.Empty);
+
+        //移除html tag.
+        htmlSource = Regex.Replace(htmlSource, @"<[^>]*>", String.Empty);
+        return htmlSource;
+    }
+}

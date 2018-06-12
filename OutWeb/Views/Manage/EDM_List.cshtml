@@ -21,6 +21,7 @@
     string edm_title = "";
     string edm_date = "";
     string edm_sort = "";
+    string edm_url = "";
     string is_index = "";
     string show = "";
     string show_class = "";
@@ -172,8 +173,9 @@
     </header>
     <table class="table-list table-hover table-striped">
         <colgroup>
-            <col span="3">
-            <col style="width: 13.5%">
+            <col span="2" style="width: 20%">
+            <col>
+            <col>
             <col span="3" style="width: 11%">
         </colgroup>
         <thead>
@@ -190,9 +192,10 @@
                 <th class="item-edit">刪除</th>
                 <th class="item-edit">修改</th>
                 <th class="text-left">標題</th>
+                <th class="text-left">網址</th>
                 <th>
                     @* 點選排序功能 (點一下遞增 asc, 點兩下遞減 desc) *@
-                    <button class="text-xs-center th-sort-toggle @class_date" name="btn_date" id="btn_date" onclick="sort('edm_date');">成交日期</button>
+                    <button class="text-xs-center th-sort-toggle @class_date" name="btn_date" id="btn_date" onclick="sort('edm_date');">日期</button>
                 </th>
                 <th>
                     @* 點選排序功能 (點一下遞增 asc, 點兩下遞減 desc) *@
@@ -213,6 +216,7 @@
                     edm_id = dt.Rows[i]["edm_id"].ToString();
                     edm_title = dt.Rows[i]["edm_title"].ToString();
                     edm_date = dt.Rows[i]["edm_date"].ToString();
+                    edm_url = dt.Rows[i]["edm_url"].ToString();
                     edm_sort = dt.Rows[i]["sort"].ToString();
                     is_index = dt.Rows[i]["is_index"].ToString();
                     if (dt.Rows[i]["status"].ToString() == "Y")
@@ -244,6 +248,7 @@
                             <button type="button" onclick="location.href='@Url.Content("~/Manage/Edm_Edit?edm_id=" + edm_id)';" class="btn btn-link oi" data-glyph="pencil"></button>
                         </td>
                         <td class="text-left">@edm_title</td>
+                        <td class="text-left">@edm_url</td>
                         <td>@edm_date</td>
                         <td><span class="label @show_class">@show</span></td>
                         <td>@edm_sort</td>
@@ -253,7 +258,7 @@
             else
             {
                 <tr>
-                    <td class="text-left" colspan="7">
+                    <td class="text-left" colspan="8">
                         無資料
                     </td>
                 </tr>
