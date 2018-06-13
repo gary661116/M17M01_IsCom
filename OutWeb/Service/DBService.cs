@@ -9566,7 +9566,7 @@ namespace Lib.Service
                      + ", _UPD_ID = 'System' "
                      + ", _UPD_DT = getdate() "
                      + "where "
-                     + "  proj_id = @proj_id ";
+                     + "  edm_id = @edm_id ";
 
                 cmd.CommandText = csql;
 
@@ -9579,7 +9579,7 @@ namespace Lib.Service
                 cmd.Parameters.AddWithValue("@sort", sort);
                 cmd.Parameters.AddWithValue("@is_show", is_show);
                 cmd.Parameters.AddWithValue("@edm_memo", edm_memo);
-                cmd.Parameters.AddWithValue("@edm_url", edm_memo);
+                cmd.Parameters.AddWithValue("@edm_url", edm_url);
                 cmd.ExecuteNonQuery();
             }
             catch (Exception ex)

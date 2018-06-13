@@ -58,7 +58,8 @@
 }
 
 <div role="main" class="main">
-<script>
+<a id="autoclickme" href="#headers" style="opacity: 0;">123</a>
+<!--<script>
     $(document).ready(function(){
             var $body = (window.opera) ? (document.compatMode == "CSS1Compat" ? $('html') : $('body')) : $('html,body');
             $body.animate({
@@ -67,7 +68,7 @@
      
             return false;
     });
-</script>
+</script>-->
     <!-- Prod_Cate Start -->
     <section class="page-top">
         <div class="container">
@@ -278,4 +279,10 @@
         return htmlSource;
     }
 }
+<script>
 
+         $(document).ready(function () {
+             $('#autoclickme').get(0).click();
+         });
+
+</script>
