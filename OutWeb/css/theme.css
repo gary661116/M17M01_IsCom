@@ -1159,7 +1159,17 @@ body #header nav.mega-menu .mega-menu-signin ul.dropdown-menu li a, body #header
 	#header .header-top, #header .social-icons, #header .search {
 		display: none;
 	}
-
+	 #header .search {
+			display: block;
+			position: absolute;
+			right: 10px;
+			top:-8px;
+			
+		}
+		#header .search button.btn-default {
+			right: 10px;
+			top:-8px;
+		}
 	#header .nav-collapse {
 		background: #171717;
 		width: 100%;

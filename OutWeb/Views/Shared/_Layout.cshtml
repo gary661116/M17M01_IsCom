@@ -1,6 +1,6 @@
 ﻿@using System.Data
 @using System.Text.RegularExpressions
-@{ 
+@{
     //DataTable d_menub = (DataTable)ViewData["d_menub"];
     //DataTable d_menus = (DataTable)ViewData["d_menus"];
     DataTable d_menub = (DataTable)Session["d_menub"];
@@ -36,7 +36,6 @@
 
         gtag('config', 'UA-61451173-1');
     </script>
-
     <!-- Facebook Pixel Code -->
     <script>
         !function(f,b,e,v,n,t,s)
@@ -55,48 +54,38 @@
              src="https://www.facebook.com/tr?id=662412500634134&ev=PageView&noscript=1" />
     </noscript>
     <!-- End Facebook Pixel Code -->
-
     <!-- Basic -->
     <meta charset="utf-8">
     <title>采威國際資訊股份有限公司</title>
     <meta name="keywords" content="智慧安全,雲端運維,智慧製造,智慧工廠,智慧旅運,資料科技,智慧城市,智慧校園,智慧監控,微軟夥伴,微軟國家獎,服務解決方案,中小企業轉型,開放資料應用,系統整合,B2B,物聯網加值,聯網,數據分析,足跡分析,輿情分析,網站建置,平台建置" />
     <meta name="description" content="創立18年，總公司設立於台中，在台北、新竹設有分公司，服務中小企業達上千家，目前共有三大事業群，「雲端運維暨智慧安全事業群」、「智慧製造與資料科技事業群」、「智慧城市與教育事業群」，提供各地不同的客戶最即時的服務。">
     <meta name="author" content="okler.net">
-
     <!-- Mobile Metas -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <!-- Web Fonts  -->
     <link href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800%7CShadows+Into+Light" rel="stylesheet" type="text/css">
-
     <!-- Vendor CSS -->
     <link rel="stylesheet" href="~/vendor/bootstrap/bootstrap.css">
     <link rel="stylesheet" href="~/vendor/fontawesome/css/font-awesome.css">
     <link rel="stylesheet" href="~/vendor/owlcarousel/owl.carousel.min.css" media="screen">
     <link rel="stylesheet" href="~/vendor/owlcarousel/owl.theme.default.min.css" media="screen">
     <link rel="stylesheet" href="~/vendor/magnific-popup/magnific-popup.css" media="screen">
-
     <!-- Theme CSS -->
     <link rel="stylesheet" href="~/css/theme.css">
     <link rel="stylesheet" href="~/css/theme-elements.css">
     <link rel="stylesheet" href="~/css/theme-blog.css">
     <link rel="stylesheet" href="~/css/theme-shop.css">
     <link rel="stylesheet" href="~/css/theme-animate.css">
-
     <!-- Current Page CSS -->
     <link rel="stylesheet" href="~/vendor/rs-plugin/css/settings.css" media="screen">
     <link rel="stylesheet" href="~/vendor/circle-flip-slideshow/css/component.css" media="screen">
-
     <!-- Skin CSS -->
     <link rel="stylesheet" href="~/css/skins/default.css">
-
     <!-- Theme Custom CSS -->
     <link rel="stylesheet" href="~/css/custom.css">
     <link rel="stylesheet" href="~/css/iscom-style.css">
-
     <!-- Head Libs -->
     <script src="~/vendor/modernizr/modernizr.js"></script>
-
     <!-- JQuery UI Css -->
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="~/vendor/jquery/jquery.js"></script>
@@ -113,23 +102,21 @@
     <div id="wrapper" class="body">
         <header id="header">
             <div class="container">
-
                 <div class="logo">
                     <a href="~/">
                         <img alt="Porto" width="291" height="55" data-sticky-width="291" data-sticky-height="55" src="~/img/logo.png">
                     </a>
                 </div>
-
-                <!-- <div class="search">
-                <form id="searchForm" action="page-search-results.html" method="get">
-                    <div class="input-group">
-                        <input type="text" class="form-control search" name="q" id="q" placeholder="Search..." required>
-                        <span class="input-group-btn">
-                            <button class="btn btn-default" type="submit"><i class="fa fa-search"></i></button>
-                        </span>
-                    </div>
-                </form>
-            </div> -->
+                <div class="search">
+                    <form id="searchForm" action="page-search-results.html" method="get">
+                        <div class="input-group">
+                            <input type="text" class="form-control search" name="q" id="q" placeholder="全文檢索..." required>
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" type="submit"><i class="fa fa-search"></i></button>
+                            </span>
+                        </div>
+                    </form>
+                </div>
                 <nav>
                     <ul class="nav nav-pills nav-top">
                         <li>
@@ -221,13 +208,11 @@
                                 }
                             }
                             @Html.Raw(cc_menus)
-
                         </ul>
                     </nav>
                 </div>
             </div>
         </header>
-
         @RenderBody()
         @* Microsoft 專區 *@
         @for (int i = 0; i < d_microsoft.Rows.Count; i++)
@@ -236,24 +221,24 @@
             microsoft_pic = d_microsoft.Rows[i]["ad_img"].ToString();
             microsoft_url = d_microsoft.Rows[i]["ad_url"].ToString();
             <div class="container">
-               <div class="col-xs-12" style="padding: 0px 5px;">              
-                   @if (microsoft_url.Trim().Length > 0)
-                   {
-                       <a class="h-banner" href="@microsoft_url"><img src="@Url.Content("~/Images/" + microsoft_pic)" class="img-responsive" alt=""></a>
-                   }
-                   else
-                   {            
-                       <img src="@Url.Content("~/Images/" + microsoft_pic)" class="img-responsive" alt="">
-                   }        
-               </div>
+                <div class="col-xs-12" style="padding: 0px 5px;">
+                    @if (microsoft_url.Trim().Length > 0)
+                    {
+                        <a class="h-banner" href="@microsoft_url"><img src="@Url.Content("~/Images/" + microsoft_pic)" class="img-responsive" alt=""></a>
+                    }
+                    else
+                    {
+                        <img src="@Url.Content("~/Images/" + microsoft_pic)" class="img-responsive" alt="">
+                    }
+                </div>
             </div>
         }
         @*
-        <div class="container">
-            <div class="col-xs-12" style="padding: 0px 5px;">
-                <a class="h-banner" href="http://www.iscom.com.tw/Prod/List?page=1&cateb_id=7&cates_id=33"><img src="~/img/banners.jpg" class="img-responsive"  alt=""></a>
+            <div class="container">
+                <div class="col-xs-12" style="padding: 0px 5px;">
+                    <a class="h-banner" href="http://www.iscom.com.tw/Prod/List?page=1&cateb_id=7&cates_id=33"><img src="~/img/banners.jpg" class="img-responsive"  alt=""></a>
+                </div>
             </div>
-        </div>
         *@
         @* Foot *@
         <footer id="footer">
@@ -284,10 +269,10 @@
             </div>
             <div class="container">
                 <div class="row">
-                     <!-- <div class="footer-ribbon">
-                    <span>聯繫采威</span>
-                </div>  -->
-                    
+                    <!-- <div class="footer-ribbon">
+                        <span>聯繫采威</span>
+                    </div>  -->
+
                     <div class="col-md-4">
                         <div class="contact-details">
                             <h4>企業總部</h4>
@@ -305,7 +290,6 @@
                                 <li><p><i class="fa fa-map-marker"></i> <strong>地址 : </strong>104台北市中山區敬業一路128巷39號2樓</p></li>
                                 <li><p><i class="fa fa-phone"></i> <strong>電話 : </strong> (02) 8501-1109</p></li>
                                 <li><p><i class="fa fa-fax"></i> <strong>傳真 :  </strong> (02) 8501-2795</p></li>
-
                             </ul>
                         </div>
                     </div>
@@ -313,11 +297,14 @@
                         <div class="contact-details">
                             <h4>新竹分公司</h4>
                             <ul class="contact">
-                                <li><p><i class="fa fa-map-marker"></i> <strong>地址 : </strong>300新竹市寶山路
-                                452巷9弄12號</p></li>
+                                <li>
+                                    <p>
+                                        <i class="fa fa-map-marker"></i> <strong>地址 : </strong>300新竹市寶山路
+                                        452巷9弄12號
+                                    </p>
+                                </li>
                                 <li><p><i class="fa fa-phone"></i> <strong>電話 : </strong> (03) 5797-606</p></li>
                                 <!-- <li><p><i class="fa fa-fax"></i> <strong>傳真 :  </strong> (02) 8501-2795</p></li> -->
-
                             </ul>
                         </div>
                     </div>
@@ -343,7 +330,6 @@
         </footer>
     </div><!-- wrapper //-->
     <!-- Vendor -->
-
     <script src="~/vendor/jquery.appear/jquery.appear.js"></script>
     <script src="~/vendor/jquery.easing/jquery.easing.js"></script>
     <script src="~/vendor/jquery-cookie/jquery-cookie.js"></script>
@@ -358,22 +344,17 @@
     <script src="~/vendor/jflickrfeed/jflickrfeed.js"></script>
     <script src="~/vendor/magnific-popup/jquery.magnific-popup.js"></script>
     <script src="~/vendor/vide/vide.js"></script>
-
     <!-- Theme Base, Components and Settings -->
     <script src="~/js/theme.js"></script>
-
     <!-- Specific Page Vendor and Views -->
     <script src="~/vendor/rs-plugin/js/jquery.themepunch.tools.min.js"></script>
     <script src="~/vendor/rs-plugin/js/jquery.themepunch.revolution.min.js"></script>
     <script src="~/vendor/circle-flip-slideshow/js/jquery.flipshow.js"></script>
     <script src="~/js/views/view.home.js"></script>
-
     <!-- Theme Custom -->
     <script src="~/js/custom.js"></script>
-
     <!-- Theme Initialization Files -->
     <script src="~/js/theme.init.js"></script>
-
     <!-- Google Analytics: Change UA-XXXXX-X to be your site's ID. Go to http://www.google.com/analytics/ for more information.
     <script type="text/javascript">
 
@@ -389,7 +370,6 @@
 
     </script>
      -->
-
     <script>
 		 	$(document).ready(function(){
 		 		$(".btnop-1").click(function(){
