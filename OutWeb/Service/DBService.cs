@@ -9650,5 +9650,82 @@ namespace Lib.Service
         #endregion
 
         #endregion
+
+        #region 全文檢索
+        public DataTable Query_List(string txt_query = "")
+        {
+            string err_msg = "";
+            DataTable dt = new DataTable();
+            //設計欄位
+            dt.Columns.Add("Title", System.Type.GetType("System.String"));  //標題
+            dt.Columns.Add("CDesc", System.Type.GetType("System.String"));  //內文
+            dt.Columns.Add("Url", System.Type.GetType("System.String"));    //網址
+
+            DataRow dw;
+
+            //抓最新消息資料
+            DataTable dt_new;
+            dt_new = News_List(ref err_msg, "", "", "Y", txt_query, "", "", "");
+            if(dt_new.Rows.Count > 0)
+            {
+                for(int i = 0; i < dt_new.Rows.Count; i++)
+                {
+                    dw = dt.NewRow();
+                    dw["Title"] = dt_new.Rows[i]["n_title"].ToString();
+                    dw["CDesc"] = dt_new.Rows[i]["n_memo"].ToString();
+                    dw["Url"] = "~/News/NewsData?n_id=" + dt_new.Rows[i]["n_id"].ToString();
+                    dt.Rows.Add(dw);
+                }
+            }
+
+            //產品
+            DataTable dt_prod;
+            dt_prod = Prod_List(ref err_msg, "", "", "Y", txt_query, "", "");
+
+            if(dt_prod.Rows.Count > 0)
+            {
+                for(int i= 0; i < dt_prod.Rows.Count; i++)
+                {
+                    dw = dt.NewRow();
+                    dw["Title"] = dt_prod.Rows[i]["prod_name"].ToString();
+                    dw["CDesc"] = dt_prod.Rows[i]["prod_desc"].ToString();
+                    dw["Url"] = "~/Prod/ProdData?prod_id=" + dt_prod.Rows[i]["prod_id"].ToString();
+                    dt.Rows.Add(dw);
+                }
+            }
+
+            //成功案例
+            DataTable dt_proj;
+            dt_proj = Proj_List(ref err_msg, "", "", "Y", txt_query, "", "", "");
+            if (dt_proj.Rows.Count > 0)
+            {
+                for (int i = 0; i < dt_proj.Rows.Count; i++)
+                {
+                    dw = dt.NewRow();
+                    dw["Title"] = dt_proj.Rows[i]["proj_title"].ToString();
+                    dw["CDesc"] = dt_proj.Rows[i]["proj_memo"].ToString();
+                    dw["Url"] = "~/Project/ProjectData?proj_id=" + dt_proj.Rows[i]["proj_id"].ToString();
+                    dt.Rows.Add(dw);
+                }
+            }
+
+            //經典案例
+            DataTable dt_classic;
+            dt_classic = Classic_List(ref err_msg, "", "", "Y", txt_query, "", "", "","");
+            if (dt_classic.Rows.Count > 0)
+            {
+                for (int i = 0; i < dt_classic.Rows.Count; i++)
+                {
+                    dw = dt.NewRow();
+                    dw["Title"] = dt_classic.Rows[i]["proj_title"].ToString();
+                    dw["CDesc"] = dt_classic.Rows[i]["proj_memo"].ToString();
+                    dw["Url"] = "~/Classic/ClassicData?n_id=" + dt_proj.Rows[i]["n_id"].ToString();
+                    dt.Rows.Add(dw);
+                }
+            }
+
+            return dt;
+        }
+        #endregion 全文檢索
     }
 }

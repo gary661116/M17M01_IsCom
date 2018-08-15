@@ -108,9 +108,10 @@
                     </a>
                 </div>
                 <div class="search">
-                    <form id="searchForm" action="page-search-results.html" method="get">
+                    <form id="searchForm" action="~/Home/Search" method="post">
+                        @Html.AntiForgeryToken()
                         <div class="input-group">
-                            <input type="text" class="form-control search" name="q" id="q" placeholder="全文檢索..." required>
+                            <input type="text" class="form-control search" name="txt_query" id="txt_query" placeholder="全文檢索..." required>
                             <span class="input-group-btn">
                                 <button class="btn btn-default" type="submit"><i class="fa fa-search"></i></button>
                             </span>

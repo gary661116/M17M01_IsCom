@@ -1219,6 +1219,7 @@
     <Content Include="Views\Manage\Edm_List.cshtml" />
     <Content Include="Views\Manage\Edm_Data.cshtml" />
     <Content Include="Views\Home\Edm.cshtml" />
+    <Content Include="Views\Home\Search.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\Logs\" />

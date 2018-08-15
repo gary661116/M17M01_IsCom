@@ -735,5 +735,17 @@ namespace OutWeb.Controllers
 
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult search(string txt_query = "")
+        {
+            DataTable dt;
+            //抓取資料
+            dt = DB.Query_List(txt_query);
+            ViewData["dt"] = dt;
+
+            return View();
+        }
+
     }
 }
