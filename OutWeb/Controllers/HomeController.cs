@@ -739,9 +739,46 @@ namespace OutWeb.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult search(string txt_query = "")
         {
+            //變數設定 
+            //DataTable d_menub;
+            //DataTable d_menus;
+            DataTable d_foot;
+            DataTable d_microsoft;
+            string err_msg = "";
+
+            //Menu
+            //d_menub = DB.Prod_CateB_List("", "sort", "Y", "");
+            //d_menus = DB.Prod_CateS_List("", "sort", "Y", "", "");
+            chk_menu();
+            //抓取微軟專區
+            d_microsoft = DB.Microsoft_Img_List(ref err_msg, "", "Y", "", "sort");
+
+            //Foot
+            d_foot = DB.Foot_List(ref err_msg, "", "sort", "Y", "");
+
             DataTable dt;
             //抓取資料
             dt = DB.Query_List(txt_query);
+
+            //-------------------------------------------------//
+            //string cTitle = "";
+            //if (d_foot.Rows.Count > 0)
+            //{
+            //    DataTable dr = d_foot.Select("foot_url='~/Home/JoinUs'").CopyToDataTable();
+            //    if (dr.Rows.Count > 0)
+            //    {
+            //        cTitle = dr.Rows[0]["foot_title"].ToString();
+            //    }
+            //}
+
+            //ViewData["cTitle"] = cTitle;
+            //--------------------------------------------------//
+
+            //ViewData["d_menub"] = d_menub;
+            //ViewData["d_menus"] = d_menus;
+            ViewData["d_foot"] = d_foot;
+            ViewData["d_microsoft"] = d_microsoft;
+
             ViewData["dt"] = dt;
 
             return View();
