@@ -9717,9 +9717,9 @@ namespace Lib.Service
                 for (int i = 0; i < dt_classic.Rows.Count; i++)
                 {
                     dw = dt.NewRow();
-                    dw["Title"] = dt_classic.Rows[i]["proj_title"].ToString();
-                    dw["CDesc"] = dt_classic.Rows[i]["proj_memo"].ToString();
-                    dw["Url"] = "~/Classic/ClassicData?n_id=" + dt_proj.Rows[i]["n_id"].ToString();
+                    dw["Title"] = dt_classic.Rows[i]["n_title"].ToString();
+                    dw["CDesc"] = dt_classic.Rows[i]["n_memo"].ToString();
+                    dw["Url"] = "~/Classic/ClassicData?n_id=" + dt_classic.Rows[i]["n_id"].ToString();
                     dt.Rows.Add(dw);
                 }
             }

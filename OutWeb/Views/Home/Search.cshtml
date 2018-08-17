@@ -49,46 +49,34 @@
 
             <div class="row">
                 <div class="col-md-12">
-
-
-                    @if (dt.Rows.Count > 0)
-                    {
-                        faq_html = "";
-                        faq_html += "<div class=\"toogle\" data-plugin-toggle  data-plugin-options='{\"isAccordion\":true}'>";
-                        for (int i = 0; i < dt.Rows.Count; i++)
+                    <div class="blog-posts">
+                        @if (dt.Rows.Count > 0)
                         {
-                            title = dt.Rows[i]["title"].ToString();
-                            cdesc = dt.Rows[i]["cdesc"].ToString();
-                            curl = dt.Rows[i]["url"].ToString();
-                            faq_id = dt.Rows[i]["faq_id"].ToString();
-                            faq_title = dt.Rows[i]["faq_title"].ToString();
-                            faq_desc = dt.Rows[i]["faq_desc"].ToString();
-
-                            if (i == 0)
+                            for (int i = 0; i < dt.Rows.Count; i++)
                             {
-                                faq_active = "toggle active";
-                            }
-                            else
-                            {
-                                faq_active = "toggle";
-                            }
+                                title = dt.Rows[i]["title"].ToString();
+                                cdesc = dt.Rows[i]["cdesc"].ToString();
+                                curl = dt.Rows[i]["url"].ToString();
 
-                            faq_html += "<section class=\"" + faq_active + "\">";
-                            faq_html += "<label>" + faq_title + "</label>";
-                            faq_html += "    <div class=\"toggle-content\">";
-                            faq_html += faq_desc;
-                            faq_html += "    </div>";
-                            faq_html += "</section>";
+                                if (cdesc.Length > 200)
+                                {
+                                    cdesc = cdesc.Substring(0, 200) + "...";
+                                }
+                                <article class="post post-medium">
+                                    <div class="post-content">
 
+                                        <h3><a href="@Url.Content(curl)">@title</a></h3>
+                                        <p>@Html.Raw(cdesc)</p>
+                                        <div class="post-meta">
+                                            <a href="@Url.Content(curl)" class="btn btn-xs btn-primary pull-right">Read more...</a>
+                                        </div>
+                                    </div>
+                                </article>
+                            }
                         }
-                        faq_html += "</div>";
-                    }
-                    @Html.Raw(faq_html)
+                    </div>
                 </div>
-
             </div>
-
         </div>
-
     </div>
 </div>

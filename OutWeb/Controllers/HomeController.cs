@@ -735,8 +735,8 @@ namespace OutWeb.Controllers
 
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        
+
         public ActionResult search(string txt_query = "")
         {
             //變數設定 
